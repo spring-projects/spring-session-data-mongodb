@@ -1,0 +1,120 @@
+
+= Spring Session MongoDB
+Rob Winch, Vedran Pavić, Jakub Kubrynski, Greg Turnquist
+:doctype: book
+:toc: left
+
+[[abstract]]
+
+Spring Session MongoDB provides an API and implementations for managing a user's session information on MongoDB.
+
+[[introduction]]
+== Introduction
+
+For an introduction to Spring Session as a whole, visit http://docs.spring.io/spring-session/docs/{spring-session-version}/reference/html5/[Spring Session] itself.
+
+[[samples]]
+== Samples and Guides (Start Here)
+
+If you are looking to get started with Spring Session, the best place to start is our Sample Applications.
+
+.Sample Applications using Spring Boot
+|===
+| Description | Guide
+
+| Demonstrates how to use Spring Session to replace the `HttpSession` with Mongo.
+| link:boot-mongo.html[HttpSession with Mongo Guide]
+
+|===
+
+[[httpsession-mongo]]
+=== HttpSession with Mongo
+
+Using Spring Session with `HttpSession` is enabled by adding a Servlet Filter before anything that uses the `HttpSession`.
+
+This section describes how to use Mongo to back `HttpSession` using Java based configuration.
+
+NOTE: The <<samples, HttpSession Mongo Sample>> provides a working sample on how to integrate Spring Session and `HttpSession` using Java configuration.
+You can read the basic steps for integration below, but you are encouraged to follow along with the detailed HttpSession Guide when integrating with your own application.
+
+include::guides/boot-mongo.adoc[tags=config,leveloffset=+3]
+
+==== Session serialization mechanisms
+
+To be able to persist session objects in MongoDB we need to provide the serialization/deserialization mechanism.
+Depending on your classpath Spring Session will choose one of two build-in converters:
+
+* `JacksonMongoSessionConverter` when `ObjectMapper` class is available, or
+* `JdkMongoSessionConverter` otherwise.
+
+===== JacksonMongoSessionConverter
+
+This mechanism uses Jackson to serialize session objects to/from JSON.
+`JacksonMongoSessionConverter` will be the default when Jackson is detected on the classpath and the user has not explicitly registered a `AbstractMongoSessionConverter` Bean.
+
+If you would like to provide custom Jackson modules you can do it by explicitly registering `JacksonMongoSessionConverter`:
+
+[source,java,indent=0]
+----
+include::{docs-test-dir}/docs/http/MongoJacksonSessionConfiguration.java[tags=config]
+----
+
+==== JdkMongoSessionConverter
+
+`JdkMongoSessionConverter` uses standard Java serialization to persist session attributes map to MongoDB in a binary form.
+However, standard session elements like id, access time, etc are still written as a plain Mongo objects and can be read and queried without additional effort.
+`JdkMongoSessionConverter` is used if Jackson is not on the classpath and no explicit `AbstractMongoSessionConverter` Bean has been defined.
+You can explicitly register `JdkMongoSessionConverter` by defining it as a Bean.
+
+[source,java,indent=0]
+----
+include::{docs-test-dir}/docs/http/MongoJdkSessionConfiguration.java[tags=config]
+----
+
+There is also a constructor taking `Serializer` and `Deserializer` objects, allowing you to pass custom implementations, which is especially important when you want to use non-default classloader.
+
+[[api]]
+== API Documentation
+
+You can browse the complete link:../../api/[Javadoc] online. The key APIs are described below:
+
+[[community]]
+== Spring Session Community
+
+We are glad to consider you a part of our community.
+Please find additional information below.
+
+[[community-support]]
+=== Support
+
+You can get help by asking questions on http://stackoverflow.com/questions/tagged/spring-session[StackOverflow with the tag spring-session].
+Similarly we encourage helping others by answering questions on StackOverflow.
+
+[[community-source]]
+=== Source Code
+
+Our source code can be found on github at https://github.com/spring-projects/spring-session-data-mongodb/
+
+[[community-issues]]
+=== Issue Tracking
+
+We track issues in github issues at https://github.com/spring-projects/spring-session-data-mongodb/issues
+
+[[community-contributing]]
+=== Contributing
+
+We appreciate https://help.github.com/articles/using-pull-requests/[Pull Requests].
+
+[[community-license]]
+=== License
+
+Spring Session is Open Source software released under the http://www.apache.org/licenses/LICENSE-2.0.html[Apache 2.0 license].
+
+[[minimum-requirements]]
+== Minimum Requirements
+
+The minimum requirements for Spring Session MongoDB are:
+
+* Java 8
+* If you are running in a Servlet Container (not required), Servlet 2.5+
+* If you are using other Spring libraries (not required), the minimum required version is Spring 5.0

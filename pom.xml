@@ -299,14 +299,15 @@
 								</goals>
 								<configuration>
 									<sourceDirectory>${basedir}/src/main/asciidoc</sourceDirectory>
-									<sourceDocumentName>index.adoc</sourceDocumentName>
 									<outputDirectory>${project.build.directory}/content/reference/htmlsingle</outputDirectory>
 									<backend>html</backend>
 									<doctype>book</doctype>
 									<attributes>
 										<docinfo>true</docinfo>
-										<stylesheet>css/manual-singlepage.css</stylesheet>
 										<github-tag>v${project.version}</github-tag>
+										<asciidoc-base>${basedir}/src/main/asciidoc</asciidoc-base>
+										<docs-test-dir>${basedir}/src/main/asciidoc/java</docs-test-dir>
+										<spring-session-version>${spring-session.version}</spring-session-version>
 									</attributes>
 								</configuration>
 							</execution>
