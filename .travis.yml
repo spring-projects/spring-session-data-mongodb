@@ -15,7 +15,6 @@ cache:
 
 os:
   - linux
-  - osx
 
 sudo: false
 script: "mvn clean dependency:list test -P${PROFILE} -Dsort"
