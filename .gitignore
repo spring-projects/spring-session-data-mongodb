@@ -1,8 +1,5 @@
-.gradle
 .idea
-build
 *.iml
-bin
 .classpath
 .settings
 .project

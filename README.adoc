@@ -1,11 +1,9 @@
-image:https://badges.gitter.im/spring-projects/spring-session.svg[link="https://gitter.im/spring-projects/spring-session?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
+image:https://travis-ci.org/spring-projects/spring-session-data-mongodb.svg?branch=master["Build Status", link="https://travis-ci.org/spring-projects/spring-session-data-mongodb"]
 
-image:https://travis-ci.org/spring-projects/spring-session.svg?branch=master["Build Status", link="https://travis-ci.org/spring-projects/spring-session"]
+= Spring Session MongoDB
+Greg Turnquist
 
-= Spring Session
-Rob Winch
-
-Spring Session aims to provide a common infrastructure for managing sessions. This provides many benefits including:
+Spring Session MongoDB provides a solution for Spring Session in a MongoDB data store.
 
 * Accessing a session from any environment (i.e. web, messaging infrastructure, etc)
 * In a web environment
@@ -19,7 +17,7 @@ By participating, you  are expected to uphold this code. Please report unaccepta
 
 = Spring Session Project Site
 
-You can find the documentation, issue management, support, samples, and guides for using Spring Session at http://projects.spring.io/spring-session/
+You can find the documentation, issue management, support, samples, and guides for using Spring Session MongoDB at http://projects.spring.io/spring-session-data-mongodb/
 
 = License
 
