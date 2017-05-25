@@ -5,7 +5,7 @@ jdk:
 
 env:
   matrix:
-    - PROFILE=non-existant
+    - PROFILE=non-existent
     - PROFILE=spring5-next
 
 
@@ -22,7 +22,7 @@ branches:
     
 sudo: false
 script:
-  - if [ "${TRAVIS_PULL_REQUEST}" = "false" -a "${TRAVIS_BRANCH}" = "master" ]; then
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" -a "${TRAVIS_BRANCH}" = "master" -a "${PROFILE}" = "non-existent" ]; then
   -   mvn -Pdistribute,snapshot,docs clean deploy
   - else
   -   mvn clean dependency:list test -P${PROFILE} -Dsort
