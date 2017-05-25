@@ -1,24 +1,26 @@
 language: java
 
 jdk:
-  - oraclejdk8
+- oraclejdk8
 
 env:
   matrix:
-    - PROFILE=non-existent
-    - PROFILE=spring5-next
-
+  - PROFILE=non-existent
+  - PROFILE=spring5-next
 
 cache:
   directories:
-    - $HOME/.m2
+  - $HOME/.m2
 
 os:
-  - linux
+- linux
 
 branches:
   except:
-    - gh-pages
-    
+  - gh-pages
+
 sudo: false
 script: ./build.bash
+notifications:
+  slack:
+    secure: gxRCHl/xMeopwHrh0SQz906oY9f1R85zne2Nlo79P45Y5GZVji+o6D/2MtWNJ5b7ihBjY9w6+ZypWdrMrqF4iYcbdaaCOGoL46m5O8ugs8+YAqxbrElKZFa9KUEjE9zxc5dGXo140Hq8HuPqGKenUTE0ygsAqBAesRl1InQVaQANq9mJYyjXBfg6PcnRrOIqpDXnUb4S1kUl3vY13Sw9RI1xBiO56Y9u8ENVOG51JbKFxDffXp5x9hNunnlRCAOsFh2DdmySSSvAZBQYBdbLpM6wqywRnWYY5CVUX/8orYilZJzqY/umX1KVuwUgsNFgcgRpL3l9fVjVdovYH57t0wb18HOjyMZiW0HKbTVahge9aNKc/gl4XxjRtzK0Sl1geJ9q8VfXdQ/FIXOEcvMyfzovuU8bHxaCsMt3Mh+UiOxdGmNfROarzcCW2eTa1tKC3PgoQ99ulCsSh6EZg73HhZXcVqhLtZAMspVkbJ34aKPDA2LiQEfatlOBjkriRIsvN/+L1pUdMVao2bE23edmq66JbYlc5eWQ4XZLoRiujKuMkzXqPrq9Hv2ExYcPtW72LgBX9uiD7SxgnrtLa3cVl8NlTtWPT8pfhGoT6cFvzjm/Oic9CgI9iPxOwxqeadwIWKS20LKNg1ByHblWi5kmVfHo39CEmII1/sax0jtq3PA=
