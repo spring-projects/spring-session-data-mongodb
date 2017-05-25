@@ -16,5 +16,14 @@ cache:
 os:
   - linux
 
+branches:
+  except:
+    - gh-pages
+    
 sudo: false
-script: "mvn clean dependency:list test -P${PROFILE} -Dsort"
+script:
+  - if [ "${TRAVIS_PULL_REQUEST}" = "false" -a "${TRAVIS_BRANCH}" = "master" ]; then
+  -   mvn -Pdistribute,snapshot,docs clean deploy
+  - else
+  -   mvn clean dependency:list test -P${PROFILE} -Dsort
+  - fi

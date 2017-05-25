@@ -361,12 +361,12 @@
 									<goal>run</goal>
 								</goals>
 								<configuration>
-									<target>
+									<tasks>
 										<zip destfile="${project.build.directory}/${project.artifactId}-${project.version}.zip">
 											<zipfileset src="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar" prefix="api" />
 											<fileset dir="${project.build.directory}/content"/>
 										</zip>
-									</target>
+									</tasks>
 								</configuration>
 							</execution>
 						</executions>
@@ -374,6 +374,7 @@
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>1.10</version>
 						<executions>
 							<execution>
 								<id>attach-zip</id>
