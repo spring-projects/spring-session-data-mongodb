@@ -1,26 +1,20 @@
 language: java
-
 jdk:
 - oraclejdk8
-
 env:
   matrix:
   - PROFILE=non-existent
   - PROFILE=spring5-next
-
 cache:
   directories:
   - $HOME/.m2
-
 os:
 - linux
-
 branches:
   except:
   - gh-pages
-
 sudo: false
 script: ./build.bash
 notifications:
   slack:
-    secure: gxRCHl/xMeopwHrh0SQz906oY9f1R85zne2Nlo79P45Y5GZVji+o6D/2MtWNJ5b7ihBjY9w6+ZypWdrMrqF4iYcbdaaCOGoL46m5O8ugs8+YAqxbrElKZFa9KUEjE9zxc5dGXo140Hq8HuPqGKenUTE0ygsAqBAesRl1InQVaQANq9mJYyjXBfg6PcnRrOIqpDXnUb4S1kUl3vY13Sw9RI1xBiO56Y9u8ENVOG51JbKFxDffXp5x9hNunnlRCAOsFh2DdmySSSvAZBQYBdbLpM6wqywRnWYY5CVUX/8orYilZJzqY/umX1KVuwUgsNFgcgRpL3l9fVjVdovYH57t0wb18HOjyMZiW0HKbTVahge9aNKc/gl4XxjRtzK0Sl1geJ9q8VfXdQ/FIXOEcvMyfzovuU8bHxaCsMt3Mh+UiOxdGmNfROarzcCW2eTa1tKC3PgoQ99ulCsSh6EZg73HhZXcVqhLtZAMspVkbJ34aKPDA2LiQEfatlOBjkriRIsvN/+L1pUdMVao2bE23edmq66JbYlc5eWQ4XZLoRiujKuMkzXqPrq9Hv2ExYcPtW72LgBX9uiD7SxgnrtLa3cVl8NlTtWPT8pfhGoT6cFvzjm/Oic9CgI9iPxOwxqeadwIWKS20LKNg1ByHblWi5kmVfHo39CEmII1/sax0jtq3PA=
+    secure: fKLKkvaIVRK4l0f+PjFIZTwnVmgmFilKv1uS2XFFhFWPjAzSF0Qi0H2ZKt3cYRTbhNkUGksRbTivbvi9/p69lIpLn0HbM9p6theS7EdgP6O4VkDk9ubMysO9JZRp/5APJN3JJqHCC9gKCabyFwtsixKfzKhPtxNwhNiOAP7a/izuIdCq9Cl+lOskdFp3nAY3U8+Jk0zsE26TdRQ/7uOTDlWl4RU5h0UEr+AGxns+Du/K2efxpWrmOEjiIVQMSFGXJ3FBonX1XZcLu8RweLSARVcjPzZyOZgNWoziRvG9rprDRM6pZGEuSTDW/OIi3EcUezEXLkx5VxpaxS7ELNSBiQxsSpyWSIbTeUdA63n2VCSs5yfGJzuRG2zci0tSObEQtYNaSWoGFTW4EAliS4HmibN697vjoLO+s6mqc37YLkRa+aZctDHVKByDIgniOjz27/t1ZVgqVwOABfAjXxJyLLNrOkWoWAhwKWji+xvIIq+OK6TysWKs8ivTgJwMfeQ0yEEmo0/BaOONNvwUGgWX5/0xq4UvBJxIZzNbL6HUPBBUMCAJf+2t9S3zoBy2ML54ardhfk28jVOiH0lOLC/rQfQzCjM9FxQ4eBSy6TIdEJkCitfRrIVkDH23YmCuQl9nVrjwX+Jak6VRGvjYYs41N8dRxrN4cK6433LV9qyOvAA=
