@@ -10,3 +10,4 @@ out
 !eclispe/.checkstyle
 .checkstyle
 !**/src/**/build
+_site

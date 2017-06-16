@@ -72,12 +72,12 @@
 		<jackson.version>2.9.0.pr3</jackson.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.7.22</mockito.version>
-		<spring.version>5.0.0.RC1</spring.version>
+		<spring.version>5.0.0.RC2</spring.version>
 		<spring-data.version>Kay-M4</spring-data.version>
 		<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
 		<source.level>1.8</source.level>
 		<assertj.version>3.6.2</assertj.version>
-		<spring-security.version>5.0.0.M1</spring-security.version>
+		<spring-security.version>5.0.0.M2</spring-security.version>
 	</properties>
 
 	<profiles>
