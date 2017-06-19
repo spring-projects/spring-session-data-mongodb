@@ -40,6 +40,7 @@ import com.mongodb.util.JSON;
  * {@code AbstractMongoSessionConverter} implementation using Jackson.
  *
  * @author Jakub Kubrynski
+ * @author Greg Turnquist
  * @since 1.2
  */
 public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter {
@@ -67,7 +68,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 			return Query.query(Criteria.where(PRINCIPAL_FIELD_NAME).is(indexValue));
 		}
 		return Query.query(Criteria.where(ATTRS_FIELD_NAME +
-				MongoExpiringSession.coverDot(indexName)).is(indexValue));
+				MongoSession.coverDot(indexName)).is(indexValue));
 	}
 
 	private ObjectMapper buildObjectMapper() {
@@ -87,7 +88,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	}
 
 	@Override
-	protected DBObject convert(MongoExpiringSession source) {
+	protected DBObject convert(MongoSession source) {
 
 		try {
 			DBObject dbSession = (DBObject) JSON.parse(this.objectMapper.writeValueAsString(source));
@@ -100,12 +101,12 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	}
 
 	@Override
-	protected MongoExpiringSession convert(Document source) {
+	protected MongoSession convert(Document source) {
 
 		String json = JSON.serialize(source);
 
 		try {
-			return this.objectMapper.readValue(json, MongoExpiringSession.class);
+			return this.objectMapper.readValue(json, MongoSession.class);
 		}
 		catch (IOException e) {
 			LOG.error("Error during Mongo Session deserialization", e);

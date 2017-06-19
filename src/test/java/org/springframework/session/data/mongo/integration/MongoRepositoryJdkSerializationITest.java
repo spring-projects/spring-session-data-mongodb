@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
-import org.springframework.session.data.mongo.MongoExpiringSession;
+import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.session.data.mongo.config.annotation.web.http.EnableMongoHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -35,6 +35,7 @@ import org.springframework.test.context.ContextConfiguration;
  *
  * @author Jakub Kubrynski
  * @author Vedran Pavic
+ * @author Greg Turnquist
  */
 @ContextConfiguration
 public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositoryITest {
@@ -42,16 +43,16 @@ public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositor
 	@Test
 	public void findByDeletedSecurityPrincipalNameReload() throws Exception {
 
-		MongoExpiringSession toSave = this.repository.createSession();
+		MongoSession toSave = this.repository.createSession();
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
 		this.repository.save(toSave);
 
-		MongoExpiringSession getSession = this.repository.getSession(toSave.getId());
+		MongoSession getSession = this.repository.getSession(toSave.getId());
 		getSession.setAttribute(INDEX_NAME, null);
 		this.repository.save(getSession);
 
-		Map<String, MongoExpiringSession> findByPrincipalName = this.repository
+		Map<String, MongoSession> findByPrincipalName = this.repository
 				.findByIndexNameAndIndexValue(INDEX_NAME, getChangedSecurityName());
 
 		assertThat(findByPrincipalName).isEmpty();
@@ -60,7 +61,7 @@ public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositor
 	@Test
 	public void findByPrincipalNameNoSecurityPrincipalNameChangeReload() throws Exception {
 
-		MongoExpiringSession toSave = this.repository.createSession();
+		MongoSession toSave = this.repository.createSession();
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.context);
 
 		this.repository.save(toSave);
@@ -70,7 +71,7 @@ public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositor
 		toSave.setAttribute("other", "value");
 		this.repository.save(toSave);
 
-		Map<String, MongoExpiringSession> findByPrincipalName = this.repository
+		Map<String, MongoSession> findByPrincipalName = this.repository
 				.findByIndexNameAndIndexValue(INDEX_NAME, getSecurityName());
 
 		assertThat(findByPrincipalName).hasSize(1);

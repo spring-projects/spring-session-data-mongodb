@@ -15,23 +15,26 @@
  */
 package org.springframework.session.data.mongo;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-import org.springframework.session.ExpiringSession;
+import org.springframework.session.Session;
 
 /**
  * Session object providing additional information about the datetime of expiration.
  *
  * @author Jakub Kubrynski
+ * @author Greg Turnquist
  * @since 1.2
  */
-public class MongoExpiringSession implements ExpiringSession {
+public class MongoSession implements Session {
 
 	/**
 	 * Mongo doesn't support {@literal dot} in field names. We replace it with a very rarely used character
@@ -39,25 +42,25 @@ public class MongoExpiringSession implements ExpiringSession {
 	private static final char DOT_COVER_CHAR = '\uF607';
 
 	private final String id;
-	private long created = System.currentTimeMillis();
-	private long accessed;
-	private int interval;
+	private long createdMillis = System.currentTimeMillis();
+	private long accessedMillis;
+	private long intervalSeconds;
 	private Date expireAt;
 	private Map<String, Object> attrs = new HashMap<String, Object>();
 
-	public MongoExpiringSession() {
+	public MongoSession() {
 		this(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 	}
 
-	public MongoExpiringSession(int maxInactiveIntervalInSeconds) {
+	public MongoSession(long maxInactiveIntervalInSeconds) {
 		this(UUID.randomUUID().toString(), maxInactiveIntervalInSeconds);
 	}
 
-	public MongoExpiringSession(String id, int maxInactiveIntervalInSeconds) {
+	public MongoSession(String id, long maxInactiveIntervalInSeconds) {
 
 		this.id = id;
-		this.interval = maxInactiveIntervalInSeconds;
-		setLastAccessedTime(this.created);
+		this.intervalSeconds = maxInactiveIntervalInSeconds;
+		setLastAccessedTime(Instant.ofEpochMilli(this.createdMillis));
 	}
 
 	public String getId() {
@@ -65,8 +68,8 @@ public class MongoExpiringSession implements ExpiringSession {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getAttribute(String attributeName) {
-		return (T) this.attrs.get(coverDot(attributeName));
+	public <T> Optional<T> getAttribute(String attributeName) {
+		return Optional.ofNullable((T) this.attrs.get(coverDot(attributeName)));
 	}
 
 	public Set<String> getAttributeNames() {
@@ -93,34 +96,34 @@ public class MongoExpiringSession implements ExpiringSession {
 		this.attrs.remove(coverDot(attributeName));
 	}
 
-	public long getCreationTime() {
-		return this.created;
+	public Instant getCreationTime() {
+		return Instant.ofEpochMilli(this.createdMillis);
 	}
 
 	public void setCreationTime(long created) {
-		this.created = created;
+		this.createdMillis = created;
 	}
 
-	public void setLastAccessedTime(long lastAccessedTime) {
+	public void setLastAccessedTime(Instant lastAccessedTime) {
 
-		this.accessed = lastAccessedTime;
-		this.expireAt = new Date(lastAccessedTime + TimeUnit.SECONDS.toMillis(this.interval));
+		this.accessedMillis = lastAccessedTime.toEpochMilli();
+		this.expireAt = Date.from(lastAccessedTime.plus(Duration.ofSeconds(this.intervalSeconds)));
 	}
 
-	public long getLastAccessedTime() {
-		return this.accessed;
+	public Instant getLastAccessedTime() {
+		return Instant.ofEpochMilli(this.accessedMillis);
 	}
 
-	public void setMaxInactiveIntervalInSeconds(int interval) {
-		this.interval = interval;
+	public void setMaxInactiveInterval(Duration interval) {
+		this.intervalSeconds = interval.getSeconds();
 	}
 
-	public int getMaxInactiveIntervalInSeconds() {
-		return this.interval;
+	public Duration getMaxInactiveInterval() {
+		return Duration.ofSeconds(this.intervalSeconds);
 	}
 
 	public boolean isExpired() {
-		return this.interval >= 0 && new Date().after(this.expireAt);
+		return this.intervalSeconds >= 0 && new Date().after(this.expireAt);
 	}
 
 	public Date getExpireAt() {
@@ -149,7 +152,7 @@ public class MongoExpiringSession implements ExpiringSession {
 			return false;
 		}
 
-		MongoExpiringSession that = (MongoExpiringSession) o;
+		MongoSession that = (MongoSession) o;
 
 		return this.id.equals(that.id);
 	}

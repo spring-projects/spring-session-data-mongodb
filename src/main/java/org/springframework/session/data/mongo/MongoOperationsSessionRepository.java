@@ -16,6 +16,7 @@
 
 package org.springframework.session.data.mongo;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -42,10 +43,11 @@ import com.mongodb.DBObject;
  * done every minute.
  *
  * @author Jakub Kubrynski
+ * @author Greg Turnquist
  * @since 1.2
  */
 public class MongoOperationsSessionRepository
-		implements FindByIndexNameSessionRepository<MongoExpiringSession> {
+		implements FindByIndexNameSessionRepository<MongoSession> {
 
 	/**
 	 * The default time period in seconds in which a session will expire.
@@ -69,24 +71,24 @@ public class MongoOperationsSessionRepository
 		this.mongoOperations = mongoOperations;
 	}
 
-	public MongoExpiringSession createSession() {
+	public MongoSession createSession() {
 
-		MongoExpiringSession session = new MongoExpiringSession();
+		MongoSession session = new MongoSession();
 
 		if (this.maxInactiveIntervalInSeconds != null) {
-			session.setMaxInactiveIntervalInSeconds(this.maxInactiveIntervalInSeconds);
+			session.setMaxInactiveInterval(Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
 		}
 		
 		return session;
 	}
 
-	public void save(MongoExpiringSession session) {
+	public void save(MongoSession session) {
 
 		DBObject sessionDbObject = convertToDBObject(session);
 		this.mongoOperations.save(sessionDbObject, this.collectionName);
 	}
 
-	public MongoExpiringSession getSession(String id) {
+	public MongoSession getSession(String id) {
 
 		Document sessionWrapper = findSession(id);
 
@@ -94,7 +96,7 @@ public class MongoOperationsSessionRepository
 			return null;
 		}
 
-		MongoExpiringSession session = convertToSession(sessionWrapper);
+		MongoSession session = convertToSession(sessionWrapper);
 
 		if (session.isExpired()) {
 			delete(id);
@@ -113,9 +115,9 @@ public class MongoOperationsSessionRepository
 	 * @param indexValue the value of the index to search for.
 	 * @return sessions map
 	 */
-	public Map<String, MongoExpiringSession> findByIndexNameAndIndexValue(String indexName, String indexValue) {
+	public Map<String, MongoSession> findByIndexNameAndIndexValue(String indexName, String indexValue) {
 
-		HashMap<String, MongoExpiringSession> result = new HashMap<String, MongoExpiringSession>();
+		HashMap<String, MongoSession> result = new HashMap<String, MongoSession>();
 
 		Query query = this.mongoSessionConverter.getQueryForIndex(indexName, indexValue);
 
@@ -126,7 +128,7 @@ public class MongoOperationsSessionRepository
 		List<Document> mapSessions = this.mongoOperations.find(query, Document.class, this.collectionName);
 
 		for (Document dbSession : mapSessions) {
-			MongoExpiringSession mapSession = convertToSession(dbSession);
+			MongoSession mapSession = convertToSession(dbSession);
 			result.put(mapSession.getId(), mapSession);
 		}
 		
@@ -148,17 +150,17 @@ public class MongoOperationsSessionRepository
 		return this.mongoOperations.findById(id, Document.class, this.collectionName);
 	}
 
-	MongoExpiringSession convertToSession(Document session) {
+	MongoSession convertToSession(Document session) {
 
-		return (MongoExpiringSession) this.mongoSessionConverter.convert(session,
+		return (MongoSession) this.mongoSessionConverter.convert(session,
 				TypeDescriptor.valueOf(Document.class),
-				TypeDescriptor.valueOf(MongoExpiringSession.class));
+				TypeDescriptor.valueOf(MongoSession.class));
 	}
 
-	DBObject convertToDBObject(MongoExpiringSession session) {
+	DBObject convertToDBObject(MongoSession session) {
 
 		return (DBObject) this.mongoSessionConverter.convert(session,
-				TypeDescriptor.valueOf(MongoExpiringSession.class),
+				TypeDescriptor.valueOf(MongoSession.class),
 				TypeDescriptor.valueOf(DBObject.class));
 	}
 

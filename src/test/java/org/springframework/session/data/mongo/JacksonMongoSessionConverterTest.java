@@ -25,6 +25,7 @@ import com.mongodb.DBObject;
 
 /**
  * @author Jakub Kubrynski
+ * @author Greg Turnquist
  */
 public class JacksonMongoSessionConverterTest {
 
@@ -34,7 +35,7 @@ public class JacksonMongoSessionConverterTest {
 	public void shouldSaveIdField() throws Exception {
 
 		//given
-		MongoExpiringSession session = new MongoExpiringSession();
+		MongoSession session = new MongoSession();
 
 		//when
 		DBObject convert = this.sut.convert(session);

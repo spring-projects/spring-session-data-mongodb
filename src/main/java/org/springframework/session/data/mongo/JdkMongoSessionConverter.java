@@ -16,6 +16,8 @@
 
 package org.springframework.session.data.mongo;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +42,7 @@ import com.mongodb.DBObject;
  *
  * @author Jakub Kubrynski
  * @author Rob Winch
+ * @author Greg Turnquist
  * @since 1.2
  */
 public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
@@ -78,13 +81,13 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 	}
 
 	@Override
-	protected DBObject convert(MongoExpiringSession session) {
+	protected DBObject convert(MongoSession session) {
 
 		BasicDBObject basicDBObject = new BasicDBObject();
 		basicDBObject.put(ID, session.getId());
 		basicDBObject.put(CREATION_TIME, session.getCreationTime());
 		basicDBObject.put(LAST_ACCESSED_TIME, session.getLastAccessedTime());
-		basicDBObject.put(MAX_INTERVAL, session.getMaxInactiveIntervalInSeconds());
+		basicDBObject.put(MAX_INTERVAL, session.getMaxInactiveInterval());
 		basicDBObject.put(PRINCIPAL_FIELD_NAME, extractPrincipal(session));
 		basicDBObject.put(EXPIRE_AT_FIELD_NAME, session.getExpireAt());
 		basicDBObject.put(ATTRIBUTES, serializeAttributes(session));
@@ -92,14 +95,33 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 	}
 
 	@Override
-	protected MongoExpiringSession convert(Document sessionWrapper) {
+	protected MongoSession convert(Document sessionWrapper) {
 
-		MongoExpiringSession session = new MongoExpiringSession(
-			sessionWrapper.getString(ID), sessionWrapper.getInteger(MAX_INTERVAL));
+		Object maxInterval = sessionWrapper.get(MAX_INTERVAL);
 
-		session.setCreationTime(sessionWrapper.getLong(CREATION_TIME));
-		session.setLastAccessedTime(sessionWrapper.getLong(LAST_ACCESSED_TIME));
+		Duration maxIntervalDuration = (maxInterval instanceof Duration)
+			? (Duration) maxInterval
+			: Duration.parse(maxInterval.toString());
+
+		MongoSession session = new MongoSession(
+			sessionWrapper.getString(ID), maxIntervalDuration.getSeconds());
+
+		Object creationTime = sessionWrapper.get(CREATION_TIME);
+		if (creationTime instanceof Instant) {
+			session.setCreationTime(((Instant) creationTime).toEpochMilli());
+		} else if (creationTime instanceof Date) {
+			session.setCreationTime(((Date) creationTime).getTime());
+		}
+
+		Object lastAccessedTime = sessionWrapper.get(LAST_ACCESSED_TIME);
+		if (lastAccessedTime instanceof Instant) {
+			session.setLastAccessedTime((Instant) lastAccessedTime);
+		} else if (lastAccessedTime instanceof Date) {
+			session.setLastAccessedTime(Instant.ofEpochMilli(((Date) lastAccessedTime).getTime()));
+		}
+
 		session.setExpireAt((Date) sessionWrapper.get(EXPIRE_AT_FIELD_NAME));
+		
 		deserializeAttributes(sessionWrapper, session);
 
 		return session;
@@ -110,7 +132,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 		Map<String, Object> attributes = new HashMap<>();
 
 		for (String attrName : session.getAttributeNames()) {
-			attributes.put(attrName, session.getAttribute(attrName));
+			attributes.put(attrName, session.getAttribute(attrName).get());
 		}
 		
 		return this.serializer.convert(attributes);

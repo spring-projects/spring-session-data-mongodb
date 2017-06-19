@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.geo.GeoModule;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JacksonMongoSessionConverter;
-import org.springframework.session.data.mongo.MongoExpiringSession;
+import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.session.data.mongo.config.annotation.web.http.EnableMongoHttpSession;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.Module;
  *
  * @author Jakub Kubrynski
  * @author Vedran Pavic
+ * @author Greg Turnquist
  */
 @ContextConfiguration
 public class MongoRepositoryJacksonITest extends AbstractMongoRepositoryITest {
@@ -47,13 +48,13 @@ public class MongoRepositoryJacksonITest extends AbstractMongoRepositoryITest {
 	@Test
 	public void findByCustomIndex() throws Exception {
 
-		MongoExpiringSession toSave = this.repository.createSession();
+		MongoSession toSave = this.repository.createSession();
 		String cartId = "cart-" + UUID.randomUUID();
 		toSave.setAttribute("cartId", cartId);
 
 		this.repository.save(toSave);
 
-		Map<String, MongoExpiringSession> findByCartId = this.repository
+		Map<String, MongoSession> findByCartId = this.repository
 				.findByIndexNameAndIndexValue("cartId", cartId);
 
 		assertThat(findByCartId).hasSize(1);

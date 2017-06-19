@@ -41,6 +41,7 @@ import com.mongodb.DBObject;
  * bean.
  *
  * @author Jakub Kubrynski
+ * @author Greg Turnquist
  * @since 1.2
  */
 public abstract class AbstractMongoSessionConverter implements GenericConverter {
@@ -89,14 +90,16 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 		if (resolvedPrincipal != null) {
 			return resolvedPrincipal;
 		} else {
-			return expiringSession.getAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME);
+			return expiringSession.getAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME)
+				.map(Object::toString)
+				.orElse("");
 		}
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
 
 		return Collections.singleton(
-				new ConvertiblePair(DBObject.class, MongoExpiringSession.class));
+				new ConvertiblePair(DBObject.class, MongoSession.class));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -113,11 +116,11 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 			return convert((Document) source);
 		}
 		else {
-			return convert((MongoExpiringSession) source);
+			return convert((MongoSession) source);
 		}
 	}
 
-	protected abstract DBObject convert(MongoExpiringSession session);
+	protected abstract DBObject convert(MongoSession session);
 
-	protected abstract MongoExpiringSession convert(Document sessionWrapper);
+	protected abstract MongoSession convert(Document sessionWrapper);
 }

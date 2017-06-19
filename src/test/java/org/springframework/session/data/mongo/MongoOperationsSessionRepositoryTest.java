@@ -38,7 +38,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.session.ExpiringSession;
 import org.springframework.session.FindByIndexNameSessionRepository;
 
 import com.mongodb.BasicDBObject;
@@ -49,6 +48,7 @@ import com.mongodb.DBObject;
  *
  * @author Jakub Kubrynski
  * @author Vedran Pavic
+ * @author Greg Turnquist
  */
 @RunWith(MockitoJUnitRunner.class)
 public class MongoOperationsSessionRepositoryTest {
@@ -70,11 +70,11 @@ public class MongoOperationsSessionRepositoryTest {
 	@Test
 	public void shouldCreateSession() throws Exception {
 		// when
-		ExpiringSession session = this.repository.createSession();
+		MongoSession session = this.repository.createSession();
 
 		// then
 		assertThat(session.getId()).isNotEmpty();
-		assertThat(session.getMaxInactiveIntervalInSeconds())
+		assertThat(session.getMaxInactiveInterval().getSeconds())
 				.isEqualTo(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 	}
 
@@ -82,22 +82,22 @@ public class MongoOperationsSessionRepositoryTest {
 	public void shouldCreateSessionWhenMaxInactiveIntervalNotDefined() throws Exception {
 		// when
 		this.repository.setMaxInactiveIntervalInSeconds(null);
-		ExpiringSession session = this.repository.createSession();
+		MongoSession session = this.repository.createSession();
 
 		// then
 		assertThat(session.getId()).isNotEmpty();
-		assertThat(session.getMaxInactiveIntervalInSeconds())
+		assertThat(session.getMaxInactiveInterval().getSeconds())
 				.isEqualTo(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 	}
 
 	@Test
 	public void shouldSaveSession() throws Exception {
 		// given
-		MongoExpiringSession session = new MongoExpiringSession();
+		MongoSession session = new MongoSession();
 		BasicDBObject dbSession = new BasicDBObject();
 
 		given(this.converter.convert(session,
-				TypeDescriptor.valueOf(MongoExpiringSession.class),
+				TypeDescriptor.valueOf(MongoSession.class),
 				TypeDescriptor.valueOf(DBObject.class))).willReturn(dbSession);
 		// when
 		this.repository.save(session);
@@ -115,13 +115,13 @@ public class MongoOperationsSessionRepositoryTest {
 		given(this.mongoOperations.findById(sessionId, Document.class,
 			MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(sessionDocument);
 
-		MongoExpiringSession session = new MongoExpiringSession();
+		MongoSession session = new MongoSession();
 
 		given(this.converter.convert(sessionDocument, TypeDescriptor.valueOf(Document.class),
-				TypeDescriptor.valueOf(MongoExpiringSession.class))).willReturn(session);
+				TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
 
 		// when
-		ExpiringSession retrievedSession = this.repository.getSession(sessionId);
+		MongoSession retrievedSession = this.repository.getSession(sessionId);
 
 		// then
 		assertThat(retrievedSession).isEqualTo(session);
@@ -136,11 +136,11 @@ public class MongoOperationsSessionRepositoryTest {
 		given(this.mongoOperations.findById(sessionId, Document.class,
 			MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(sessionDocument);
 
-		MongoExpiringSession session = mock(MongoExpiringSession.class);
+		MongoSession session = mock(MongoSession.class);
 
 		given(session.isExpired()).willReturn(true);
 		given(this.converter.convert(sessionDocument, TypeDescriptor.valueOf(Document.class),
-			TypeDescriptor.valueOf(MongoExpiringSession.class))).willReturn(session);
+			TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
 
 		// when
 		this.repository.getSession(sessionId);
@@ -182,13 +182,13 @@ public class MongoOperationsSessionRepositoryTest {
 
 		String sessionId = UUID.randomUUID().toString();
 
-		MongoExpiringSession session = new MongoExpiringSession(sessionId, 1800);
+		MongoSession session = new MongoSession(sessionId, 1800);
 
 		given(this.converter.convert(document, TypeDescriptor.valueOf(Document.class),
-				TypeDescriptor.valueOf(MongoExpiringSession.class))).willReturn(session);
+				TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
 
 		// when
-		Map<String, MongoExpiringSession> sessionsMap =
+		Map<String, MongoSession> sessionsMap =
 			this.repository.findByIndexNameAndIndexValue(principalNameIndexName, "john");
 
 		// then
@@ -202,7 +202,7 @@ public class MongoOperationsSessionRepositoryTest {
 		String index = "some_not_supported_index_name";
 
 		// when
-		Map<String, MongoExpiringSession> sessionsMap = this.repository
+		Map<String, MongoSession> sessionsMap = this.repository
 				.findByIndexNameAndIndexValue(index, "some_value");
 
 		// then

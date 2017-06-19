@@ -16,20 +16,24 @@
 
 package org.springframework.session.data.mongo;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.time.Duration;
+import java.time.Instant;
+
+import org.junit.Test;
 
 /**
  * @author Rob Winch
+ * @author Greg Turnquist
  */
-public class MongoExpiringSessionTest {
+public class MongoSessionTest {
 
 	@Test
 	public void isExpiredWhenIntervalNegativeThenFalse() {
-		MongoExpiringSession session = new MongoExpiringSession();
-		session.setMaxInactiveIntervalInSeconds(-1);
-		session.setLastAccessedTime(0L);
+		MongoSession session = new MongoSession();
+		session.setMaxInactiveInterval(Duration.ofSeconds(-1));
+		session.setLastAccessedTime(Instant.ofEpochMilli(0L));
 
 		assertThat(session.isExpired()).isFalse();
 	}

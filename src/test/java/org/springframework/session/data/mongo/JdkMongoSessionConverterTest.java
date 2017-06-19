@@ -24,7 +24,6 @@ import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.session.ExpiringSession;
 import org.springframework.session.FindByIndexNameSessionRepository;
 
 import com.mongodb.DBObject;
@@ -32,6 +31,7 @@ import com.mongodb.DBObject;
 /**
  * @author Jakub Kubrynski
  * @author Rob Winch
+ * @author Greg Turnquist
  */
 public class JdkMongoSessionConverterTest {
 
@@ -51,12 +51,12 @@ public class JdkMongoSessionConverterTest {
 	public void verifyRoundTripSerialization() throws Exception {
 
 		// given
-		MongoExpiringSession toSerialize = new MongoExpiringSession();
+		MongoSession toSerialize = new MongoSession();
 		toSerialize.setAttribute("username", "john_the_springer");
 
 		// when
 		DBObject dbObject = convertToDBObject(toSerialize);
-		ExpiringSession deserialized = convertToSession(dbObject);
+		MongoSession deserialized = convertToSession(dbObject);
 
 		// then
 		assertThat(deserialized).isEqualToComparingFieldByField(toSerialize);
@@ -66,7 +66,7 @@ public class JdkMongoSessionConverterTest {
 	public void shouldExtractPrincipalNameFromAttributes() throws Exception {
 
 		// given
-		MongoExpiringSession toSerialize = new MongoExpiringSession();
+		MongoSession toSerialize = new MongoSession();
 		String principalName = "john_the_springer";
 		toSerialize.setAttribute(
 				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME,
@@ -83,7 +83,7 @@ public class JdkMongoSessionConverterTest {
 	public void shouldExtractPrincipalNameFromAuthentication() throws Exception {
 
 		// given
-		MongoExpiringSession toSerialize = new MongoExpiringSession();
+		MongoSession toSerialize = new MongoSession();
 		String principalName = "john_the_springer";
 		SecurityContextImpl context = new SecurityContextImpl();
 		context.setAuthentication(
@@ -97,15 +97,15 @@ public class JdkMongoSessionConverterTest {
 		assertThat(dbObject.get("principal")).isEqualTo(principalName);
 	}
 
-	MongoExpiringSession convertToSession(DBObject session) {
-		return (MongoExpiringSession) this.sut.convert(session,
+	MongoSession convertToSession(DBObject session) {
+		return (MongoSession) this.sut.convert(session,
 				TypeDescriptor.valueOf(DBObject.class),
-				TypeDescriptor.valueOf(MongoExpiringSession.class));
+				TypeDescriptor.valueOf(MongoSession.class));
 	}
 
-	DBObject convertToDBObject(MongoExpiringSession session) {
+	DBObject convertToDBObject(MongoSession session) {
 		return (DBObject) this.sut.convert(session,
-				TypeDescriptor.valueOf(MongoExpiringSession.class),
+				TypeDescriptor.valueOf(MongoSession.class),
 				TypeDescriptor.valueOf(DBObject.class));
 	}
 }
