@@ -36,7 +36,6 @@ To do a release (.RELEASE, .RC?, .M?):
 . Bump up the version in `pom.xml` to the desired version and commit the change.
 . `git tag <version>` (like v2.0.1.RELEASE)
 . Execute a maven deploy.
-. Execute a maven deploy.
 * For a milestone: `USERNAME=<user> PASSWORD=<encrypted password> mvn -Pdistribute,gpg,milestone,docs clean deploy`
 * For a release: `USERNAME=<user> PASSWORD=<encrypted password> mvn -Pdistribute,gpg,release,docs clean deploy`
 * For a release to maven central: `USERNAME=<user> PASSWORD=<nexus password> mvn -Pdistribute,gpg,central,docs clean deploy -s settings.xml`
