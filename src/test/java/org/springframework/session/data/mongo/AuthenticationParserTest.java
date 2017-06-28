@@ -17,8 +17,6 @@ package org.springframework.session.data.mongo;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.Optional;
-
 import org.junit.Test;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,7 +37,7 @@ public class AuthenticationParserTest {
 		context.setAuthentication(new UsernamePasswordAuthenticationToken(principalName, null));
 
 		// when
-		String extractedName = AuthenticationParser.extractName(Optional.ofNullable(context));
+		String extractedName = AuthenticationParser.extractName(context);
 
 		// then
 		assertThat(extractedName).isEqualTo(principalName);

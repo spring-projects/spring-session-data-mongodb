@@ -16,6 +16,8 @@
 
 package org.springframework.session.data.mongo;
 
+import static org.springframework.session.data.mongo.MongoSessionUtils.*;
+
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,7 +28,6 @@ import javax.annotation.PostConstruct;
 
 import org.bson.Document;
 
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mongodb.core.IndexOperations;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
@@ -86,7 +87,7 @@ public class MongoOperationsSessionRepository
 	@Override
 	public void save(MongoSession session) {
 
-		DBObject sessionDbObject = convertToDBObject(session);
+		DBObject sessionDbObject = convertToDBObject(this.mongoSessionConverter, session);
 		this.mongoOperations.save(sessionDbObject, this.collectionName);
 	}
 
@@ -99,7 +100,7 @@ public class MongoOperationsSessionRepository
 			return null;
 		}
 
-		MongoSession session = convertToSession(sessionWrapper);
+		MongoSession session = convertToSession(this.mongoSessionConverter, sessionWrapper);
 
 		if (session.isExpired()) {
 			deleteById(id);
@@ -132,7 +133,7 @@ public class MongoOperationsSessionRepository
 		List<Document> mapSessions = this.mongoOperations.find(query, Document.class, this.collectionName);
 
 		for (Document dbSession : mapSessions) {
-			MongoSession mapSession = convertToSession(dbSession);
+			MongoSession mapSession = convertToSession(this.mongoSessionConverter, dbSession);
 			result.put(mapSession.getId(), mapSession);
 		}
 		
@@ -153,20 +154,6 @@ public class MongoOperationsSessionRepository
 
 	Document findSession(String id) {
 		return this.mongoOperations.findById(id, Document.class, this.collectionName);
-	}
-
-	MongoSession convertToSession(Document session) {
-
-		return (MongoSession) this.mongoSessionConverter.convert(session,
-				TypeDescriptor.valueOf(Document.class),
-				TypeDescriptor.valueOf(MongoSession.class));
-	}
-
-	DBObject convertToDBObject(MongoSession session) {
-
-		return (DBObject) this.mongoSessionConverter.convert(session,
-				TypeDescriptor.valueOf(MongoSession.class),
-				TypeDescriptor.valueOf(DBObject.class));
 	}
 
 	public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {

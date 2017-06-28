@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -67,9 +66,9 @@ public class MongoSession implements Session {
 		return this.id;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> Optional<T> getAttribute(String attributeName) {
-		return Optional.ofNullable((T) this.attrs.get(coverDot(attributeName)));
+	@Override
+	public <T> T getAttribute(String attributeName) {
+		return (T) this.attrs.get(coverDot(attributeName));
 	}
 
 	public Set<String> getAttributeNames() {

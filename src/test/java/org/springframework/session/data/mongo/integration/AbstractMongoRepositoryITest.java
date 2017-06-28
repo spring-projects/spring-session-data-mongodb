@@ -22,7 +22,6 @@ import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
@@ -108,8 +107,8 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		Session session = this.repository.findById(toSave.getId());
 		assertThat(session.getAttributeNames().size()).isEqualTo(2);
-		assertThat(session.<String>getAttribute("a")).isEqualTo(Optional.of("b"));
-		assertThat(session.<String>getAttribute("1")).isEqualTo(Optional.of("2"));
+		assertThat(session.<String>getAttribute("a")).isEqualTo("b");
+		assertThat(session.<String>getAttribute("1")).isEqualTo("2");
 
 		this.repository.deleteById(toSave.getId());
 	}

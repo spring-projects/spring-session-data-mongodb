@@ -90,9 +90,7 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 		if (resolvedPrincipal != null) {
 			return resolvedPrincipal;
 		} else {
-			return expiringSession.getAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME)
-				.map(Object::toString)
-				.orElse("");
+			return expiringSession.getAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME);
 		}
 	}
 

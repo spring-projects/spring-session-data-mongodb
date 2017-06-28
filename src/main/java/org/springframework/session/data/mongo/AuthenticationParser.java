@@ -15,8 +15,6 @@
  */
 package org.springframework.session.data.mongo;
 
-import java.util.Optional;
-
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
@@ -38,14 +36,15 @@ final class AuthenticationParser {
 	 * @param authentication Authentication object
 	 * @return principal name
 	 */
-	static String extractName(Optional<Object> authentication) {
+	static String extractName(Object authentication) {
 
-		return authentication
-			.map(auth -> {
-				Expression expression = PARSER.parseExpression(NAME_EXPRESSION);
-				return expression.getValue(auth, String.class);
-			})
-			.orElse(null);
+		if (authentication == null) {
+			return null;
+		}
+
+		Expression expression = PARSER.parseExpression(NAME_EXPRESSION);
+
+		return expression.getValue(authentication, String.class);
 	}
 
 	private AuthenticationParser() {}

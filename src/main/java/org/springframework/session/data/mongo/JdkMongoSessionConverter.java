@@ -132,7 +132,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 		Map<String, Object> attributes = new HashMap<>();
 
 		for (String attrName : session.getAttributeNames()) {
-			attributes.put(attrName, session.getAttribute(attrName).get());
+			attributes.put(attrName, session.getAttribute(attrName));
 		}
 		
 		return this.serializer.convert(attributes);
