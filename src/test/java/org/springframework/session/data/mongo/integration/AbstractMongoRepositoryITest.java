@@ -79,17 +79,17 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		this.repository.save(toSave);
 
-		Session session = this.repository.getSession(toSave.getId());
+		Session session = this.repository.findById(toSave.getId());
 
 		assertThat(session.getId()).isEqualTo(toSave.getId());
 		assertThat(session.getAttributeNames()).isEqualTo(toSave.getAttributeNames());
 		assertThat(session.<String>getAttribute(expectedAttributeName))
 				.isEqualTo(toSave.getAttribute(expectedAttributeName));
 
-		this.repository.delete(toSave.getId());
+		this.repository.deleteById(toSave.getId());
 
 		String id = toSave.getId();
-		assertThat(this.repository.getSession(id)).isNull();
+		assertThat(this.repository.findById(id)).isNull();
 	}
 
 	@Test
@@ -99,19 +99,19 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		toSave.setAttribute("a", "b");
 
 		this.repository.save(toSave);
-		toSave = this.repository.getSession(toSave.getId());
+		toSave = this.repository.findById(toSave.getId());
 
 		toSave.setAttribute("1", "2");
 
 		this.repository.save(toSave);
-		toSave = this.repository.getSession(toSave.getId());
+		toSave = this.repository.findById(toSave.getId());
 
-		Session session = this.repository.getSession(toSave.getId());
+		Session session = this.repository.findById(toSave.getId());
 		assertThat(session.getAttributeNames().size()).isEqualTo(2);
 		assertThat(session.<String>getAttribute("a")).isEqualTo(Optional.of("b"));
 		assertThat(session.<String>getAttribute("1")).isEqualTo(Optional.of("2"));
 
-		this.repository.delete(toSave.getId());
+		this.repository.deleteById(toSave.getId());
 	}
 
 	@Test
@@ -129,7 +129,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
 
-		this.repository.delete(toSave.getId());
+		this.repository.deleteById(toSave.getId());
 
 		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
 				principalName);
@@ -168,7 +168,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		this.repository.save(toSave);
 
-		toSave = this.repository.getSession(toSave.getId());
+		toSave = this.repository.findById(toSave.getId());
 
 		toSave.setAttribute("other", "value");
 		this.repository.save(toSave);
@@ -231,7 +231,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		this.repository.save(toSave);
 
-		MongoSession getSession = this.repository.getSession(toSave.getId());
+		MongoSession getSession = this.repository.findById(toSave.getId());
 		getSession.setAttribute(INDEX_NAME, null);
 		this.repository.save(getSession);
 
@@ -251,7 +251,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		this.repository.save(toSave);
 
-		MongoSession getSession = this.repository.getSession(toSave.getId());
+		MongoSession getSession = this.repository.findById(toSave.getId());
 
 		getSession.setAttribute(INDEX_NAME, principalNameChanged);
 		this.repository.save(getSession);
@@ -281,7 +281,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
 
-		this.repository.delete(toSave.getId());
+		this.repository.deleteById(toSave.getId());
 
 		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
 				getSecurityName());
@@ -355,7 +355,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		this.repository.save(toSave);
 
-		MongoSession getSession = this.repository.getSession(toSave.getId());
+		MongoSession getSession = this.repository.findById(toSave.getId());
 
 		getSession.setAttribute(SPRING_SECURITY_CONTEXT, this.changedContext);
 		this.repository.save(getSession);
@@ -382,7 +382,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		// then
 		MongoSession expiredSessionFromDb = this.repository
-				.getSession(expiredSession.getId());
+				.findById(expiredSession.getId());
 		assertThat(expiredSessionFromDb).isNull();
 	}
 

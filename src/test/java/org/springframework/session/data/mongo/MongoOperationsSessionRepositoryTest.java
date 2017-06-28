@@ -121,7 +121,7 @@ public class MongoOperationsSessionRepositoryTest {
 				TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
 
 		// when
-		MongoSession retrievedSession = this.repository.getSession(sessionId);
+		MongoSession retrievedSession = this.repository.findById(sessionId);
 
 		// then
 		assertThat(retrievedSession).isEqualTo(session);
@@ -143,7 +143,7 @@ public class MongoOperationsSessionRepositoryTest {
 			TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
 
 		// when
-		this.repository.getSession(sessionId);
+		this.repository.findById(sessionId);
 
 		// then
 		verify(this.mongoOperations).remove(any(Document.class),
@@ -161,7 +161,7 @@ public class MongoOperationsSessionRepositoryTest {
 			eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME))).willReturn(sessionDocument);
 
 		// when
-		this.repository.delete(sessionId);
+		this.repository.deleteById(sessionId);
 
 		// then
 		verify(this.mongoOperations).remove(any(Document.class),

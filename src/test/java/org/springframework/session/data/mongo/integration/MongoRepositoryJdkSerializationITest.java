@@ -48,7 +48,7 @@ public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositor
 
 		this.repository.save(toSave);
 
-		MongoSession getSession = this.repository.getSession(toSave.getId());
+		MongoSession getSession = this.repository.findById(toSave.getId());
 		getSession.setAttribute(INDEX_NAME, null);
 		this.repository.save(getSession);
 
@@ -66,7 +66,7 @@ public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositor
 
 		this.repository.save(toSave);
 
-		toSave = this.repository.getSession(toSave.getId());
+		toSave = this.repository.findById(toSave.getId());
 
 		toSave.setAttribute("other", "value");
 		this.repository.save(toSave);

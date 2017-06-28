@@ -430,7 +430,7 @@
 
 		<dependency>
 			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session</artifactId>
+			<artifactId>spring-session-core</artifactId>
 			<version>${spring-session.version}</version>
 		</dependency>
 

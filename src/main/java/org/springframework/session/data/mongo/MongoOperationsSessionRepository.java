@@ -71,6 +71,7 @@ public class MongoOperationsSessionRepository
 		this.mongoOperations = mongoOperations;
 	}
 
+	@Override
 	public MongoSession createSession() {
 
 		MongoSession session = new MongoSession();
@@ -82,13 +83,15 @@ public class MongoOperationsSessionRepository
 		return session;
 	}
 
+	@Override
 	public void save(MongoSession session) {
 
 		DBObject sessionDbObject = convertToDBObject(session);
 		this.mongoOperations.save(sessionDbObject, this.collectionName);
 	}
 
-	public MongoSession getSession(String id) {
+	@Override
+	public MongoSession findById(String id) {
 
 		Document sessionWrapper = findSession(id);
 
@@ -99,7 +102,7 @@ public class MongoOperationsSessionRepository
 		MongoSession session = convertToSession(sessionWrapper);
 
 		if (session.isExpired()) {
-			delete(id);
+			deleteById(id);
 			return null;
 		}
 		
@@ -115,6 +118,7 @@ public class MongoOperationsSessionRepository
 	 * @param indexValue the value of the index to search for.
 	 * @return sessions map
 	 */
+	@Override
 	public Map<String, MongoSession> findByIndexNameAndIndexValue(String indexName, String indexValue) {
 
 		HashMap<String, MongoSession> result = new HashMap<String, MongoSession>();
@@ -135,7 +139,8 @@ public class MongoOperationsSessionRepository
 		return result;
 	}
 
-	public void delete(String id) {
+	@Override
+	public void deleteById(String id) {
 		this.mongoOperations.remove(findSession(id), this.collectionName);
 	}
 
