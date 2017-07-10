@@ -144,6 +144,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 
 	@Test
 	public void shouldHandleExpiredSession() throws Exception {
+
 		// given
 		String sessionId = UUID.randomUUID().toString();
 		Document sessionDocument = new Document();
@@ -170,6 +171,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 
 	@Test
 	public void shouldDeleteSession() throws Exception {
+		
 		// given
 		String sessionId = UUID.randomUUID().toString();
 
