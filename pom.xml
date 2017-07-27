@@ -4,12 +4,12 @@
 
 	<groupId>org.springframework.session</groupId>
 	<artifactId>spring-session-data-mongodb</artifactId>
-	<version>2.0.0.BUILD-SNAPSHOT</version>
+	<version>2.0.0.M2</version>
 
 	<parent>
 		<groupId>org.springframework.data</groupId>
 		<artifactId>spring-data-mongodb-parent</artifactId>
-		<version>2.0.0.BUILD-SNAPSHOT</version>
+		<version>2.0.0.RC2</version>
 	</parent>
 
 	<name>Spring Session MongoDB</name>
@@ -80,11 +80,11 @@
 		<jackson.version>2.9.0.pr3</jackson.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.7.22</mockito.version>
-		<reactor.version>Bismuth-M2</reactor.version>
-		<spring.version>5.0.0.RC2</spring.version>
+		<reactor.version>Bismuth-M3</reactor.version>
+		<spring.version>5.0.0.RC3</spring.version>
 		<spring-data.version>Kay-RC2</spring-data.version>
-		<spring-security.version>5.0.0.M2</spring-security.version>
-		<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
+		<spring-security.version>5.0.0.M3</spring-security.version>
+		<spring-session.version>2.0.0.M3</spring-session.version>
 	</properties>
 
 	<profiles>
