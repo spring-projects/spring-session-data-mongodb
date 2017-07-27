@@ -82,7 +82,7 @@
 		<mockito.version>2.7.22</mockito.version>
 		<reactor.version>Bismuth-M2</reactor.version>
 		<spring.version>5.0.0.RC2</spring.version>
-		<spring-data.version>Kay-M4</spring-data.version>
+		<spring-data.version>Kay-RC2</spring-data.version>
 		<spring-security.version>5.0.0.M2</spring-security.version>
 		<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
 	</properties>
