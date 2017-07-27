@@ -40,7 +40,7 @@ public class MongoSession implements Session {
 	 */
 	private static final char DOT_COVER_CHAR = '\uF607';
 
-	private final String id;
+	private String id;
 	private long createdMillis = System.currentTimeMillis();
 	private long accessedMillis;
 	private long intervalSeconds;
@@ -65,6 +65,17 @@ public class MongoSession implements Session {
 	public String getId() {
 		return this.id;
 	}
+
+	public String changeSessionId() {
+		String changedId = generateId();
+		this.id = changedId;
+		return changedId;
+	}
+
+	private String generateId() {
+		return UUID.randomUUID().toString();
+	}
+
 
 	@Override
 	public <T> T getAttribute(String attributeName) {
