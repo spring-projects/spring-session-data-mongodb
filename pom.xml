@@ -6,12 +6,6 @@
 	<artifactId>spring-session-data-mongodb</artifactId>
 	<version>2.0.0.BUILD-SNAPSHOT</version>
 
-	<parent>
-		<groupId>org.springframework.data</groupId>
-		<artifactId>spring-data-mongodb-parent</artifactId>
-		<version>2.0.0.RC2</version>
-	</parent>
-
 	<name>Spring Session MongoDB</name>
 	<url>https://github.com/spring-projects/spring-session-data-mongodb</url>
 	<description>
@@ -77,9 +71,11 @@
 		<assertj.version>3.6.2</assertj.version>
 		<flapdoodle.version>1.50.5</flapdoodle.version>
 		<hamcrest.version>1.3</hamcrest.version>
-		<jackson.version>2.9.0.pr3</jackson.version>
+		<jackson.version>2.9.0</jackson.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.7.22</mockito.version>
+		<mongo.version>3.4.2</mongo.version>
+		<mongo-reactivestreams.version>1.5.0</mongo-reactivestreams.version>
 		<reactor.version>Bismuth-M3</reactor.version>
 		<spring.version>5.0.0.RC3</spring.version>
 		<spring-data.version>Kay-RC2</spring-data.version>
@@ -310,10 +306,11 @@
 									<backend>html</backend>
 									<doctype>book</doctype>
 									<attributes>
+										<allow-uri-read>true</allow-uri-read>
 										<docinfo>true</docinfo>
 										<github-tag>v${project.version}</github-tag>
-										<asciidoc-base>${basedir}/src/main/asciidoc</asciidoc-base>
-										<docs-test-dir>${basedir}/src/main/asciidoc/java</docs-test-dir>
+										<code-dir>${basedir}</code-dir>
+										<samples-dir>https://raw.githubusercontent.com/gregturn/spring-session-data-mongodb-examples/master</samples-dir>
 										<spring-session-version>${spring-session.version}</spring-session-version>
 									</attributes>
 								</configuration>
@@ -467,7 +464,8 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver</artifactId>
-			<version>${mongo}</version>
+			<version>${mongo.version}</version>
+			<optional>true</optional>
 		</dependency>
 		
 		<dependency>
@@ -487,11 +485,13 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -543,22 +543,15 @@
 
 		<dependency>
 			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver</artifactId>
-			<version>${mongo}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-async</artifactId>
-			<version>${mongo}</version>
+			<version>${mongo.version}</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-reactivestreams</artifactId>
-			<version>${mongo.reactivestreams}</version>
+			<version>${mongo-reactivestreams.version}</version>
 			<scope>test</scope>
 		</dependency>
 

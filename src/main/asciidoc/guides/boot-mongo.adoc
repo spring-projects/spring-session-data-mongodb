@@ -1,5 +1,5 @@
 = Spring Session - Mongo Repositories
-Jakub Kubrynski
+Jakub Kubrynski, Greg Turnquist
 :toc:
 
 This guide describes how to use Spring Session backed by Mongo.
@@ -74,7 +74,7 @@ All you have to do is to add the following Spring Configuration:
 
 [source,java]
 ----
-include::{samples-dir}boot/mongo/src/main/java/sample/config/HttpSessionConfig.java[tags=class]
+include::{samples-dir}/spring-session-data-mongodb-traditional-boot/src/main/java/sample/config/HttpSessionConfig.java[tag=class]
 ----
 
 <1> The `@EnableMongoHttpSession` annotation creates a Spring Bean with the name of `springSessionRepositoryFilter` that implements Filter.

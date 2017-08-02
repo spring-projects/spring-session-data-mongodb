@@ -78,6 +78,7 @@ public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositor
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
 	}
 
+	// tag::sample[]
 	@Configuration
 	@EnableMongoHttpSession
 	static class Config extends BaseConfig {
@@ -86,6 +87,6 @@ public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositor
 		public AbstractMongoSessionConverter mongoSessionConverter() {
 			return new JdkMongoSessionConverter();
 		}
-
 	}
+	// end::sample[]
 }

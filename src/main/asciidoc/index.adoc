@@ -56,7 +56,7 @@ If you would like to provide custom Jackson modules you can do it by explicitly 
 
 [source,java,indent=0]
 ----
-include::{docs-test-dir}/docs/http/MongoJacksonSessionConfiguration.java[tags=config]
+include::{code-dir}/src/test/java/org/springframework/session/data/mongo/integration/MongoRepositoryJacksonITest.java[tag=sample]
 ----
 
 ==== JdkMongoSessionConverter
@@ -68,7 +68,7 @@ You can explicitly register `JdkMongoSessionConverter` by defining it as a Bean.
 
 [source,java,indent=0]
 ----
-include::{docs-test-dir}/docs/http/MongoJdkSessionConfiguration.java[tags=config]
+include::{code-dir}/src/test/java/org/springframework/session/data/mongo/integration/MongoRepositoryJdkSerializationITest.java[tag=sample]
 ----
 
 There is also a constructor taking `Serializer` and `Deserializer` objects, allowing you to pass custom implementations, which is especially important when you want to use non-default classloader.

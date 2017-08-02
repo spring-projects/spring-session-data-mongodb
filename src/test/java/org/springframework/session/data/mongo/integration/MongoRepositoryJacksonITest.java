@@ -61,6 +61,7 @@ public class MongoRepositoryJacksonITest extends AbstractMongoRepositoryITest {
 		assertThat(findByCartId.keySet()).containsOnly(toSave.getId());
 	}
 
+	// tag::sample[]
 	@Configuration
 	@EnableMongoHttpSession
 	static class Config extends BaseConfig {
@@ -69,6 +70,6 @@ public class MongoRepositoryJacksonITest extends AbstractMongoRepositoryITest {
 		public AbstractMongoSessionConverter mongoSessionConverter() {
 			return new JacksonMongoSessionConverter(Collections.<Module>singletonList(new GeoModule()));
 		}
-
 	}
+	// end::sample[]
 }
