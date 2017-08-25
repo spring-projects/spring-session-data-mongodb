@@ -17,11 +17,8 @@ package org.springframework.session.data.mongo;
 
 import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
-import java.time.Duration;
-
 import org.bson.Document;
 import reactor.core.publisher.Mono;
-
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.ReactorSessionRepository;
 
@@ -42,8 +39,7 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 
 	private final ReactiveMongoOperations mongoOperations;
 
-	private AbstractMongoSessionConverter mongoSessionConverter =
-		SessionConverterProvider.getDefaultMongoConverter();
+	private AbstractMongoSessionConverter mongoSessionConverter = SessionConverterProvider.getDefaultMongoConverter();
 
 	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
 	private String collectionName = DEFAULT_COLLECTION_NAME;
@@ -67,15 +63,9 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 	@Override
 	public Mono<MongoSession> createSession() {
 
-		return Mono.defer(() -> {
-			MongoSession session = new MongoSession();
-
-			if (this.maxInactiveIntervalInSeconds != null) {
-				session.setMaxInactiveInterval(Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
-			}
-
-			return Mono.just(session);
-		});
+		return Mono.justOrEmpty(this.maxInactiveIntervalInSeconds)
+			.map(MongoSession::new)
+			.switchIfEmpty(Mono.just(new MongoSession()));
 	}
 
 	/**
@@ -111,7 +101,7 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 		return findSession(id)
 			.map(document -> convertToSession(this.mongoSessionConverter, document))
 			.filter(mongoSession -> !mongoSession.isExpired())
-			.switchIfEmpty(Mono.defer(() -> delete(id).then(Mono.empty())));
+			.switchIfEmpty(Mono.defer(() -> this.delete(id).then(Mono.empty())));
 	}
 
 	/**
@@ -125,7 +115,7 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 		return this.mongoOperations.remove(findSession(id), this.collectionName).then();
 	}
 
-	Mono<Document> findSession(String id) {
+	private Mono<Document> findSession(String id) {
 		return this.mongoOperations.findById(id, Document.class, this.collectionName);
 	}
 

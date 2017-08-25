@@ -53,7 +53,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	private final ObjectMapper objectMapper;
 
 	public JacksonMongoSessionConverter() {
-		this(Collections.<Module>emptyList());
+		this(Collections.emptyList());
 	}
 
 	public JacksonMongoSessionConverter(Iterable<Module> modules) {
@@ -66,9 +66,10 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 
 		if (FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME.equals(indexName)) {
 			return Query.query(Criteria.where(PRINCIPAL_FIELD_NAME).is(indexValue));
-		}
-		return Query.query(Criteria.where(ATTRS_FIELD_NAME +
+		} else {
+			return Query.query(Criteria.where(ATTRS_FIELD_NAME +
 				MongoSession.coverDot(indexName)).is(indexValue));
+		}
 	}
 
 	private ObjectMapper buildObjectMapper() {
@@ -94,8 +95,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 			DBObject dbSession = (DBObject) JSON.parse(this.objectMapper.writeValueAsString(source));
 			dbSession.put(PRINCIPAL_FIELD_NAME, extractPrincipal(source));
 			return dbSession;
-		}
-		catch (JsonProcessingException e) {
+		} catch (JsonProcessingException e) {
 			throw new IllegalStateException("Cannot convert MongoExpiringSession", e);
 		}
 	}
@@ -107,8 +107,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 
 		try {
 			return this.objectMapper.readValue(json, MongoSession.class);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			LOG.error("Error during Mongo Session deserialization", e);
 			return null;
 		}
@@ -120,11 +119,11 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 		public String translate(String propertyName) {
 			if (propertyName.equals("id")) {
 				return "_id";
-			}
-			else if (propertyName.equals("_id")) {
+			} else if (propertyName.equals("_id")) {
 				return "id";
+			} else {
+				return propertyName;
 			}
-			return propertyName;
 		}
 	}
 }

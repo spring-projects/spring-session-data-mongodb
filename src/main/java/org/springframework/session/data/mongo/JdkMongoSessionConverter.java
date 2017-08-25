@@ -76,14 +76,16 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 		if (FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME
 				.equals(indexName)) {
 			return Query.query(Criteria.where(PRINCIPAL_FIELD_NAME).is(indexValue));
+		} else {
+			return null;
 		}
-		return null;
 	}
 
 	@Override
 	protected DBObject convert(MongoSession session) {
 
 		BasicDBObject basicDBObject = new BasicDBObject();
+		
 		basicDBObject.put(ID, session.getId());
 		basicDBObject.put(CREATION_TIME, session.getCreationTime());
 		basicDBObject.put(LAST_ACCESSED_TIME, session.getLastAccessedTime());
@@ -91,6 +93,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 		basicDBObject.put(PRINCIPAL_FIELD_NAME, extractPrincipal(session));
 		basicDBObject.put(EXPIRE_AT_FIELD_NAME, session.getExpireAt());
 		basicDBObject.put(ATTRIBUTES, serializeAttributes(session));
+
 		return basicDBObject;
 	}
 

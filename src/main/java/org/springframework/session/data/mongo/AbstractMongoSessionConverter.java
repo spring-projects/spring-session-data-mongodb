@@ -109,11 +109,9 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 
 		if (DBObject.class.isAssignableFrom(sourceType.getType())) {
 			return convert(new Document(((DBObject) source).toMap()));
-		}
-		else if (Document.class.isAssignableFrom(sourceType.getType())) {
+		} else if (Document.class.isAssignableFrom(sourceType.getType())) {
 			return convert((Document) source);
-		}
-		else {
+		} else {
 			return convert((MongoSession) source);
 		}
 	}

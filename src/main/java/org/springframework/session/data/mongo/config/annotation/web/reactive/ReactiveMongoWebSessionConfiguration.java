@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.session.data.mongo;
+package org.springframework.session.data.mongo.config.annotation.web.reactive;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 
 /**
  * Configure a {@link ReactiveMongoOperationsSessionRepository} using a provided {@link ReactiveMongoOperations}.
