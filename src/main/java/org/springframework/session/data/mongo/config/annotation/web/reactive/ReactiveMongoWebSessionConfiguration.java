@@ -15,10 +15,18 @@
  */
 package org.springframework.session.data.mongo.config.annotation.web.reactive;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportAware;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
+import org.springframework.util.StringUtils;
+import org.springframework.util.StringValueResolver;
 
 /**
  * Configure a {@link ReactiveMongoOperationsSessionRepository} using a provided {@link ReactiveMongoOperations}.
@@ -26,10 +34,56 @@ import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepo
  * @author Greg Turnquist
  */
 @Configuration
-public class ReactiveMongoWebSessionConfiguration {
+public class ReactiveMongoWebSessionConfiguration implements EmbeddedValueResolverAware, ImportAware {
+
+	private AbstractMongoSessionConverter mongoSessionConverter;
+	private Integer maxInactiveIntervalInSeconds;
+	private String collectionName;
+	
+	private StringValueResolver embeddedValueResolver;
 
 	@Bean
 	public ReactiveMongoOperationsSessionRepository reactiveMongoOperationsSessionRepository(ReactiveMongoOperations operations) {
-		return new ReactiveMongoOperationsSessionRepository(operations);
+		
+		ReactiveMongoOperationsSessionRepository repository = new ReactiveMongoOperationsSessionRepository(operations);
+
+		if (this.mongoSessionConverter != null) {
+			repository.setMongoSessionConverter(this.mongoSessionConverter);
+		}
+
+		if (this.maxInactiveIntervalInSeconds != null) {
+			repository.setMaxInactiveIntervalInSeconds(this.maxInactiveIntervalInSeconds);
+		}
+
+		if (this.collectionName != null) {
+			repository.setCollectionName(this.collectionName);
+		}
+		
+		return repository;
+	}
+
+	@Autowired(required = false)
+	public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
+		this.mongoSessionConverter = mongoSessionConverter;
+	}
+
+	@Override
+	public void setImportMetadata(AnnotationMetadata importMetadata) {
+
+		AnnotationAttributes attributes = AnnotationAttributes.fromMap(
+			importMetadata.getAnnotationAttributes(EnableMongoWebSession.class.getName()));
+
+		this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
+
+		String collectionNameValue = attributes.getString("collectionName");
+		if (StringUtils.hasText(collectionNameValue)) {
+			this.collectionName = this.embeddedValueResolver.resolveStringValue(collectionNameValue);
+		}
+
+	}
+
+	@Override
+	public void setEmbeddedValueResolver(StringValueResolver embeddedValueResolver) {
+		this.embeddedValueResolver = embeddedValueResolver;
 	}
 }

@@ -103,6 +103,27 @@ public class ReactiveMongoWebSessionConfigurationTest {
 			.contains(JdkMongoSessionConverter.class);
 	}
 
+	@Test
+	public void overridingIntervalAndCollectionNameThroughAnnotationShouldWork() throws IllegalAccessException {
+
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(OverrideMongoParametersConfig.class);
+		ctx.refresh();
+
+		ReactiveMongoOperationsSessionRepository repository = ctx.getBean(ReactiveMongoOperationsSessionRepository.class);
+
+		Field inactiveField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class, "maxInactiveIntervalInSeconds");
+		ReflectionUtils.makeAccessible(inactiveField);
+		Integer inactiveSeconds = (Integer) inactiveField.get(repository);
+
+		Field collectionNameField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class, "collectionName");
+		ReflectionUtils.makeAccessible(collectionNameField);
+		String collectionName = (String) collectionNameField.get(repository);
+
+		assertThat(inactiveSeconds).isEqualTo(123);
+		assertThat(collectionName).isEqualTo("test-case");
+	}
+
 	/**
 	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the {@link ReactiveMongoOperationsSessionRepository}.
 	 * This is to avoid expanding the surface area of the API.
@@ -152,6 +173,15 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		@Bean
 		JdkMongoSessionConverter mongoSessionConverter() {
 			return new JdkMongoSessionConverter();
+		}
+	}
+
+	@EnableMongoWebSession(maxInactiveIntervalInSeconds = 123, collectionName = "test-case")
+	static class OverrideMongoParametersConfig {
+
+		@Bean
+		ReactiveMongoOperations operations() {
+			return mock(ReactiveMongoOperations.class);
 		}
 	}
 }

@@ -22,6 +22,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.session.EnableSpringWebSession;
+import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 
 /**
  * Add this annotation to a {@code @Configuration} class to configure a MongoDB-based {@code WebSessionManager} for a
@@ -53,4 +54,18 @@ import org.springframework.session.EnableSpringWebSession;
 @Import(ReactiveMongoWebSessionConfiguration.class)
 @Configuration
 public @interface EnableMongoWebSession {
+
+	/**
+	 * The maximum time a session will be kept if it is inactive.
+	 *
+	 * @return default max inactive interval in seconds
+	 */
+	int maxInactiveIntervalInSeconds() default ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL;
+
+	/**
+	 * The collection name to use.
+	 *
+	 * @return name of the collection to store session
+	 */
+	String collectionName() default ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME;
 }

@@ -19,7 +19,6 @@ import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
 import org.bson.Document;
 import reactor.core.publisher.Mono;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.ReactorSessionRepository;
 
@@ -34,14 +33,13 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 	public static final int DEFAULT_INACTIVE_INTERVAL = 1800;
 
 	/**
-	 * the default collection name for storing session.
+	 * The default collection name for storing session.
 	 */
 	public static final String DEFAULT_COLLECTION_NAME = "sessions";
 
 	private final ReactiveMongoOperations mongoOperations;
 
 	private AbstractMongoSessionConverter mongoSessionConverter = SessionConverterProvider.getDefaultMongoConverter();
-
 	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
 	private String collectionName = DEFAULT_COLLECTION_NAME;
 
@@ -120,7 +118,6 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 		return this.mongoOperations.findById(id, Document.class, this.collectionName);
 	}
 
-	@Autowired(required = false)
 	public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
 		this.mongoSessionConverter = mongoSessionConverter;
 	}
@@ -132,5 +129,5 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 	public void setCollectionName(String collectionName) {
 		this.collectionName = collectionName;
 	}
-	
+
 }
