@@ -33,7 +33,7 @@ import org.springframework.web.server.session.WebSessionManager;
  *
  * @author Greg Turnquist
  */
-public class ReactiveMongoWebSessionConfigurationTests {
+public class ReactiveMongoWebSessionConfigurationTest {
 
 	@Test
 	public void enableSpringWebSessionConfiguresThings() {
