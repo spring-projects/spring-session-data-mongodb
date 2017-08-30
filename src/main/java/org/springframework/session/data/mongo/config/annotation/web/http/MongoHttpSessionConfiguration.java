@@ -42,10 +42,8 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 		implements EmbeddedValueResolverAware, ImportAware {
 
 	private AbstractMongoSessionConverter mongoSessionConverter;
-
 	private Integer maxInactiveIntervalInSeconds;
 	private String collectionName;
-
 	private StringValueResolver embeddedValueResolver;
 
 	@Bean

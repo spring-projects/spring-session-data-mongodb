@@ -39,7 +39,6 @@ public class ReactiveMongoWebSessionConfiguration implements EmbeddedValueResolv
 	private AbstractMongoSessionConverter mongoSessionConverter;
 	private Integer maxInactiveIntervalInSeconds;
 	private String collectionName;
-	
 	private StringValueResolver embeddedValueResolver;
 
 	@Bean
