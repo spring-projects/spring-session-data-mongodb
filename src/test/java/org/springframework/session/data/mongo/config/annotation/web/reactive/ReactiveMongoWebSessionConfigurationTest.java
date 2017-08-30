@@ -18,6 +18,8 @@ package org.springframework.session.data.mongo.config.annotation.web.reactive;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.lang.reflect.Field;
+
 import org.junit.Test;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -25,6 +27,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.EnableSpringWebSession;
 import org.springframework.session.ReactorSessionRepository;
+import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
+import org.springframework.session.data.mongo.JacksonMongoSessionConverter;
+import org.springframework.session.data.mongo.JdkMongoSessionConverter;
+import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.session.WebSessionManager;
 
@@ -64,6 +71,56 @@ public class ReactiveMongoWebSessionConfigurationTest {
 				.withMessageContaining("No qualifying bean of type '" + ReactiveMongoOperations.class.getCanonicalName());
 	}
 
+	@Test
+	public void defaultSessionConverterShouldBeJacksonWhenOnClasspath() throws IllegalAccessException {
+
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(GoodConfig.class);
+		ctx.refresh();
+
+		ReactiveMongoOperationsSessionRepository repository = ctx.getBean(ReactiveMongoOperationsSessionRepository.class);
+
+		AbstractMongoSessionConverter converter = findMongoSessionConverter(repository);
+
+		assertThat(converter)
+			.extracting(AbstractMongoSessionConverter::getClass)
+			.contains(JacksonMongoSessionConverter.class);
+	}
+
+	@Test
+	public void overridingMongoSessionConverterWithBeanShouldWork() throws IllegalAccessException {
+
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.register(OverrideSessionConverterConfig.class);
+		ctx.refresh();
+
+		ReactiveMongoOperationsSessionRepository repository = ctx.getBean(ReactiveMongoOperationsSessionRepository.class);
+
+		AbstractMongoSessionConverter converter = findMongoSessionConverter(repository);
+
+		assertThat(converter)
+			.extracting(AbstractMongoSessionConverter::getClass)
+			.contains(JdkMongoSessionConverter.class);
+	}
+
+	/**
+	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the {@link ReactiveMongoOperationsSessionRepository}.
+	 * This is to avoid expanding the surface area of the API.
+	 * 
+	 * @param repository
+	 * @return
+	 */
+	private AbstractMongoSessionConverter findMongoSessionConverter(ReactiveMongoOperationsSessionRepository repository) {
+
+		Field field = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class, "mongoSessionConverter");
+		ReflectionUtils.makeAccessible(field);
+		try {
+			return (AbstractMongoSessionConverter) field.get(repository);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
 	 * A configuration with all the right parts.
 	 */
@@ -82,5 +139,19 @@ public class ReactiveMongoWebSessionConfigurationTest {
 	@EnableMongoWebSession
 	static class BadConfig {
 
+	}
+
+	@EnableMongoWebSession
+	static class OverrideSessionConverterConfig {
+
+		@Bean
+		ReactiveMongoOperations operations() {
+			return mock(ReactiveMongoOperations.class);
+		}
+
+		@Bean
+		JdkMongoSessionConverter mongoSessionConverter() {
+			return new JdkMongoSessionConverter();
+		}
 	}
 }

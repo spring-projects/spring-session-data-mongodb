@@ -19,6 +19,7 @@ import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
 import org.bson.Document;
 import reactor.core.publisher.Mono;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.ReactorSessionRepository;
 
@@ -119,6 +120,7 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 		return this.mongoOperations.findById(id, Document.class, this.collectionName);
 	}
 
+	@Autowired(required = false)
 	public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
 		this.mongoSessionConverter = mongoSessionConverter;
 	}
