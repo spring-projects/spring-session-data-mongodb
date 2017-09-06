@@ -72,7 +72,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 	}
 
 	@Test
-	public void defaultSessionConverterShouldBeJacksonWhenOnClasspath() throws IllegalAccessException {
+	public void defaultSessionConverterShouldBeJdkWhenOnClasspath() throws IllegalAccessException {
 
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ctx.register(GoodConfig.class);
@@ -84,7 +84,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 
 		assertThat(converter)
 			.extracting(AbstractMongoSessionConverter::getClass)
-			.contains(JacksonMongoSessionConverter.class);
+			.contains(JdkMongoSessionConverter.class);
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 
 		assertThat(converter)
 			.extracting(AbstractMongoSessionConverter::getClass)
-			.contains(JdkMongoSessionConverter.class);
+			.contains(JacksonMongoSessionConverter.class);
 	}
 
 	@Test
@@ -171,8 +171,8 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		}
 
 		@Bean
-		JdkMongoSessionConverter mongoSessionConverter() {
-			return new JdkMongoSessionConverter();
+		AbstractMongoSessionConverter mongoSessionConverter() {
+			return new JacksonMongoSessionConverter();
 		}
 	}
 

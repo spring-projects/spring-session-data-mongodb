@@ -15,8 +15,6 @@
  */
 package org.springframework.session.data.mongo;
 
-import org.springframework.util.ClassUtils;
-
 /**
  * Provider choosing proper AbstractMongoSessionConverter.
  *
@@ -30,13 +28,7 @@ final class SessionConverterProvider {
 	}
 
 	static AbstractMongoSessionConverter getDefaultMongoConverter() {
-		
-		if (ClassUtils.isPresent(JACKSON_CLASS_NAME, null)) {
-			return new JacksonMongoSessionConverter();
-		}
-		else {
-			return new JdkMongoSessionConverter();
-		}
+		return new JdkMongoSessionConverter();
 	}
 
 }
