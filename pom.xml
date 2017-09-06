@@ -90,6 +90,7 @@
 			<properties>
 				<spring-data.version>Kay-BUILD-SNAPSHOT</spring-data.version>
 				<spring.version>5.0.0.BUILD-SNAPSHOT</spring.version>
+				<reactor.version>Bismuth-BUILD-SNAPSHOT</reactor.version>
 			</properties>
 			<repositories>
 				<repository>
@@ -648,6 +649,7 @@
 		<repository>
 			<id>spring-libs-snapshot</id>
 			<url>https://repo.spring.io/libs-snapshot</url>
+			<snapshots><enabled>true</enabled></snapshots>
 		</repository>
 	</repositories>
 
