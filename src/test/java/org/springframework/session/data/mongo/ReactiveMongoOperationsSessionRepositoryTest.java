@@ -182,7 +182,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 		given(this.mongoOperations.remove((Mono<? extends Object>) any(), eq("sessions"))).willReturn(Mono.just(DeleteResult.acknowledged(1)));
 
 		// when
-		StepVerifier.create(this.repository.delete(sessionId))
+		StepVerifier.create(this.repository.deleteById(sessionId))
 			.expectNextMatches(aVoid -> {
 				// then
 				verify(this.mongoOperations).remove(any(Document.class),

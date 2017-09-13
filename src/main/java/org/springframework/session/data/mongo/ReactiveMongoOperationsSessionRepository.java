@@ -100,7 +100,7 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 		return findSession(id)
 			.map(document -> convertToSession(this.mongoSessionConverter, document))
 			.filter(mongoSession -> !mongoSession.isExpired())
-			.switchIfEmpty(Mono.defer(() -> this.delete(id).then(Mono.empty())));
+			.switchIfEmpty(Mono.defer(() -> this.deleteById(id).then(Mono.empty())));
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 	 * @param id the {@link MongoSession#getId()} to delete
 	 */
 	@Override
-	public Mono<Void> delete(String id) {
+	public Mono<Void> deleteById(String id) {
 		return this.mongoOperations.remove(findSession(id), this.collectionName).then();
 	}
 
