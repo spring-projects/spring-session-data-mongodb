@@ -62,9 +62,7 @@ public class MongoOperationsSessionRepository
 
 	private final MongoOperations mongoOperations;
 
-	private AbstractMongoSessionConverter mongoSessionConverter =
-		SessionConverterProvider.getDefaultMongoConverter();
-
+	private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter();
 	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
 	private String collectionName = DEFAULT_COLLECTION_NAME;
 

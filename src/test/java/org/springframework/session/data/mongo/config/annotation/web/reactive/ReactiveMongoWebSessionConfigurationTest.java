@@ -16,15 +16,21 @@
 package org.springframework.session.data.mongo.config.annotation.web.reactive;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
 
+import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.session.EnableSpringWebSession;
 import org.springframework.session.ReactorSessionRepository;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
@@ -42,31 +48,41 @@ import org.springframework.web.server.session.WebSessionManager;
  */
 public class ReactiveMongoWebSessionConfigurationTest {
 
+	private AnnotationConfigApplicationContext context;
+	
+	@After
+	public void tearDown() {
+
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
+
 	@Test
 	public void enableSpringWebSessionConfiguresThings() {
 
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(GoodConfig.class);
-		ctx.refresh();
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(GoodConfig.class);
+		this.context.refresh();
 
-		WebSessionManager webSessionManagerFoundByType = ctx.getBean(WebSessionManager.class);
-		Object webSessionManagerFoundByName = ctx.getBean(WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME);
+		WebSessionManager webSessionManagerFoundByType = this.context.getBean(WebSessionManager.class);
+		Object webSessionManagerFoundByName = this.context.getBean(WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME);
 
 		assertThat(webSessionManagerFoundByType).isNotNull();
 		assertThat(webSessionManagerFoundByName).isNotNull();
 		assertThat(webSessionManagerFoundByType).isEqualTo(webSessionManagerFoundByName);
 
-		assertThat(ctx.getBean(ReactorSessionRepository.class)).isNotNull();
+		assertThat(this.context.getBean(ReactorSessionRepository.class)).isNotNull();
 	}
 
 	@Test
 	public void missingReactorSessionRepositoryBreaksAppContext() {
 
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(BadConfig.class);
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(BadConfig.class);
 
 		assertThatExceptionOfType(UnsatisfiedDependencyException.class)
-				.isThrownBy(ctx::refresh)
+				.isThrownBy(this.context::refresh)
 				.withMessageContaining("Error creating bean with name 'webSessionManager'")
 				.withMessageContaining("No qualifying bean of type '" + ReactiveMongoOperations.class.getCanonicalName());
 	}
@@ -74,11 +90,11 @@ public class ReactiveMongoWebSessionConfigurationTest {
 	@Test
 	public void defaultSessionConverterShouldBeJdkWhenOnClasspath() throws IllegalAccessException {
 
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(GoodConfig.class);
-		ctx.refresh();
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(GoodConfig.class);
+		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = ctx.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoOperationsSessionRepository repository = this.context.getBean(ReactiveMongoOperationsSessionRepository.class);
 
 		AbstractMongoSessionConverter converter = findMongoSessionConverter(repository);
 
@@ -90,11 +106,11 @@ public class ReactiveMongoWebSessionConfigurationTest {
 	@Test
 	public void overridingMongoSessionConverterWithBeanShouldWork() throws IllegalAccessException {
 
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(OverrideSessionConverterConfig.class);
-		ctx.refresh();
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(OverrideSessionConverterConfig.class);
+		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = ctx.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoOperationsSessionRepository repository = this.context.getBean(ReactiveMongoOperationsSessionRepository.class);
 
 		AbstractMongoSessionConverter converter = findMongoSessionConverter(repository);
 
@@ -106,11 +122,11 @@ public class ReactiveMongoWebSessionConfigurationTest {
 	@Test
 	public void overridingIntervalAndCollectionNameThroughAnnotationShouldWork() throws IllegalAccessException {
 
-		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		ctx.register(OverrideMongoParametersConfig.class);
-		ctx.refresh();
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(OverrideMongoParametersConfig.class);
+		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = ctx.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoOperationsSessionRepository repository = this.context.getBean(ReactiveMongoOperationsSessionRepository.class);
 
 		Field inactiveField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class, "maxInactiveIntervalInSeconds");
 		ReflectionUtils.makeAccessible(inactiveField);
@@ -122,6 +138,21 @@ public class ReactiveMongoWebSessionConfigurationTest {
 
 		assertThat(inactiveSeconds).isEqualTo(123);
 		assertThat(collectionName).isEqualTo("test-case");
+	}
+
+	@Test
+	public void reactiveAndBlockingMongoOperationsShouldEnsureIndexing() {
+
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(ConfigWithReactiveAndImperativeMongoOperations.class);
+		this.context.refresh();
+
+		MongoOperations operations = this.context.getBean(MongoOperations.class);
+		IndexOperations indexOperations = this.context.getBean(IndexOperations.class);
+
+		verify(operations, times(1)).indexOps((String) any());
+		verify(indexOperations, times(1)).getIndexInfo();
+		verify(indexOperations, times(1)).ensureIndex(any());
 	}
 
 	/**
@@ -182,6 +213,31 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		@Bean
 		ReactiveMongoOperations operations() {
 			return mock(ReactiveMongoOperations.class);
+		}
+	}
+
+	@EnableMongoWebSession
+	static class ConfigWithReactiveAndImperativeMongoOperations {
+
+		@Bean
+		ReactiveMongoOperations reactiveMongoOperations() {
+			return mock(ReactiveMongoOperations.class);
+		}
+
+		@Bean
+		IndexOperations indexOperations() {
+
+			IndexOperations indexOperations = mock(IndexOperations.class);
+			given(indexOperations.getIndexInfo()).willReturn(Collections.emptyList());
+			return indexOperations;
+		}
+
+		@Bean
+		MongoOperations mongoOperations(IndexOperations indexOperations) {
+			
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			given(mongoOperations.indexOps((String) any())).willReturn(indexOperations);
+			return mongoOperations;
 		}
 	}
 }

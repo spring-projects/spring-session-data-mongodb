@@ -32,7 +32,9 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.data.mongodb.core.index.IndexOperations;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -55,6 +57,9 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 	private ReactiveMongoOperations mongoOperations;
 
 	private ReactiveMongoOperationsSessionRepository repository;
+
+	@Mock
+	private MongoOperations blockingMongoOperations;
 
 	@Before
 	public void setUp() throws Exception {
@@ -189,5 +194,22 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 					eq(ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
 				return true;
 			});
+	}
+
+	@Test
+	public void shouldInvokeMethodToCreateIndexesImperatively() {
+
+		// given
+		IndexOperations indexOperations = mock(IndexOperations.class);
+		given(this.blockingMongoOperations.indexOps((String) any())).willReturn(indexOperations);
+
+		this.repository.setBlockingMongoOperations(this.blockingMongoOperations);
+
+		// when
+		this.repository.ensureIndexesAreCreated();
+
+		// then
+		verify(this.blockingMongoOperations, times(1)).indexOps((String) any());
+		verify(this.converter, times(1)).ensureIndexes(indexOperations);
 	}
 }

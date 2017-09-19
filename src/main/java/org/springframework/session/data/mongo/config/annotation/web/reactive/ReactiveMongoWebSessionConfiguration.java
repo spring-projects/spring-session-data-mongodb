@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
@@ -41,6 +42,9 @@ public class ReactiveMongoWebSessionConfiguration implements EmbeddedValueResolv
 	private String collectionName;
 	private StringValueResolver embeddedValueResolver;
 
+	@Autowired(required = false)
+	private MongoOperations mongoOperations;
+
 	@Bean
 	public ReactiveMongoOperationsSessionRepository reactiveMongoOperationsSessionRepository(ReactiveMongoOperations operations) {
 		
@@ -56,6 +60,10 @@ public class ReactiveMongoWebSessionConfiguration implements EmbeddedValueResolv
 
 		if (this.collectionName != null) {
 			repository.setCollectionName(this.collectionName);
+		}
+
+		if (this.mongoOperations != null) {
+			repository.setBlockingMongoOperations(this.mongoOperations);
 		}
 		
 		return repository;

@@ -17,9 +17,13 @@ package org.springframework.session.data.mongo;
 
 import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
+import javax.annotation.PostConstruct;
+
 import org.bson.Document;
 import reactor.core.publisher.Mono;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.session.ReactorSessionRepository;
 
 /**
@@ -39,9 +43,11 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 
 	private final ReactiveMongoOperations mongoOperations;
 
-	private AbstractMongoSessionConverter mongoSessionConverter = SessionConverterProvider.getDefaultMongoConverter();
+	private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter();
 	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
 	private String collectionName = DEFAULT_COLLECTION_NAME;
+
+	private MongoOperations blockingMongoOperations;
 
 	public ReactiveMongoOperationsSessionRepository(ReactiveMongoOperations mongoOperations) {
 		this.mongoOperations = mongoOperations;
@@ -114,6 +120,19 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 		return this.mongoOperations.remove(findSession(id), this.collectionName).then();
 	}
 
+	/**
+	 * Do not use {@link org.springframework.data.mongodb.core.index.ReactiveIndexOperations} to ensure indexes exist.
+	 * Instead, get a blocking {@link IndexOperations} and use that instead, if possible.
+	 */
+	@PostConstruct
+	public void ensureIndexesAreCreated() {
+
+		if (this.blockingMongoOperations != null) {
+			IndexOperations indexOperations = this.blockingMongoOperations.indexOps(this.collectionName);
+			this.mongoSessionConverter.ensureIndexes(indexOperations);
+		}
+	}
+
 	private Mono<Document> findSession(String id) {
 		return this.mongoOperations.findById(id, Document.class, this.collectionName);
 	}
@@ -130,4 +149,11 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 		this.collectionName = collectionName;
 	}
 
+	public MongoOperations getBlockingMongoOperations() {
+		return this.blockingMongoOperations;
+	}
+
+	public void setBlockingMongoOperations(MongoOperations blockingMongoOperations) {
+		this.blockingMongoOperations = blockingMongoOperations;
+	}
 }
