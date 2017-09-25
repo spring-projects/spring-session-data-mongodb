@@ -93,4 +93,19 @@ public class ReactiveMongoWebSessionConfiguration implements EmbeddedValueResolv
 	public void setEmbeddedValueResolver(StringValueResolver embeddedValueResolver) {
 		this.embeddedValueResolver = embeddedValueResolver;
 	}
+	public Integer getMaxInactiveIntervalInSeconds() {
+		return maxInactiveIntervalInSeconds;
+	}
+
+	public void setMaxInactiveIntervalInSeconds(Integer maxInactiveIntervalInSeconds) {
+		this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
+	}
+
+	public String getCollectionName() {
+		return collectionName;
+	}
+
+	public void setCollectionName(String collectionName) {
+		this.collectionName = collectionName;
+	}
 }

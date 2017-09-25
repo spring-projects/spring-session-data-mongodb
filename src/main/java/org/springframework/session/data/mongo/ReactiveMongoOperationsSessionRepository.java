@@ -145,8 +145,16 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 		this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
 	}
 
+	public Integer getMaxInactiveIntervalInSeconds() {
+		return maxInactiveIntervalInSeconds;
+	}
+
 	public void setCollectionName(String collectionName) {
 		this.collectionName = collectionName;
+	}
+
+	public String getCollectionName() {
+		return collectionName;
 	}
 
 	public MongoOperations getBlockingMongoOperations() {

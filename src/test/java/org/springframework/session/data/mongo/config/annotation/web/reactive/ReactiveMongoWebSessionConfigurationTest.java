@@ -17,6 +17,8 @@ package org.springframework.session.data.mongo.config.annotation.web.reactive;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 
@@ -155,6 +157,18 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		verify(indexOperations, times(1)).ensureIndex(any());
 	}
 
+	@Test
+	public void overrideCollectionAndInactiveIntervalThroughConfigurationOptions() {
+
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomizedReactiveConfiguration.class);
+		this.context.refresh();
+
+		ReactiveMongoOperationsSessionRepository repository = this.context.getBean(ReactiveMongoOperationsSessionRepository.class);
+		assertThat(repository.getCollectionName()).isEqualTo("custom-collection");
+		assertThat(repository.getMaxInactiveIntervalInSeconds()).isEqualTo(123);
+	}
+
 	/**
 	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the {@link ReactiveMongoOperationsSessionRepository}.
 	 * This is to avoid expanding the surface area of the API.
@@ -238,6 +252,21 @@ public class ReactiveMongoWebSessionConfigurationTest {
 			MongoOperations mongoOperations = mock(MongoOperations.class);
 			given(mongoOperations.indexOps((String) any())).willReturn(indexOperations);
 			return mongoOperations;
+		}
+	}
+
+	@EnableSpringWebSession
+	static class CustomizedReactiveConfiguration extends ReactiveMongoWebSessionConfiguration {
+
+		@Bean
+		ReactiveMongoOperations reactiveMongoOperations() {
+			return mock(ReactiveMongoOperations.class);
+		}
+
+		public CustomizedReactiveConfiguration() {
+
+			this.setCollectionName("custom-collection");
+			this.setMaxInactiveIntervalInSeconds(123);
 		}
 	}
 }
