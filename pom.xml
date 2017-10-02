@@ -78,7 +78,7 @@
 		<mongo-reactivestreams.version>1.6.0</mongo-reactivestreams.version>
 		<reactor.version>Bismuth-RELEASE</reactor.version>
 		<spring.version>5.0.0.RELEASE</spring.version>
-		<spring-data.version>Kay-RC3</spring-data.version>
+		<spring-data.version>Kay-RELEASE</spring-data.version>
 		<spring-security.version>5.0.0.M4</spring-security.version>
 		<spring-session.version>2.0.0.M4</spring-session.version>
 	</properties>
@@ -91,6 +91,23 @@
 				<reactor.version>Bismuth-BUILD-SNAPSHOT</reactor.version>
 				<spring.version>5.0.1.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Kay-BUILD-SNAPSHOT</spring-data.version>
+				<spring-security.version>5.0.0.BUILD-SNAPSHOT</spring-security.version>
+				<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
+			</properties>
+			<repositories>
+				<repository>
+					<id>spring-libs-snapshot</id>
+					<url>http://repo.spring.io/libs-snapshot</url>
+				</repository>
+			</repositories>
+		</profile>
+
+		<profile>
+			<id>springdata-next</id>
+			<properties>
+				<reactor.version>Bismuth-BUILD-SNAPSHOT</reactor.version>
+				<spring.version>5.0.1.BUILD-SNAPSHOT</spring.version>
+				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
 				<spring-security.version>5.0.0.BUILD-SNAPSHOT</spring-security.version>
 				<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
 			</properties>

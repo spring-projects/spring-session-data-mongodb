@@ -5,6 +5,7 @@ env:
   matrix:
   - PROFILE=non-existent
   - PROFILE=spring5-next
+  - PROFILE=springdata-next
 cache:
   directories:
   - $HOME/.m2
