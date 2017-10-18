@@ -57,17 +57,20 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 	private final Converter<Object, byte[]> serializer;
 	private final Converter<byte[], Object> deserializer;
 
-	public JdkMongoSessionConverter() {
-		this(new SerializingConverter(), new DeserializingConverter());
+	private Duration maxInactiveInterval;
+
+	public JdkMongoSessionConverter(Duration maxInactiveInterval) {
+		this(new SerializingConverter(), new DeserializingConverter(), maxInactiveInterval);
 	}
 
 	public JdkMongoSessionConverter(Converter<Object, byte[]> serializer,
-			Converter<byte[], Object> deserializer) {
-
+			Converter<byte[], Object> deserializer, Duration maxInactiveInterval) {
 		Assert.notNull(serializer, "serializer cannot be null");
 		Assert.notNull(deserializer, "deserializer cannot be null");
+		Assert.notNull(maxInactiveInterval, "maxInactiveInterval cannot be null");
 		this.serializer = serializer;
 		this.deserializer = deserializer;
+		this.maxInactiveInterval = maxInactiveInterval;
 	}
 
 	@Override
@@ -100,7 +103,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 	@Override
 	protected MongoSession convert(Document sessionWrapper) {
 
-		Object maxInterval = sessionWrapper.get(MAX_INTERVAL);
+		Object maxInterval = sessionWrapper.getOrDefault(MAX_INTERVAL, this.maxInactiveInterval);
 
 		Duration maxIntervalDuration = (maxInterval instanceof Duration)
 			? (Duration) maxInterval

@@ -17,8 +17,10 @@ package org.springframework.session.data.mongo;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.junit.Test;
+import java.time.Duration;
 
+import org.bson.Document;
+import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
@@ -35,16 +37,17 @@ import com.mongodb.DBObject;
  */
 public class JdkMongoSessionConverterTest {
 
-	JdkMongoSessionConverter sut = new JdkMongoSessionConverter();
+	Duration inactiveInterval = Duration.ofMinutes(30);
+	JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(inactiveInterval);
 
 	@Test(expected = IllegalArgumentException.class)
 	public void constructorNullSerializer() {
-		new JdkMongoSessionConverter(null, new DeserializingConverter());
+		new JdkMongoSessionConverter(null, new DeserializingConverter(), inactiveInterval);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void constructorNullDeserializer() {
-		new JdkMongoSessionConverter(new SerializingConverter(), null);
+		new JdkMongoSessionConverter(new SerializingConverter(), null, inactiveInterval);
 	}
 
 	@Test
@@ -97,14 +100,30 @@ public class JdkMongoSessionConverterTest {
 		assertThat(dbObject.get("principal")).isEqualTo(principalName);
 	}
 
+	@Test
+	public void sessionWrapperWithNoMaxIntervalShouldFallbackToDefaultValues() {
+
+		// given
+		MongoSession toSerialize = new MongoSession();
+		DBObject dbObject = convertToDBObject(toSerialize);
+		Document document = new Document(dbObject.toMap());
+		document.remove("interval");
+
+		// when
+		MongoSession convertedSession = this.mongoSessionConverter.convert(document);
+
+		// then
+		assertThat(convertedSession.getMaxInactiveInterval()).isEqualTo(Duration.ofMinutes(30));
+	}
+
 	MongoSession convertToSession(DBObject session) {
-		return (MongoSession) this.sut.convert(session,
+		return (MongoSession) this.mongoSessionConverter.convert(session,
 				TypeDescriptor.valueOf(DBObject.class),
 				TypeDescriptor.valueOf(MongoSession.class));
 	}
 
 	DBObject convertToDBObject(MongoSession session) {
-		return (DBObject) this.sut.convert(session,
+		return (DBObject) this.mongoSessionConverter.convert(session,
 				TypeDescriptor.valueOf(MongoSession.class),
 				TypeDescriptor.valueOf(DBObject.class));
 	}

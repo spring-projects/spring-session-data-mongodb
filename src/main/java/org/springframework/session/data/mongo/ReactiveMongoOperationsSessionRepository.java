@@ -17,6 +17,8 @@ package org.springframework.session.data.mongo;
 
 import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
+import java.time.Duration;
+
 import javax.annotation.PostConstruct;
 
 import org.bson.Document;
@@ -43,9 +45,10 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 
 	private final ReactiveMongoOperations mongoOperations;
 
-	private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter();
 	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
 	private String collectionName = DEFAULT_COLLECTION_NAME;
+	private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
+		Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
 
 	private MongoOperations blockingMongoOperations;
 

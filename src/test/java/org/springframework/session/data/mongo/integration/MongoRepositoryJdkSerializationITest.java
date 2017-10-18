@@ -17,6 +17,7 @@ package org.springframework.session.data.mongo.integration;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.Duration;
 import java.util.Map;
 
 import org.junit.Test;
@@ -85,7 +86,7 @@ public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositor
 
 		@Bean
 		public AbstractMongoSessionConverter mongoSessionConverter() {
-			return new JdkMongoSessionConverter();
+			return new JdkMongoSessionConverter(Duration.ofMinutes(30));
 		}
 	}
 	// end::sample[]
