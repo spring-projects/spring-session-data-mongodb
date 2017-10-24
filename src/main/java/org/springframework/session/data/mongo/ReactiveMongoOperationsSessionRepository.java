@@ -26,12 +26,12 @@ import reactor.core.publisher.Mono;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
-import org.springframework.session.ReactorSessionRepository;
+import org.springframework.session.ReactiveSessionRepository;
 
 /**
  * @author Greg Turnquist
  */
-public class ReactiveMongoOperationsSessionRepository implements ReactorSessionRepository<MongoSession> {
+public class ReactiveMongoOperationsSessionRepository implements ReactiveSessionRepository<MongoSession> {
 
 	/**
 	 * The default time period in seconds in which a session will expire.
@@ -58,7 +58,7 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 
 	/**
 	 * Creates a new {@link MongoSession} that is capable of being persisted by this
-	 * {@link ReactorSessionRepository}.
+	 * {@link ReactiveSessionRepository}.
 	 * <p>
 	 * This allows optimizations and customizations in how the {@link MongoSession} is
 	 * persisted. For example, the implementation returned might keep track of the changes
@@ -66,7 +66,7 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 	 * </p>
 	 *
 	 * @return a new {@link MongoSession} that is capable of being persisted by this
-	 * {@link ReactorSessionRepository}
+	 * {@link ReactiveSessionRepository}
 	 */
 	@Override
 	public Mono<MongoSession> createSession() {
@@ -78,7 +78,7 @@ public class ReactiveMongoOperationsSessionRepository implements ReactorSessionR
 
 	/**
 	 * Ensures the {@link MongoSession} created by
-	 * {@link ReactorSessionRepository#createSession()} is saved.
+	 * {@link ReactiveSessionRepository#createSession()} is saved.
 	 * <p>
 	 * Some implementations may choose to save as the {@link MongoSession} is updated by
 	 * returning a {@link MongoSession} that immediately persists any changes. In this case,

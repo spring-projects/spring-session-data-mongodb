@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
-import org.springframework.session.ReactorSessionRepository;
+import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.config.annotation.web.server.EnableSpringWebSession;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JacksonMongoSessionConverter;
@@ -74,7 +74,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		assertThat(webSessionManagerFoundByName).isNotNull();
 		assertThat(webSessionManagerFoundByType).isEqualTo(webSessionManagerFoundByName);
 
-		assertThat(this.context.getBean(ReactorSessionRepository.class)).isNotNull();
+		assertThat(this.context.getBean(ReactiveSessionRepository.class)).isNotNull();
 	}
 
 	@Test
