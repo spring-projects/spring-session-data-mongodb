@@ -512,14 +512,13 @@
 			<artifactId>reactor-core</artifactId>
 			<optional>true</optional>
 		</dependency>
-		
-		<!-- Test dependencies -->
 
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
-			<scope>test</scope>
 		</dependency>
+
+		<!-- Test dependencies -->
 
 		<dependency>
 			<groupId>org.springframework</groupId>

@@ -18,7 +18,6 @@ package org.springframework.session.data.mongo;
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Test;
-
 import org.springframework.data.mongodb.core.query.Query;
 
 import com.mongodb.DBObject;
@@ -27,9 +26,14 @@ import com.mongodb.DBObject;
  * @author Jakub Kubrynski
  * @author Greg Turnquist
  */
-public class JacksonMongoSessionConverterTest {
+public class JacksonMongoSessionConverterTest extends AbstractMongoSessionConverterTest {
 
-	JacksonMongoSessionConverter sut = new JacksonMongoSessionConverter();
+	JacksonMongoSessionConverter mongoSessionConverter = new JacksonMongoSessionConverter();
+
+	@Override
+	AbstractMongoSessionConverter getMongoSessionConverter() {
+		return this.mongoSessionConverter;
+	}
 
 	@Test
 	public void shouldSaveIdField() throws Exception {
@@ -38,7 +42,7 @@ public class JacksonMongoSessionConverterTest {
 		MongoSession session = new MongoSession();
 
 		//when
-		DBObject convert = this.sut.convert(session);
+		DBObject convert = this.mongoSessionConverter.convert(session);
 
 		//then
 		assertThat(convert.get("_id")).isEqualTo(session.getId());
@@ -49,9 +53,11 @@ public class JacksonMongoSessionConverterTest {
 	public void shouldQueryAgainstAttribute() throws Exception {
 
 		//when
-		Query cart = this.sut.getQueryForIndex("cart", "my-cart");
+		Query cart = this.mongoSessionConverter.getQueryForIndex("cart", "my-cart");
 
 		//then
 		assertThat(cart.getQueryObject().get("attrs.cart")).isEqualTo("my-cart");
 	}
+
+
 }

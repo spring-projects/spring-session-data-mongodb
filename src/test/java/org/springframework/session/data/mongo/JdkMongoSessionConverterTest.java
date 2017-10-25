@@ -15,30 +15,26 @@
  */
 package org.springframework.session.data.mongo;
 
-import static org.assertj.core.api.Assertions.*;
-
 import java.time.Duration;
 
-import org.bson.Document;
 import org.junit.Test;
-import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextImpl;
-import org.springframework.session.FindByIndexNameSessionRepository;
-
-import com.mongodb.DBObject;
 
 /**
  * @author Jakub Kubrynski
  * @author Rob Winch
  * @author Greg Turnquist
  */
-public class JdkMongoSessionConverterTest {
+public class JdkMongoSessionConverterTest extends AbstractMongoSessionConverterTest {
 
 	Duration inactiveInterval = Duration.ofMinutes(30);
 	JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(inactiveInterval);
+
+	@Override
+	AbstractMongoSessionConverter getMongoSessionConverter() {
+		return this.mongoSessionConverter;
+	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void constructorNullSerializer() {
@@ -48,83 +44,5 @@ public class JdkMongoSessionConverterTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void constructorNullDeserializer() {
 		new JdkMongoSessionConverter(new SerializingConverter(), null, inactiveInterval);
-	}
-
-	@Test
-	public void verifyRoundTripSerialization() throws Exception {
-
-		// given
-		MongoSession toSerialize = new MongoSession();
-		toSerialize.setAttribute("username", "john_the_springer");
-
-		// when
-		DBObject dbObject = convertToDBObject(toSerialize);
-		MongoSession deserialized = convertToSession(dbObject);
-
-		// then
-		assertThat(deserialized).isEqualToComparingFieldByField(toSerialize);
-	}
-
-	@Test
-	public void shouldExtractPrincipalNameFromAttributes() throws Exception {
-
-		// given
-		MongoSession toSerialize = new MongoSession();
-		String principalName = "john_the_springer";
-		toSerialize.setAttribute(
-				FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME,
-				principalName);
-
-		// when
-		DBObject dbObject = convertToDBObject(toSerialize);
-
-		// then
-		assertThat(dbObject.get("principal")).isEqualTo(principalName);
-	}
-
-	@Test
-	public void shouldExtractPrincipalNameFromAuthentication() throws Exception {
-
-		// given
-		MongoSession toSerialize = new MongoSession();
-		String principalName = "john_the_springer";
-		SecurityContextImpl context = new SecurityContextImpl();
-		context.setAuthentication(
-				new UsernamePasswordAuthenticationToken(principalName, null));
-		toSerialize.setAttribute("SPRING_SECURITY_CONTEXT", context);
-
-		// when
-		DBObject dbObject = convertToDBObject(toSerialize);
-
-		// then
-		assertThat(dbObject.get("principal")).isEqualTo(principalName);
-	}
-
-	@Test
-	public void sessionWrapperWithNoMaxIntervalShouldFallbackToDefaultValues() {
-
-		// given
-		MongoSession toSerialize = new MongoSession();
-		DBObject dbObject = convertToDBObject(toSerialize);
-		Document document = new Document(dbObject.toMap());
-		document.remove("interval");
-
-		// when
-		MongoSession convertedSession = this.mongoSessionConverter.convert(document);
-
-		// then
-		assertThat(convertedSession.getMaxInactiveInterval()).isEqualTo(Duration.ofMinutes(30));
-	}
-
-	MongoSession convertToSession(DBObject session) {
-		return (MongoSession) this.mongoSessionConverter.convert(session,
-				TypeDescriptor.valueOf(DBObject.class),
-				TypeDescriptor.valueOf(MongoSession.class));
-	}
-
-	DBObject convertToDBObject(MongoSession session) {
-		return (DBObject) this.mongoSessionConverter.convert(session,
-				TypeDescriptor.valueOf(MongoSession.class),
-				TypeDescriptor.valueOf(DBObject.class));
 	}
 }
