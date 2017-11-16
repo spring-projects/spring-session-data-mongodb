@@ -47,6 +47,7 @@ import org.springframework.web.server.session.WebSessionManager;
  * Verify various configurations through {@link EnableSpringWebSession}.
  *
  * @author Greg Turnquist
+ * @author Vedran Pavić
  */
 public class ReactiveMongoWebSessionConfigurationTest {
 
@@ -85,7 +86,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 
 		assertThatExceptionOfType(UnsatisfiedDependencyException.class)
 				.isThrownBy(this.context::refresh)
-				.withMessageContaining("Error creating bean with name 'webSessionManager'")
+				.withMessageContaining("Error creating bean with name 'reactiveMongoOperationsSessionRepository'")
 				.withMessageContaining("No qualifying bean of type '" + ReactiveMongoOperations.class.getCanonicalName());
 	}
 
