@@ -21,7 +21,6 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.session.config.annotation.web.server.EnableSpringWebSession;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 
 /**
@@ -50,7 +49,6 @@ import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepo
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({ java.lang.annotation.ElementType.TYPE })
 @Documented
-@EnableSpringWebSession
 @Import(ReactiveMongoWebSessionConfiguration.class)
 @Configuration
 public @interface EnableMongoWebSession {

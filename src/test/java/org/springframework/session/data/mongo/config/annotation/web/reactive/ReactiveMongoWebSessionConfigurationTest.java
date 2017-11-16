@@ -85,7 +85,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 
 		assertThatExceptionOfType(UnsatisfiedDependencyException.class)
 				.isThrownBy(this.context::refresh)
-				.withMessageContaining("Error creating bean with name 'webSessionManager'")
+				.withMessageContaining("Error creating bean with name 'reactiveMongoOperationsSessionRepository'")
 				.withMessageContaining("No qualifying bean of type '" + ReactiveMongoOperations.class.getCanonicalName());
 	}
 

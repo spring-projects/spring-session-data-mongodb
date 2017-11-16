@@ -24,6 +24,7 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.session.config.annotation.web.server.SpringWebSessionConfiguration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 import org.springframework.util.StringUtils;
@@ -35,7 +36,8 @@ import org.springframework.util.StringValueResolver;
  * @author Greg Turnquist
  */
 @Configuration
-public class ReactiveMongoWebSessionConfiguration implements EmbeddedValueResolverAware, ImportAware {
+public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfiguration
+		implements EmbeddedValueResolverAware, ImportAware {
 
 	private AbstractMongoSessionConverter mongoSessionConverter;
 	private Integer maxInactiveIntervalInSeconds;
