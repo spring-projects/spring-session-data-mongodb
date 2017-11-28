@@ -76,11 +76,11 @@
 		<mockito.version>2.10.0</mockito.version>
 		<mongo.version>3.5.0</mongo.version>
 		<mongo-reactivestreams.version>1.6.0</mongo-reactivestreams.version>
-		<reactor.version>Bismuth-SR3</reactor.version>
-		<spring.version>5.0.1.RELEASE</spring.version>
-		<spring-data.version>Kay-SR1</spring-data.version>
-		<spring-security.version>5.0.0.RC1</spring-security.version>
-		<spring-session.version>2.0.0.RC1</spring-session.version>
+		<reactor.version>Bismuth-SR4</reactor.version>
+		<spring.version>5.0.2.RELEASE</spring.version>
+		<spring-data.version>Kay-SR2</spring-data.version>
+		<spring-security.version>5.0.0.RELEASE</spring-security.version>
+		<spring-session.version>2.0.0.RC2</spring-session.version>
 	</properties>
 
 	<profiles>
@@ -89,9 +89,9 @@
 			<id>spring5-next</id>
 			<properties>
 				<reactor.version>Bismuth-BUILD-SNAPSHOT</reactor.version>
-				<spring.version>5.0.1.BUILD-SNAPSHOT</spring.version>
+				<spring.version>5.0.3.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Kay-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.0.0.BUILD-SNAPSHOT</spring-security.version>
+				<spring-security.version>5.0.0.RELEASE</spring-security.version>
 				<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
@@ -106,9 +106,9 @@
 			<id>springdata-next</id>
 			<properties>
 				<reactor.version>Bismuth-BUILD-SNAPSHOT</reactor.version>
-				<spring.version>5.0.1.BUILD-SNAPSHOT</spring.version>
+				<spring.version>5.0.3.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.0.0.BUILD-SNAPSHOT</spring-security.version>
+				<spring-security.version>5.0.0.RELEASE</spring-security.version>
 				<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
