@@ -138,6 +138,11 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 	}
 
 	@Test
+	public void nonExistentSessionShouldNotBreakMongo() {
+		this.repository.deleteById("doesn't exist");
+	}
+
+	@Test
 	public void findByPrincipalNameNoPrincipalNameChange() throws Exception {
 		
 		String principalName = "findByPrincipalNameNoPrincipalNameChange"

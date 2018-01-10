@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
 import org.bson.Document;
-
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.data.mongodb.core.query.Query;
@@ -141,7 +141,8 @@ public class MongoOperationsSessionRepository
 
 	@Override
 	public void deleteById(String id) {
-		this.mongoOperations.remove(findSession(id), this.collectionName);
+		Optional.ofNullable(findSession(id))
+			.ifPresent(document -> this.mongoOperations.remove(document, this.collectionName));
 	}
 
 	@PostConstruct
