@@ -92,7 +92,7 @@
 				<spring.version>5.0.3.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Kay-BUILD-SNAPSHOT</spring-data.version>
 				<spring-security.version>5.0.0.RELEASE</spring-security.version>
-				<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
+				<spring-session.version>2.0.1.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
@@ -109,7 +109,7 @@
 				<spring.version>5.0.3.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
 				<spring-security.version>5.0.0.RELEASE</spring-security.version>
-				<spring-session.version>2.0.0.BUILD-SNAPSHOT</spring-session.version>
+				<spring-session.version>2.0.1.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
