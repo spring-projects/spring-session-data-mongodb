@@ -80,7 +80,7 @@
 		<spring.version>5.0.2.RELEASE</spring.version>
 		<spring-data.version>Kay-SR2</spring-data.version>
 		<spring-security.version>5.0.0.RELEASE</spring-security.version>
-		<spring-session.version>2.0.0.RC2</spring-session.version>
+		<spring-session.version>2.0.0.RELEASE</spring-session.version>
 	</properties>
 
 	<profiles>
