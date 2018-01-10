@@ -22,16 +22,24 @@ import java.time.Duration;
 import javax.annotation.PostConstruct;
 
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.session.ReactiveSessionRepository;
+import org.springframework.session.events.SessionCreatedEvent;
+import org.springframework.session.events.SessionDeletedEvent;
 
 /**
  * @author Greg Turnquist
  */
-public class ReactiveMongoOperationsSessionRepository implements ReactiveSessionRepository<MongoSession> {
+public class ReactiveMongoOperationsSessionRepository
+	implements ReactiveSessionRepository<MongoSession>, ApplicationEventPublisherAware {
 
 	/**
 	 * The default time period in seconds in which a session will expire.
@@ -43,6 +51,8 @@ public class ReactiveMongoOperationsSessionRepository implements ReactiveSession
 	 */
 	public static final String DEFAULT_COLLECTION_NAME = "sessions";
 
+	private static final Logger logger = LoggerFactory.getLogger(ReactiveMongoOperationsSessionRepository.class);
+
 	private final ReactiveMongoOperations mongoOperations;
 
 	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
@@ -51,6 +61,7 @@ public class ReactiveMongoOperationsSessionRepository implements ReactiveSession
 		Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
 
 	private MongoOperations blockingMongoOperations;
+	private ApplicationEventPublisher eventPublisher;
 
 	public ReactiveMongoOperationsSessionRepository(ReactiveMongoOperations mongoOperations) {
 		this.mongoOperations = mongoOperations;
@@ -73,6 +84,10 @@ public class ReactiveMongoOperationsSessionRepository implements ReactiveSession
 
 		return Mono.justOrEmpty(this.maxInactiveIntervalInSeconds)
 			.map(MongoSession::new)
+			.map(mongoSession -> {
+				publishEvent(new SessionCreatedEvent(this, mongoSession));
+				return mongoSession;
+			})
 			.switchIfEmpty(Mono.just(new MongoSession()));
 	}
 
@@ -120,7 +135,12 @@ public class ReactiveMongoOperationsSessionRepository implements ReactiveSession
 	 */
 	@Override
 	public Mono<Void> deleteById(String id) {
-		return this.mongoOperations.remove(findSession(id), this.collectionName).then();
+
+		return findSession(id)
+			.flatMap(document -> this.mongoOperations.remove(document, this.collectionName).then(Mono.just(document)))
+			.map(document -> convertToSession(this.mongoSessionConverter, document))
+			.map(mongoSession -> Mono.fromRunnable(() -> publishEvent(new SessionDeletedEvent(this, mongoSession))))
+			.then();
 	}
 
 	/**
@@ -166,5 +186,19 @@ public class ReactiveMongoOperationsSessionRepository implements ReactiveSession
 
 	public void setBlockingMongoOperations(MongoOperations blockingMongoOperations) {
 		this.blockingMongoOperations = blockingMongoOperations;
+	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
+		this.eventPublisher = eventPublisher;
+	}
+
+	private void publishEvent(ApplicationEvent event) {
+		try {
+			this.eventPublisher.publishEvent(event);
+		}
+		catch (Throwable ex) {
+			logger.error("Error publishing " + event + ".", ex);
+		}
 	}
 }

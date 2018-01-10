@@ -28,10 +28,18 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.session.events.SessionCreatedEvent;
+import org.springframework.session.events.SessionDeletedEvent;
+import org.springframework.session.events.SessionExpiredEvent;
 
 import com.mongodb.DBObject;
 
@@ -48,7 +56,7 @@ import com.mongodb.DBObject;
  * @since 1.2
  */
 public class MongoOperationsSessionRepository
-		implements FindByIndexNameSessionRepository<MongoSession> {
+		implements FindByIndexNameSessionRepository<MongoSession>, ApplicationEventPublisherAware {
 
 	/**
 	 * The default time period in seconds in which a session will expire.
@@ -60,12 +68,15 @@ public class MongoOperationsSessionRepository
 	 */
 	public static final String DEFAULT_COLLECTION_NAME = "sessions";
 
+	private static final Logger logger = LoggerFactory.getLogger(MongoOperationsSessionRepository.class);
+
 	private final MongoOperations mongoOperations;
 
 	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
 	private String collectionName = DEFAULT_COLLECTION_NAME;
 	private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
 		Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
+	private ApplicationEventPublisher eventPublisher;
 
 	public MongoOperationsSessionRepository(MongoOperations mongoOperations) {
 		this.mongoOperations = mongoOperations;
@@ -79,6 +90,8 @@ public class MongoOperationsSessionRepository
 		if (this.maxInactiveIntervalInSeconds != null) {
 			session.setMaxInactiveInterval(Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
 		}
+
+		publishEvent(new SessionCreatedEvent(this, session));
 		
 		return session;
 	}
@@ -102,6 +115,7 @@ public class MongoOperationsSessionRepository
 		MongoSession session = convertToSession(this.mongoSessionConverter, sessionWrapper);
 
 		if (session.isExpired()) {
+			publishEvent(new SessionExpiredEvent(this, session));
 			deleteById(id);
 			return null;
 		}
@@ -142,7 +156,10 @@ public class MongoOperationsSessionRepository
 	@Override
 	public void deleteById(String id) {
 		Optional.ofNullable(findSession(id))
-			.ifPresent(document -> this.mongoOperations.remove(document, this.collectionName));
+			.ifPresent(document -> {
+				publishEvent(new SessionDeletedEvent(this, convertToSession(this.mongoSessionConverter, document)));
+				this.mongoOperations.remove(document, this.collectionName);
+			});
 	}
 
 	@PostConstruct
@@ -167,4 +184,19 @@ public class MongoOperationsSessionRepository
 	public void setCollectionName(String collectionName) {
 		this.collectionName = collectionName;
 	}
+
+	@Override
+	public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
+		this.eventPublisher = eventPublisher;
+	}
+
+	private void publishEvent(ApplicationEvent event) {
+		try {
+			this.eventPublisher.publishEvent(event);
+		}
+		catch (Throwable ex) {
+			logger.error("Error publishing " + event + ".", ex);
+		}
+	}
+
 }

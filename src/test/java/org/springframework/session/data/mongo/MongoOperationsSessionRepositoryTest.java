@@ -141,6 +141,7 @@ public class MongoOperationsSessionRepositoryTest {
 		given(session.isExpired()).willReturn(true);
 		given(this.converter.convert(sessionDocument, TypeDescriptor.valueOf(Document.class),
 			TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
+		given(session.getId()).willReturn("sessionId");
 
 		// when
 		this.repository.findById(sessionId);
@@ -156,7 +157,12 @@ public class MongoOperationsSessionRepositoryTest {
 		String sessionId = UUID.randomUUID().toString();
 
 		Document sessionDocument = new Document();
+		sessionDocument.put("id", sessionId);
 
+		MongoSession mongoSession = new MongoSession(sessionId, MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
+
+		given(this.converter.convert(sessionDocument, TypeDescriptor.valueOf(Document.class),
+			TypeDescriptor.valueOf(MongoSession.class))).willReturn(mongoSession);
 		given(this.mongoOperations.findById(eq(sessionId), eq(Document.class),
 			eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME))).willReturn(sessionDocument);
 
