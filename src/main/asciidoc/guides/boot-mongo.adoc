@@ -19,7 +19,9 @@ If you are using Maven, ensure to add the following dependencies:
 	<!-- ... -->
 
 include::{samples-dir}/pom.xml[tag=spring-session-data-mongodb]
-include::{samples-dir}/spring-session-data-mongodb-traditional-boot[tag=spring-data-mongodb]
+
+include::{samples-dir}/spring-session-data-mongodb-traditional-boot/pom.xml[tag=spring-data-mongodb]
+
 </dependencies>
 ----
 
