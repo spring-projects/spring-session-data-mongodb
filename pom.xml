@@ -343,7 +343,7 @@
 										<docinfo>true</docinfo>
 										<github-tag>v${project.version}</github-tag>
 										<code-dir>${basedir}</code-dir>
-										<samples-dir>https://raw.githubusercontent.com/gregturn/spring-session-data-mongodb-examples/master</samples-dir>
+										<samples-dir>https://raw.githubusercontent.com/spring-projects/spring-session-data-mongodb-examples/master</samples-dir>
 										<spring-session-version>${spring-session.version}</spring-session-version>
 									</attributes>
 								</configuration>
