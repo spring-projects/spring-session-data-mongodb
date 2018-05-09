@@ -19,12 +19,11 @@ import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
 import java.time.Duration;
 
-import javax.annotation.PostConstruct;
-
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -39,7 +38,7 @@ import org.springframework.session.events.SessionDeletedEvent;
  * @author Greg Turnquist
  */
 public class ReactiveMongoOperationsSessionRepository
-	implements ReactiveSessionRepository<MongoSession>, ApplicationEventPublisherAware {
+	implements ReactiveSessionRepository<MongoSession>, ApplicationEventPublisherAware, InitializingBean {
 
 	/**
 	 * The default time period in seconds in which a session will expire.
@@ -147,8 +146,8 @@ public class ReactiveMongoOperationsSessionRepository
 	 * Do not use {@link org.springframework.data.mongodb.core.index.ReactiveIndexOperations} to ensure indexes exist.
 	 * Instead, get a blocking {@link IndexOperations} and use that instead, if possible.
 	 */
-	@PostConstruct
-	public void ensureIndexesAreCreated() {
+	@Override
+	public void afterPropertiesSet() {
 
 		if (this.blockingMongoOperations != null) {
 			IndexOperations indexOperations = this.blockingMongoOperations.indexOps(this.collectionName);

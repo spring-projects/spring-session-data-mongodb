@@ -25,11 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
-
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
@@ -56,7 +55,7 @@ import com.mongodb.DBObject;
  * @since 1.2
  */
 public class MongoOperationsSessionRepository
-		implements FindByIndexNameSessionRepository<MongoSession>, ApplicationEventPublisherAware {
+		implements FindByIndexNameSessionRepository<MongoSession>, ApplicationEventPublisherAware, InitializingBean {
 
 	/**
 	 * The default time period in seconds in which a session will expire.
@@ -162,8 +161,8 @@ public class MongoOperationsSessionRepository
 			});
 	}
 
-	@PostConstruct
-	public void ensureIndexesAreCreated() {
+	@Override
+	public void afterPropertiesSet() {
 
 		IndexOperations indexOperations = this.mongoOperations.indexOps(this.collectionName);
 		this.mongoSessionConverter.ensureIndexes(indexOperations);

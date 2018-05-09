@@ -206,7 +206,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 		this.repository.setBlockingMongoOperations(this.blockingMongoOperations);
 
 		// when
-		this.repository.ensureIndexesAreCreated();
+		this.repository.afterPropertiesSet();
 
 		// then
 		verify(this.blockingMongoOperations, times(1)).indexOps((String) any());

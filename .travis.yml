@@ -1,21 +1,44 @@
 language: java
-jdk:
-- oraclejdk8
-env:
-  matrix:
-  - PROFILE=non-existent
-  - PROFILE=spring5-next
-  - PROFILE=springdata-next
+
+# Get latest install-jdk.sh script
+before_install:
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+
+matrix:
+  include:
+    - env: PROFILE=non-existent
+      jdk: oraclejdk8
+    - env: PROFILE=spring5-next
+      jdk: oraclejdk8
+    - env: PROFILE=springdata-next
+      jdk: oraclejdk8
+    - env: JDK='Open JDK 10' PROFILE=non-existent
+      install: . ./install-jdk.sh -F 10 -L GPL
+    - env: JDK='Open JDK 10' PROFILE=spring5-next
+      install: . ./install-jdk.sh -F 10 -L GPL
+    - env: JDK='Open JDK 10' PROFILE=springdata-next
+      install: . ./install-jdk.sh -F 10 -L GPL
+    - env: JDK='Oracle JDK 10' PROFILE=non-existent
+      install: . ./install-jdk.sh -F 10 -L BCL
+    - env: JDK='Oracle JDK 10' PROFILE=spring5-next
+      install: . ./install-jdk.sh -F 10 -L BCL
+    - env: JDK='Oracle JDK 10' PROFILE=springdata-next
+      install: . ./install-jdk.sh -F 10 -L BCL
+
 cache:
   directories:
   - $HOME/.m2
+
 os:
 - linux
+
 branches:
   except:
   - gh-pages
+
 sudo: false
 script: ./build.bash
+
 notifications:
   slack:
     secure: fKLKkvaIVRK4l0f+PjFIZTwnVmgmFilKv1uS2XFFhFWPjAzSF0Qi0H2ZKt3cYRTbhNkUGksRbTivbvi9/p69lIpLn0HbM9p6theS7EdgP6O4VkDk9ubMysO9JZRp/5APJN3JJqHCC9gKCabyFwtsixKfzKhPtxNwhNiOAP7a/izuIdCq9Cl+lOskdFp3nAY3U8+Jk0zsE26TdRQ/7uOTDlWl4RU5h0UEr+AGxns+Du/K2efxpWrmOEjiIVQMSFGXJ3FBonX1XZcLu8RweLSARVcjPzZyOZgNWoziRvG9rprDRM6pZGEuSTDW/OIi3EcUezEXLkx5VxpaxS7ELNSBiQxsSpyWSIbTeUdA63n2VCSs5yfGJzuRG2zci0tSObEQtYNaSWoGFTW4EAliS4HmibN697vjoLO+s6mqc37YLkRa+aZctDHVKByDIgniOjz27/t1ZVgqVwOABfAjXxJyLLNrOkWoWAhwKWji+xvIIq+OK6TysWKs8ivTgJwMfeQ0yEEmo0/BaOONNvwUGgWX5/0xq4UvBJxIZzNbL6HUPBBUMCAJf+2t9S3zoBy2ML54ardhfk28jVOiH0lOLC/rQfQzCjM9FxQ4eBSy6TIdEJkCitfRrIVkDH23YmCuQl9nVrjwX+Jak6VRGvjYYs41N8dRxrN4cK6433LV9qyOvAA=
