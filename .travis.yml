@@ -6,7 +6,7 @@ before_install:
 
 matrix:
   include:
-    - env: PROFILE=non-existent
+    - env: PROFILE=non-existent DEPLOY=true
       jdk: oraclejdk8
     - env: PROFILE=spring5-next
       jdk: oraclejdk8
