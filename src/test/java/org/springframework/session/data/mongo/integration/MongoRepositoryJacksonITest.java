@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.geo.GeoModule;
@@ -31,8 +30,6 @@ import org.springframework.session.data.mongo.JacksonMongoSessionConverter;
 import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.session.data.mongo.config.annotation.web.http.EnableMongoHttpSession;
 import org.springframework.test.context.ContextConfiguration;
-
-import com.fasterxml.jackson.databind.Module;
 
 /**
  * Integration tests for {@link org.springframework.session.data.mongo.MongoOperationsSessionRepository} that use
@@ -68,7 +65,7 @@ public class MongoRepositoryJacksonITest extends AbstractMongoRepositoryITest {
 
 		@Bean
 		public AbstractMongoSessionConverter mongoSessionConverter() {
-			return new JacksonMongoSessionConverter(Collections.<Module>singletonList(new GeoModule()));
+			return new JacksonMongoSessionConverter(Collections.singletonList(new GeoModule()));
 		}
 	}
 	// end::sample[]
