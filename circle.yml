@@ -9,7 +9,7 @@ jobs:
             name: Java 8 - Test current version
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: non-existent
+              PROFILE: non-existent,convergence
 
    j8_spring_next:
      docker:
@@ -20,7 +20,7 @@ jobs:
             name: Java 8 - Test Spring.NEXT
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: spring5-next
+              PROFILE: spring5-next,convergence
 
    j8_spring51_next:
      docker:
@@ -31,7 +31,7 @@ jobs:
             name: Java 8 - Test Spring.NEXT 5.1
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: spring51-next
+              PROFILE: spring51-next,convergence
 
    j8_springdata_next:
      docker:
@@ -42,7 +42,7 @@ jobs:
             name: Java 8 - Test Spring Data.NEXT
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: springdata-next
+              PROFILE: springdata-next,convergence
 
    j10_current:
      docker:
@@ -53,7 +53,7 @@ jobs:
             name: Java 10 - Test current version
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: non-existent
+              PROFILE: non-existent,java10,convergence
 
    j10_spring_next:
      docker:
@@ -64,7 +64,7 @@ jobs:
             name: Java 10 - Test Spring.NEXT
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: spring5-next
+              PROFILE: spring5-next,java10,convergence
 
    j10_spring51_next:
      docker:
@@ -75,7 +75,7 @@ jobs:
             name: Java 10 - Test Spring.NEXT 5.1
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: spring51-next
+              PROFILE: spring51-next,java10,convergence
 
    j10_springdata_next:
      docker:
@@ -86,7 +86,7 @@ jobs:
             name: Java 10 - Test Spring Data.NEXT
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: springdata-next
+              PROFILE: springdata-next,java10,convergence
 
    deploy:
      docker:
