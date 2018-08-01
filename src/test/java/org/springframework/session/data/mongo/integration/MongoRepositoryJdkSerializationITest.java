@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.util.Map;
 
 import org.junit.Test;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;

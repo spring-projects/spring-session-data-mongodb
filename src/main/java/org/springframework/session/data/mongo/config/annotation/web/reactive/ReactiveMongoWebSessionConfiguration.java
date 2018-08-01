@@ -15,17 +15,24 @@
  */
 package org.springframework.session.data.mongo.config.annotation.web.reactive;
 
+import java.time.Duration;
+
+import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.serializer.support.DeserializingConverter;
+import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.config.annotation.web.server.SpringWebSessionConfiguration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
+import org.springframework.session.data.mongo.JdkMongoSessionConverter;
+import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
@@ -38,7 +45,7 @@ import org.springframework.util.StringValueResolver;
  */
 @Configuration
 public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfiguration
-		implements EmbeddedValueResolverAware, ImportAware {
+		implements BeanClassLoaderAware, EmbeddedValueResolverAware, ImportAware {
 
 	private AbstractMongoSessionConverter mongoSessionConverter;
 	private Integer maxInactiveIntervalInSeconds;
@@ -47,6 +54,7 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 
 	@Autowired(required = false)
 	private MongoOperations mongoOperations;
+	private ClassLoader classLoader;
 
 	@Bean
 	public ReactiveMongoOperationsSessionRepository reactiveMongoOperationsSessionRepository(ReactiveMongoOperations operations) {
@@ -55,6 +63,12 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 
 		if (this.mongoSessionConverter != null) {
 			repository.setMongoSessionConverter(this.mongoSessionConverter);
+		} else {
+			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
+				new SerializingConverter(),
+				new DeserializingConverter(this.classLoader),
+				Duration.ofSeconds(ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL));
+			repository.setMongoSessionConverter(mongoSessionConverter);
 		}
 
 		if (this.maxInactiveIntervalInSeconds != null) {
@@ -90,6 +104,11 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 			this.collectionName = this.embeddedValueResolver.resolveStringValue(collectionNameValue);
 		}
 
+	}
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
 	}
 
 	@Override
