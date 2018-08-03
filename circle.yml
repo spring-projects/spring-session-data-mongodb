@@ -9,7 +9,7 @@ jobs:
             name: Java 8 - Test current version
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: non-existent,convergence
+              PROFILE: convergence
 
    j8_spring_next:
      docker:
@@ -33,17 +33,6 @@ jobs:
             environment:
               PROFILE: spring51-next,convergence
 
-   j8_springdata_next:
-     docker:
-       - image: circleci/openjdk:8u141
-     steps:
-        - checkout
-        - run:
-            name: Java 8 - Test Spring Data.NEXT
-            command: mvn clean dependency:list test -P${PROFILE} -Dsort
-            environment:
-              PROFILE: springdata-next,convergence
-
    j10_current:
      docker:
        - image: circleci/openjdk:10.0.1-jdk-node-browsers
@@ -53,7 +42,7 @@ jobs:
             name: Java 10 - Test current version
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: non-existent,java10,convergence
+              PROFILE: java10,convergence
 
    j10_spring_next:
      docker:
@@ -77,17 +66,6 @@ jobs:
             environment:
               PROFILE: spring51-next,java10,convergence
 
-   j10_springdata_next:
-     docker:
-       - image: circleci/openjdk:10.0.1-jdk-node-browsers
-     steps:
-        - checkout
-        - run:
-            name: Java 10 - Test Spring Data.NEXT
-            command: mvn clean dependency:list test -P${PROFILE} -Dsort
-            environment:
-              PROFILE: springdata-next,java10,convergence
-
    deploy:
      docker:
        - image: circleci/openjdk:8u141
@@ -104,21 +82,17 @@ workflows:
       - j8_current
       - j8_spring_next
       - j8_spring51_next
-      - j8_springdata_next
       - j10_current
       - j10_spring_next
       - j10_spring51_next
-      - j10_springdata_next
       - deploy:
           requires:
             - j8_current
             - j8_spring_next
             - j8_spring51_next
-            - j8_springdata_next
             - j10_current
             - j10_spring_next
             - j10_spring51_next
-            - j10_springdata_next
 
 general:
   branches:
