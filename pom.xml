@@ -4,7 +4,7 @@
 
 	<groupId>org.springframework.session</groupId>
 	<artifactId>spring-session-data-mongodb</artifactId>
-	<version>2.0.4.BUILD-SNAPSHOT</version>
+	<version>2.1.0.BUILD-SNAPSHOT</version>
 
 	<name>Spring Session MongoDB</name>
 	<url>http://spring.io/projects/spring-session-data-mongodb</url>
@@ -75,62 +75,24 @@
 		<jackson.version>2.9.1</jackson.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.18.3</mockito.version>
-		<mongo.version>3.5.0</mongo.version>
-		<mongo-reactivestreams.version>1.6.0</mongo-reactivestreams.version>
-		<reactor.version>Bismuth-SR10</reactor.version>
-		<spring.version>5.0.8.RELEASE</spring.version>
-		<spring-data.version>Kay-SR9</spring-data.version>
-		<spring-security.version>5.0.7.RELEASE</spring-security.version>
-		<spring-session.version>2.0.4.RELEASE</spring-session.version>
+		<mongo.version>3.8.0</mongo.version>
+		<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
+		<reactor.version>Californium-M1</reactor.version>
+		<spring.version>5.1.0.RC1</spring.version>
+		<spring-data.version>Lovelace-RC1</spring-data.version>
+		<spring-security.version>5.1.0.M2</spring-security.version>
+		<spring-session.version>2.1.0.BUILD-SNAPSHOT</spring-session.version>
 	</properties>
 
 	<profiles>
 
 		<profile>
-			<id>spring5-next</id>
+			<id>spring-next</id>
 			<properties>
-				<reactor.version>Bismuth-BUILD-SNAPSHOT</reactor.version>
-				<spring.version>5.0.9.BUILD-SNAPSHOT</spring.version>
-				<spring-data.version>Kay-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.0.8.BUILD-SNAPSHOT</spring-security.version>
-				<spring-session.version>2.0.5.BUILD-SNAPSHOT</spring-session.version>
-			</properties>
-			<repositories>
-				<repository>
-					<id>spring-libs-snapshot</id>
-					<url>http://repo.spring.io/libs-snapshot</url>
-				</repository>
-			</repositories>
-		</profile>
-
-		<profile>
-			<id>spring51-next</id>
-			<properties>
-				<reactor.version>Californium-M1</reactor.version>
-				<mongo.version>3.8.0</mongo.version>
-				<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
-				<spring.version>5.1.0.RC1</spring.version>
-				<spring-data.version>Lovelace-RC1</spring-data.version>
-				<spring-security.version>5.1.0.M2</spring-security.version>
-				<spring-session.version>2.1.0.BUILD-SNAPSHOT</spring-session.version>
-			</properties>
-			<repositories>
-				<repository>
-					<id>spring-libs-snapshot</id>
-					<url>http://repo.spring.io/libs-snapshot</url>
-				</repository>
-			</repositories>
-		</profile>
-
-		<profile>
-			<id>springdata-next</id>
-			<properties>
-				<reactor.version>Californium-M1</reactor.version>
-				<mongo.version>3.8.0</mongo.version>
-				<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
-				<spring.version>5.1.0.RC1</spring.version>
+				<reactor.version>Californium-BUILD-SNAPSHOT</reactor.version>
+				<spring.version>5.1.0.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.1.0.M2</spring-security.version>
+				<spring-security.version>5.1.0.BUILD-SNAPSHOT</spring-security.version>
 				<spring-session.version>2.1.0.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
