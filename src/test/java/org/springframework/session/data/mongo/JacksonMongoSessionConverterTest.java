@@ -15,11 +15,16 @@
  */
 package org.springframework.session.data.mongo;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+import java.lang.reflect.Field;
 
 import org.junit.Test;
-import org.springframework.data.mongodb.core.query.Query;
 
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.util.ReflectionUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.DBObject;
 
 /**
@@ -59,5 +64,27 @@ public class JacksonMongoSessionConverterTest extends AbstractMongoSessionConver
 		assertThat(cart.getQueryObject().get("attrs.cart")).isEqualTo("my-cart");
 	}
 
+	@Test
+	public void shouldAllowCustomObjectMapper() {
 
+		// given
+		ObjectMapper myMapper = new ObjectMapper();
+
+		// when
+		JacksonMongoSessionConverter converter = new JacksonMongoSessionConverter(myMapper);
+
+
+		// then
+		Field objectMapperField = ReflectionUtils.findField(JacksonMongoSessionConverter.class, "objectMapper");
+		ReflectionUtils.makeAccessible(objectMapperField);
+		ObjectMapper converterMapper = (ObjectMapper) ReflectionUtils.getField(objectMapperField, converter);
+
+		assertThat(converterMapper).isEqualTo(myMapper);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldNotAllowNullObjectMapperToBeInjected() {
+
+		new JacksonMongoSessionConverter((ObjectMapper) null);
+	}
 }

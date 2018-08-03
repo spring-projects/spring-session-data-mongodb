@@ -28,6 +28,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.session.FindByIndexNameSessionRepository;
+import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -63,6 +64,12 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 
 		this.objectMapper = buildObjectMapper();
 		this.objectMapper.registerModules(modules);
+	}
+
+	public JacksonMongoSessionConverter(ObjectMapper objectMapper) {
+
+		Assert.notNull(objectMapper, "ObjectMapper can NOT be null!");
+		this.objectMapper = objectMapper;
 	}
 
 	protected Query getQueryForIndex(String indexName, Object indexValue) {
