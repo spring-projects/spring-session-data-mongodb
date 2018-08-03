@@ -123,25 +123,6 @@
 		</profile>
 
 		<profile>
-			<id>springdata-next</id>
-			<properties>
-				<reactor.version>Californium-M1</reactor.version>
-				<mongo.version>3.8.0</mongo.version>
-				<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
-				<spring.version>5.1.0.RC1</spring.version>
-				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.1.0.M2</spring-security.version>
-				<spring-session.version>2.1.0.BUILD-SNAPSHOT</spring-session.version>
-			</properties>
-			<repositories>
-				<repository>
-					<id>spring-libs-snapshot</id>
-					<url>http://repo.spring.io/libs-snapshot</url>
-				</repository>
-			</repositories>
-		</profile>
-
-		<profile>
 			<id>convergence</id>
 
 			<build>
