@@ -47,7 +47,7 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 
 	private static final Log LOG = LogFactory.getLog(AbstractMongoSessionConverter.class);
 
-	protected static final String EXPIRE_AT_FIELD_NAME = "expireAt";
+	static final String EXPIRE_AT_FIELD_NAME = "expireAt";
 
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 

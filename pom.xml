@@ -74,6 +74,7 @@
 		<hamcrest.version>1.3</hamcrest.version>
 		<jackson.version>2.9.1</jackson.version>
 		<junit.version>4.12</junit.version>
+		<lombok.version>1.18.0</lombok.version>
 		<mockito.version>2.18.3</mockito.version>
 		<mongo.version>3.8.0</mongo.version>
 		<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
@@ -539,6 +540,12 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->
