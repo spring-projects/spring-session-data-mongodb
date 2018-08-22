@@ -18,12 +18,13 @@ package org.springframework.session.data.mongo;
 
 import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
+import lombok.Setter;
+
 import java.time.Duration;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -34,13 +35,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.events.SessionCreatedEvent;
 import org.springframework.session.events.SessionDeletedEvent;
 import org.springframework.session.events.SessionExpiredEvent;
-
-import com.mongodb.DBObject;
 
 /**
  * Session repository implementation which stores sessions in Mongo. Uses
@@ -57,6 +55,8 @@ import com.mongodb.DBObject;
 public class MongoOperationsSessionRepository
 		implements FindByIndexNameSessionRepository<MongoSession>, ApplicationEventPublisherAware, InitializingBean {
 
+	private static final Logger logger = LoggerFactory.getLogger(MongoOperationsSessionRepository.class);
+
 	/**
 	 * The default time period in seconds in which a session will expire.
 	 */
@@ -67,13 +67,11 @@ public class MongoOperationsSessionRepository
 	 */
 	public static final String DEFAULT_COLLECTION_NAME = "sessions";
 
-	private static final Logger logger = LoggerFactory.getLogger(MongoOperationsSessionRepository.class);
-
 	private final MongoOperations mongoOperations;
 
-	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
-	private String collectionName = DEFAULT_COLLECTION_NAME;
-	private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
+	@Setter private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
+	@Setter private String collectionName = DEFAULT_COLLECTION_NAME;
+	@Setter private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
 		Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
 	private ApplicationEventPublisher eventPublisher;
 
@@ -91,15 +89,13 @@ public class MongoOperationsSessionRepository
 		}
 
 		publishEvent(new SessionCreatedEvent(this, session));
-		
+
 		return session;
 	}
 
 	@Override
 	public void save(MongoSession session) {
-
-		DBObject sessionDbObject = convertToDBObject(this.mongoSessionConverter, session);
-		this.mongoOperations.save(sessionDbObject, this.collectionName);
+		this.mongoOperations.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName);
 	}
 
 	@Override
@@ -114,8 +110,10 @@ public class MongoOperationsSessionRepository
 		MongoSession session = convertToSession(this.mongoSessionConverter, sessionWrapper);
 
 		if (session.isExpired()) {
+
 			publishEvent(new SessionExpiredEvent(this, session));
 			deleteById(id);
+			
 			return null;
 		}
 		
@@ -134,26 +132,17 @@ public class MongoOperationsSessionRepository
 	@Override
 	public Map<String, MongoSession> findByIndexNameAndIndexValue(String indexName, String indexValue) {
 
-		HashMap<String, MongoSession> result = new HashMap<String, MongoSession>();
-
-		Query query = this.mongoSessionConverter.getQueryForIndex(indexName, indexValue);
-
-		if (query == null) {
-			return Collections.emptyMap();
+		return Optional.ofNullable(this.mongoSessionConverter.getQueryForIndex(indexName, indexValue))
+			.map(query -> this.mongoOperations.find(query, Document.class, this.collectionName))
+			.orElse(Collections.emptyList())
+			.stream()
+			.map(dbSession -> convertToSession(this.mongoSessionConverter, dbSession))
+			.collect(Collectors.toMap(MongoSession::getId, mapSession -> mapSession));
 		}
-
-		List<Document> mapSessions = this.mongoOperations.find(query, Document.class, this.collectionName);
-
-		for (Document dbSession : mapSessions) {
-			MongoSession mapSession = convertToSession(this.mongoSessionConverter, dbSession);
-			result.put(mapSession.getId(), mapSession);
-		}
-		
-		return result;
-	}
 
 	@Override
 	public void deleteById(String id) {
+		
 		Optional.ofNullable(findSession(id))
 			.ifPresent(document -> {
 				publishEvent(new SessionDeletedEvent(this, convertToSession(this.mongoSessionConverter, document)));
@@ -168,20 +157,8 @@ public class MongoOperationsSessionRepository
 		this.mongoSessionConverter.ensureIndexes(indexOperations);
 	}
 
-	Document findSession(String id) {
+	private Document findSession(String id) {
 		return this.mongoOperations.findById(id, Document.class, this.collectionName);
-	}
-
-	public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
-		this.mongoSessionConverter = mongoSessionConverter;
-	}
-
-	public void setMaxInactiveIntervalInSeconds(Integer maxInactiveIntervalInSeconds) {
-		this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
-	}
-
-	public void setCollectionName(String collectionName) {
-		this.collectionName = collectionName;
 	}
 
 	@Override

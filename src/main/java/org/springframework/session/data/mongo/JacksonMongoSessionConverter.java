@@ -145,12 +145,14 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 
 		@Override
 		public String translate(String propertyName) {
-			if (propertyName.equals("id")) {
-				return "_id";
-			} else if (propertyName.equals("_id")) {
-				return "id";
-			} else {
-				return propertyName;
+			
+			switch (propertyName) {
+				case "id":
+					return "_id";
+				case "_id":
+					return "id";
+				default:
+					return propertyName;
 			}
 		}
 	}

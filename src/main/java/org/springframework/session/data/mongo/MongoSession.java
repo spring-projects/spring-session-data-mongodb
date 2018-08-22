@@ -15,14 +15,18 @@
  */
 package org.springframework.session.data.mongo;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.session.Session;
 
@@ -33,6 +37,7 @@ import org.springframework.session.Session;
  * @author Greg Turnquist
  * @since 1.2
  */
+@EqualsAndHashCode(of = {"id"})
 public class MongoSession implements Session {
 
 	/**
@@ -40,12 +45,12 @@ public class MongoSession implements Session {
 	 */
 	private static final char DOT_COVER_CHAR = '\uF607';
 
-	private String id;
+	@Getter private String id;
 	private long createdMillis = System.currentTimeMillis();
 	private long accessedMillis;
 	private long intervalSeconds;
-	private Date expireAt;
-	private Map<String, Object> attrs = new HashMap<String, Object>();
+	@Getter @Setter private Date expireAt;
+	private Map<String, Object> attrs = new HashMap<>();
 
 	public MongoSession() {
 		this(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
@@ -62,20 +67,12 @@ public class MongoSession implements Session {
 		setLastAccessedTime(Instant.ofEpochMilli(this.createdMillis));
 	}
 
-	public String getId() {
-		return this.id;
-	}
-
 	public String changeSessionId() {
-		String changedId = generateId();
+
+		String changedId = UUID.randomUUID().toString();
 		this.id = changedId;
 		return changedId;
 	}
-
-	private String generateId() {
-		return UUID.randomUUID().toString();
-	}
-
 
 	@Override
 	public <T> T getAttribute(String attributeName) {
@@ -84,13 +81,9 @@ public class MongoSession implements Session {
 
 	public Set<String> getAttributeNames() {
 
-		HashSet<String> result = new HashSet<>();
-
-		for (String key : this.attrs.keySet()) {
-			result.add(uncoverDot(key));
-		}
-		
-		return result;
+		return this.attrs.keySet().stream()
+			.map(MongoSession::uncoverDot)
+			.collect(Collectors.toSet());
 	}
 
 	public void setAttribute(String attributeName, Object attributeValue) {
@@ -136,39 +129,11 @@ public class MongoSession implements Session {
 		return this.intervalSeconds >= 0 && new Date().after(this.expireAt);
 	}
 
-	public Date getExpireAt() {
-		return this.expireAt;
-	}
-
-	public void setExpireAt(Date expireAt) {
-		this.expireAt = expireAt;
-	}
-
 	static String coverDot(String attributeName) {
 		return attributeName.replace('.', DOT_COVER_CHAR);
 	}
 
 	static String uncoverDot(String attributeName) {
 		return attributeName.replace(DOT_COVER_CHAR, '.');
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-
-		MongoSession that = (MongoSession) o;
-
-		return this.id.equals(that.id);
-	}
-
-	@Override
-	public int hashCode() {
-		return this.id.hashCode();
 	}
 }

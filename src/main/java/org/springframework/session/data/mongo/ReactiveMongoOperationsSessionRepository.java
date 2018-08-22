@@ -17,6 +17,9 @@ package org.springframework.session.data.mongo;
 
 import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Duration;
 
 import org.bson.Document;
@@ -54,12 +57,12 @@ public class ReactiveMongoOperationsSessionRepository
 
 	private final ReactiveMongoOperations mongoOperations;
 
-	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
-	private String collectionName = DEFAULT_COLLECTION_NAME;
-	private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
+	@Getter @Setter private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
+	@Getter @Setter private String collectionName = DEFAULT_COLLECTION_NAME;
+	@Setter private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
 		Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
 
-	private MongoOperations blockingMongoOperations;
+	@Setter private MongoOperations blockingMongoOperations;
 	private ApplicationEventPublisher eventPublisher;
 
 	public ReactiveMongoOperationsSessionRepository(ReactiveMongoOperations mongoOperations) {
@@ -110,11 +113,11 @@ public class ReactiveMongoOperationsSessionRepository
 	}
 
 	/**
-	 * Gets the {@link MongoSession} by the {@link MongoSession#getId()} or null if no
+	 * Gets the {@link MongoSession} by the {@link MongoSession#getId()} or {@link Mono#empty()} if no
 	 * {@link MongoSession} is found.
 	 *
 	 * @param id the {@link MongoSession#getId()} to lookup
-	 * @return the {@link MongoSession} by the {@link MongoSession#getId()} or null if no
+	 * @return the {@link MongoSession} by the {@link MongoSession#getId()} or {@link Mono#empty()} if no
 	 * {@link MongoSession} is found.
 	 */
 	@Override
@@ -157,34 +160,6 @@ public class ReactiveMongoOperationsSessionRepository
 
 	private Mono<Document> findSession(String id) {
 		return this.mongoOperations.findById(id, Document.class, this.collectionName);
-	}
-
-	public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
-		this.mongoSessionConverter = mongoSessionConverter;
-	}
-
-	public void setMaxInactiveIntervalInSeconds(Integer maxInactiveIntervalInSeconds) {
-		this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
-	}
-
-	public Integer getMaxInactiveIntervalInSeconds() {
-		return maxInactiveIntervalInSeconds;
-	}
-
-	public void setCollectionName(String collectionName) {
-		this.collectionName = collectionName;
-	}
-
-	public String getCollectionName() {
-		return collectionName;
-	}
-
-	public MongoOperations getBlockingMongoOperations() {
-		return this.blockingMongoOperations;
-	}
-
-	public void setBlockingMongoOperations(MongoOperations blockingMongoOperations) {
-		this.blockingMongoOperations = blockingMongoOperations;
 	}
 
 	@Override
