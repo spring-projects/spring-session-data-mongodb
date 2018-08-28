@@ -44,49 +44,49 @@ jobs:
             environment:
               PROFILE: springdata-next,convergence
 
-   j10_current:
+   j11_current:
      docker:
-       - image: circleci/openjdk:10.0.1-jdk-node-browsers
+       - image: circleci/openjdk:11-ea-27-jdk-sid
      steps:
         - checkout
         - run:
-            name: Java 10 - Test current version
+            name: Java 11 - Test current version
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: non-existent,java10,convergence
+              PROFILE: non-existent,convergence
 
-   j10_spring_next:
+   j11_spring_next:
      docker:
-       - image: circleci/openjdk:10.0.1-jdk-node-browsers
+       - image: circleci/openjdk:11-ea-27-jdk-sid
      steps:
         - checkout
         - run:
-            name: Java 10 - Test Spring.NEXT
+            name: Java 11 - Test Spring.NEXT
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: spring5-next,java10,convergence
+              PROFILE: spring5-next,convergence
 
-   j10_spring51_next:
+   j11_spring51_next:
      docker:
-       - image: circleci/openjdk:10.0.1-jdk-node-browsers
+       - image: circleci/openjdk:11-ea-27-jdk-sid
      steps:
         - checkout
         - run:
-            name: Java 10 - Test Spring.NEXT 5.1
+            name: Java 11 - Test Spring.NEXT 5.1
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: spring51-next,java10,convergence
+              PROFILE: spring51-next,convergence
 
-   j10_springdata_next:
+   j11_springdata_next:
      docker:
-       - image: circleci/openjdk:10.0.1-jdk-node-browsers
+       - image: circleci/openjdk:11-ea-27-jdk-sid
      steps:
         - checkout
         - run:
-            name: Java 10 - Test Spring Data.NEXT
+            name: Java 11 - Test Spring Data.NEXT
             command: mvn clean dependency:list test -P${PROFILE} -Dsort
             environment:
-              PROFILE: springdata-next,java10,convergence
+              PROFILE: springdata-next,convergence
 
    deploy:
      docker:
@@ -105,20 +105,20 @@ workflows:
       - j8_spring_next
       - j8_spring51_next
       - j8_springdata_next
-      - j10_current
-      - j10_spring_next
-      - j10_spring51_next
-      - j10_springdata_next
+      - j11_current
+      - j11_spring_next
+      - j11_spring51_next
+      - j11_springdata_next
       - deploy:
           requires:
             - j8_current
             - j8_spring_next
             - j8_spring51_next
             - j8_springdata_next
-            - j10_current
-            - j10_spring_next
-            - j10_spring51_next
-            - j10_springdata_next
+            - j11_current
+            - j11_spring_next
+            - j11_spring51_next
+            - j11_springdata_next
 
 general:
   branches:
