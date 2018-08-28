@@ -453,10 +453,6 @@
 			</build>
 		</profile>
 
-		<profile>
-			<id>java10</id>
-		</profile>
-
 	</profiles>
 
 	<dependencyManagement>
