@@ -78,11 +78,11 @@
 		<mockito.version>2.18.3</mockito.version>
 		<mongo.version>3.8.0</mongo.version>
 		<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
-		<reactor.version>Californium-M1</reactor.version>
-		<spring.version>5.1.0.RC1</spring.version>
-		<spring-data.version>Lovelace-RC1</spring-data.version>
-		<spring-security.version>5.1.0.M2</spring-security.version>
-		<spring-session.version>2.1.0.BUILD-SNAPSHOT</spring-session.version>
+		<reactor.version>Californium-RELEASE</reactor.version>
+		<spring.version>5.1.1.RELEASE</spring.version>
+		<spring-data.version>Lovelace-SR1</spring-data.version>
+		<spring-security.version>5.1.0.RELEASE</spring-security.version>
+		<spring-session.version>2.1.0.RC1</spring-session.version>
 	</properties>
 
 	<profiles>
@@ -91,9 +91,9 @@
 			<id>spring-next</id>
 			<properties>
 				<reactor.version>Californium-BUILD-SNAPSHOT</reactor.version>
-				<spring.version>5.1.0.BUILD-SNAPSHOT</spring.version>
+				<spring.version>5.1.2.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.1.0.BUILD-SNAPSHOT</spring-security.version>
+				<spring-security.version>5.1.1.BUILD-SNAPSHOT</spring-security.version>
 				<spring-session.version>2.1.0.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
