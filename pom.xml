@@ -4,7 +4,7 @@
 
 	<groupId>org.springframework.session</groupId>
 	<artifactId>spring-session-data-mongodb</artifactId>
-	<version>2.1.0.BUILD-SNAPSHOT</version>
+	<version>2.1.0.RC1</version>
 
 	<name>Spring Session MongoDB</name>
 	<url>http://spring.io/projects/spring-session-data-mongodb</url>
@@ -78,7 +78,7 @@
 		<mockito.version>2.18.3</mockito.version>
 		<mongo.version>3.8.0</mongo.version>
 		<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
-		<reactor.version>Californium-RELEASE</reactor.version>
+		<reactor.version>Californium-SR1</reactor.version>
 		<spring.version>5.1.1.RELEASE</spring.version>
 		<spring-data.version>Lovelace-SR1</spring-data.version>
 		<spring-security.version>5.1.0.RELEASE</spring-security.version>
