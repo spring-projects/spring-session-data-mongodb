@@ -81,8 +81,8 @@
 		<reactor.version>Californium-SR1</reactor.version>
 		<spring.version>5.1.1.RELEASE</spring.version>
 		<spring-data.version>Lovelace-SR1</spring-data.version>
-		<spring-security.version>5.1.0.RELEASE</spring-security.version>
-		<spring-session.version>2.1.0.RC1</spring-session.version>
+		<spring-security.version>5.1.1.RELEASE</spring-security.version>
+		<spring-session.version>2.1.0.RELEASE</spring-session.version>
 	</properties>
 
 	<profiles>
@@ -93,8 +93,8 @@
 				<reactor.version>Californium-BUILD-SNAPSHOT</reactor.version>
 				<spring.version>5.1.2.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.1.1.BUILD-SNAPSHOT</spring-security.version>
-				<spring-session.version>2.1.0.BUILD-SNAPSHOT</spring-session.version>
+				<spring-security.version>5.1.2.BUILD-SNAPSHOT</spring-security.version>
+				<spring-session.version>2.1.1.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
