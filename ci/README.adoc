@@ -1,0 +1,47 @@
+== Spring Session for MongoDB CI
+
+Spring Session for MongoDB uses Concourse as it's CI tool of choice. This provides support for:
+
+* Pipelines against the `master` and `2.0.x` branches
+* Support for pull requests
+
+=== Creating a pipeline
+
+Using the `fly` command, you can execute a series of commands to create multiple pipelines to manage everything. But
+first, some critical credentials are needed.
+
+Create a `credentials.yml` file like this:
+
+[source,yml]
+----
+github-access-token: <your Personal Access Token from github>
+slack: <your slack hook URL>
+docker-email: <your docker hub email address>
+docker-username: <your docker hub username>
+docker-password: <your docker hub password>
+artifactory-username: <your artifactory username>
+artifactory-password: <your artifactory encoded password>
+----
+
+WARNING: Do NOT check this file into source control! If you'll check, `credentials.yml` is listed in `.gitignore` to prevent tihs.
+
+With this in place, run the following `fly` commands to create pipelines:
+
+----
+% fly -t <team-name> sp -p spring-session-data-mongodb -c ci/pipeline-template.yml -l credentials.yml -v branch=master
+% fly -t <team-name> sp -p spring-session-data-mongodb-2.0.x -c ci/pipeline-template.yml -l credentials.yml -v branch=2.0.x
+----
+
+This creates pipelines for:
+
+* Spring Session for MongoDB `master` branch
+* Spring Session for MongoDB `2.0.x` branch
+
+With these pipelines in place, you can now activate and expose them:
+
+----
+% fly -t <team-name> unpause-pipeline -p spring-session-data-mongodb
+% fly -t <team-name> expose-pipeline -p spring-session-data-mongodb
+% fly -t <team-name> unpause-pipeline -p spring-session-data-mongodb-2.0.x
+% fly -t <team-name> expose-pipeline -p spring-session-data-mongodb-2.x
+----
