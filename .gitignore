@@ -11,3 +11,5 @@ out
 .checkstyle
 !**/src/**/build
 _site
+
+credentials.yml

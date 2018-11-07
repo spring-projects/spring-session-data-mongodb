@@ -1,8 +1,7 @@
 image:https://badges.gitter.im/spring-projects/spring-session.svg[link="https://gitter.im/spring-projects/spring-session?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
 
-image:https://circleci.com/gh/spring-projects/spring-session-data-mongodb.svg?style=svg["CircleCI", link="https://circleci.com/gh/spring-projects/spring-session-data-mongodb"]
-
 = Spring Session MongoDB
+
 Greg Turnquist
 
 Spring Session MongoDB provides a solution for Spring Session in a MongoDB data store.
@@ -12,6 +11,81 @@ Spring Session MongoDB provides a solution for Spring Session in a MongoDB data 
 ** Support for clustering in a vendor neutral way
 ** Pluggable strategy for determining the session id
 ** Easily keep the HttpSession alive when a WebSocket is active
+
+== Project Status
+
+We go to great lengths to ensure smooth upgrades. We also seek to make your upgrade on major versions of Java can be as smooth
+as possible.
+
+Check the matrix below to see the status of supported versions:
+
+.`master` branch
+[cols=2]
+|===
+| Job | Status
+
+| Test - JDK 8
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%208/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+
+| Test - JDK 8 and Spring.NEXT
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%208%20and%20Spring.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+
+| Test - JDK 8 and Spring.NEXT 5.1
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%208%20and%20Spring.NEXT%205.1/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+
+| Test - JDK 8 and Spring Data.NEXT
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%208%20and%20Spring%20Data.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+
+| Test - JDK 11
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%2011/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+
+| Test - JDK 11 and Spring.NEXT
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%2011%20and%20Spring.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+
+| Test - JDK 11 and Spring.NEXT 5.1
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%2011%20and%20Spring.NEXT%205.1/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+
+| Test - JDK 11 and Spring Data.NEXT
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%2011%20and%20Spring%20Data.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+
+| Build - Release to repo.spring.io
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Build/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+|===
+
+.`2.0.x` branch
+[cols=2]
+|===
+| Job | Status
+
+| Test - JDK 8
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%208/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Test - JDK 8 and Spring.NEXT
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%208%20and%20Spring.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Test - JDK 8 and Spring.NEXT 5.1
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%208%20and%20Spring.NEXT%205.1/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Test - JDK 8 and Spring Data.NEXT
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%208%20and%20Spring%20Data.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Test - JDK 11
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%2011/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Test - JDK 11 and Spring.NEXT
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%2011%20and%20Spring.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Test - JDK 11 and Spring.NEXT 5.1
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%2011%20and%20Spring.NEXT%205.1/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Test - JDK 11 and Spring Data.NEXT
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%2011%20and%20Spring%20Data.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Build - Release to repo.spring.io
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Build/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+|===
+
+
 
 
 == Building Spring Session MongoDB
@@ -23,14 +97,6 @@ This will generate the artifact.
 You can also import the project into your IDE.
 
 == Releasing Spring Session MongoDB
-
-Snapshots are published automatically via CI server by doing this:
-
-----
-$ USERNAME=<username> PASSWORD=<encrypted password> mvn -Pdistribute,snapshot,docs clean deploy
-----
-
-IMPORTANT: Snapshots do NOT include GPG signatures. To do so would require putting a private key on the CI server. The process for releases (below) is manual and DOES include GPG signatures.
 
 To do a release (.RELEASE, .RC?, .M?):
 
