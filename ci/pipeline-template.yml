@@ -401,7 +401,6 @@ jobs:
     trigger: true
     version: every
   - get: openjdk:11-jdk
-    trigger: true
   - put: spring-session-data-mongodb-pull-requests
     params:
       path: spring-session-data-mongodb-github
