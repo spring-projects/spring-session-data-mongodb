@@ -16,7 +16,7 @@ as possible.
 
 Check the matrix below to see the status of supported versions:
 
-.`master` branch
+.Spring Session for MongoDB Status
 [cols=3]
 |===
 | Job | `master` branch (`2.1`) | `2.0.x` branch (`2.0.x`)
@@ -53,10 +53,31 @@ Check the matrix below to see the status of supported versions:
 | image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%2011%20and%20Spring%20Data.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
 | image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%2011%20and%20Spring%20Data.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
 
+| Test - JDK 12*
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%2012/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%2012/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Test - JDK 12* and Spring.NEXT
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%2012%20and%20Spring.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%2012%20and%20Spring.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Test - JDK 12* and Spring.NEXT 5.1
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%2012%20and%20Spring.NEXT%205.1/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%2012%20and%20Spring.NEXT%205.1/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
+| Test - JDK 12* and Spring Data.NEXT
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Test%20-%20JDK%2012%20and%20Spring%20Data.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
+| image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Test%20-%20JDK%2012%20and%20Spring%20Data.NEXT/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
+
 | Build - Release to repo.spring.io
 | image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb/jobs/Build/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb"]
 | image:https://ci.spring.io/api/v1/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x/jobs/Build/badge[link="https://ci.spring.io/teams/spring-team/pipelines/spring-session-data-mongodb-2.0.x"]
 |===
+
+IMPORTANT: Spring Session for MongoDB 2.1 runs on Spring Framework 5.1, which has support for *JDK 11*. Spring Session for MongoDB 2.0.x runs on Spring Framework 5.0 and is NOT supported on *JDK 11* despite our pipelines testing against it. The extra
+tests are designed to give you a smooth upgrade path. If you are going into production on JDK 11, should need to be using Spring Session for MongoDB 2.1.
+
+IMPORTANT: *JDK 12* is Java's latest version and is unstable. We are testing against it to catch issues early on, but don't support it directly on any version of Spring Session for MongoDB.
 
 == Building Spring Session MongoDB
 
