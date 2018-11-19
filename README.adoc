@@ -1,9 +1,5 @@
 
-
-
 = Spring Session MongoDB
-
-Greg Turnquist
 
 Spring Session MongoDB provides a solution for Spring Session in a MongoDB data store.
 
