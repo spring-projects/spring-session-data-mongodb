@@ -77,11 +77,11 @@
 		<mockito.version>2.18.3</mockito.version>
 		<mongo.version>3.5.0</mongo.version>
 		<mongo-reactivestreams.version>1.6.0</mongo-reactivestreams.version>
-		<reactor.version>Bismuth-SR10</reactor.version>
-		<spring.version>5.0.8.RELEASE</spring.version>
-		<spring-data.version>Kay-SR9</spring-data.version>
-		<spring-security.version>5.0.7.RELEASE</spring-security.version>
-		<spring-session.version>2.0.4.RELEASE</spring-session.version>
+		<reactor.version>Bismuth-SR14</reactor.version>
+		<spring.version>5.0.10.RELEASE</spring.version>
+		<spring-data.version>Kay-SR11</spring-data.version>
+		<spring-security.version>5.0.9.RELEASE</spring-security.version>
+		<spring-session.version>2.0.7.RELEASE</spring-session.version>
 	</properties>
 
 	<profiles>
@@ -90,10 +90,10 @@
 			<id>spring5-next</id>
 			<properties>
 				<reactor.version>Bismuth-BUILD-SNAPSHOT</reactor.version>
-				<spring.version>5.0.9.BUILD-SNAPSHOT</spring.version>
+				<spring.version>5.0.11.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Kay-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.0.8.BUILD-SNAPSHOT</spring-security.version>
-				<spring-session.version>2.0.5.BUILD-SNAPSHOT</spring-session.version>
+				<spring-security.version>5.0.10.BUILD-SNAPSHOT</spring-security.version>
+				<spring-session.version>2.0.8.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
@@ -106,13 +106,13 @@
 		<profile>
 			<id>spring51-next</id>
 			<properties>
-				<reactor.version>Californium-M1</reactor.version>
+				<reactor.version>Californium-SR3</reactor.version>
 				<mongo.version>3.8.0</mongo.version>
 				<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
-				<spring.version>5.1.0.RC1</spring.version>
-				<spring-data.version>Lovelace-RC1</spring-data.version>
-				<spring-security.version>5.1.0.M2</spring-security.version>
-				<spring-session.version>2.1.0.BUILD-SNAPSHOT</spring-session.version>
+				<spring.version>5.1.2.RELEASE</spring.version>
+				<spring-data.version>Lovelace-SR2</spring-data.version>
+				<spring-security.version>5.1.1.RELEASE</spring-security.version>
+				<spring-session.version>2.1.1.RELEASE</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
