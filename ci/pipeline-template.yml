@@ -4,7 +4,7 @@ resource_types:
   type: docker-image
   source:
     repository: springio/artifactory-resource
-    tag:        0.0.4
+    tag:        0.0.6
 
 - name: github-status
   type: docker-image
@@ -48,7 +48,7 @@ resources:
     uri: https://repo.spring.io
     username: ((artifactory-username))
     password: ((artifactory-password))
-    build_name: Spring Session for MongoDB
+    build_name: spring-session-data-mongodb
 
 - name: spring-session-data-mongodb-pull-requests
   type: pull-request
@@ -56,6 +56,12 @@ resources:
     access_token: ((github-access-token))
     repo: spring-projects/spring-session-data-mongodb
     base: ((branch))
+
+- name: spring-session-data-mongodb-release
+  type: git
+  source:
+    uri: https://github.com/spring-projects/spring-session-data-mongodb.git
+    branch: ((release-branch))
 
 - name: spring-session-data-mongodb-status
   type: github-status
@@ -84,6 +90,11 @@ groups:
 - name: pull-requests
   jobs:
   - spring-session-data-mongodb-pull-requests
+- name: release
+  jobs:
+  - release-to-artifactory
+  - promote-to-bintray
+  - sync-to-maven-central
 
 jobs:
 - name: Test - JDK 8
@@ -445,7 +456,7 @@ jobs:
         attachments:
           - color: danger
             fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-            text: "Build has failed"
+            text: "Pull request has failed"
             title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
             title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
   on_success:
@@ -459,6 +470,149 @@ jobs:
         attachments:
           - color: good
             fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-            text: "Build has succeeded!"
+            text: "Pull request has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: release-to-artifactory
+  serial: true
+  public: true
+  plan:
+  - get: spring-session-data-mongodb-github
+    resource: spring-session-data-mongodb-release
+    trigger: true
+  - put: spring-session-data-mongodb-status
+    params:
+      commit: spring-session-data-mongodb-github
+      state: pending
+  - task: build
+    file: spring-session-data-mongodb-github/ci/build.yml
+  - put: spring-session-data-mongodb-artifactory
+    params:
+      build_number:   ${BUILD_NAME}
+      build_uri:      ${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}
+      repo:           libs-release-local
+      folder:         spring-session-data-mongodb-artifactory
+      artifact_set:
+      - include:
+        - "/**"
+        properties:
+          archives: '*:*:*:*@zip zip.name:spring-session-data-mongodb, zip.displayname:Spring Session Data MongoDB, zip.deployed:false'
+  on_failure:
+    aggregate:
+    - put: spring-session-data-mongodb-status
+      params:
+        commit: spring-session-data-mongodb-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Releasing to artifactory has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-session-data-mongodb-status
+      params:
+        commit: spring-session-data-mongodb-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Releasing to artifactory has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: promote-to-bintray
+  serial: true
+  plan:
+  - get: spring-session-data-mongodb-github
+  - get: spring-session-data-mongodb-artifactory
+    trigger: true
+    passed: [release-to-artifactory]
+    params:
+      save_build_info: true
+  - task: promote-to-bintray
+    file: spring-session-data-mongodb-github/ci/promote-to-bintray.yml
+    params:
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
+  on_failure:
+    aggregate:
+    - put: spring-session-data-mongodb-status
+      params:
+        commit: spring-session-data-mongodb-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Promoting to bintray has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-session-data-mongodb-status
+      params:
+        commit: spring-session-data-mongodb-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Promoting to bintray has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: sync-to-maven-central
+  serial: true
+  plan:
+  - get: spring-session-data-mongodb-github
+  - get: spring-session-data-mongodb-artifactory
+    trigger: true
+    passed: [promote-to-bintray]
+    params:
+      save_build_info: true
+  - task: sync-to-maven-central
+    file: spring-session-data-mongodb-github/ci/sync-to-maven-central.yml
+    params:
+      BINTRAY_USERNAME: ((bintray-username))
+      BINTRAY_API_KEY: ((bintray-api-key))
+      SONATYPE_USER_TOKEN: ((sonatype-user-token))
+      SONATYPE_PASSWORD_TOKEN: ((sonatype-user-token-password))
+      ARTIFACTORY_USERNAME: ((artifactory-username))
+      ARTIFACTORY_PASSWORD: ((artifactory-password))
+  on_failure:
+    aggregate:
+    - put: spring-session-data-mongodb-status
+      params:
+        commit: spring-session-data-mongodb-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Syncing to maven central has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-session-data-mongodb-status
+      params:
+        commit: spring-session-data-mongodb-github
+        state: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Syncing to maven central has succeeded!"
             title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
             title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
