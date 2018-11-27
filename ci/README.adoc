@@ -28,8 +28,8 @@ WARNING: Do NOT check this file into source control! If you'll check, `credentia
 With this in place, run the following `fly` commands to create pipelines:
 
 ----
-% fly -t <team-name> sp -p spring-session-data-mongodb -c ci/pipeline-template.yml -l credentials.yml -v branch=master
-% fly -t <team-name> sp -p spring-session-data-mongodb-2.0.x -c ci/pipeline-template.yml -l credentials.yml -v branch=2.0.x
+% fly -t <team-name> sp -p spring-session-data-mongodb -c ci/pipeline-template.yml -l credentials.yml -v branch=master release-branch=release
+% fly -t <team-name> sp -p spring-session-data-mongodb-2.0.x -c ci/pipeline-template.yml -l credentials.yml -v branch=2.0.x release-branch=release-2.0.x
 ----
 
 This creates pipelines for:

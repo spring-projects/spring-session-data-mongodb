@@ -63,6 +63,12 @@ resources:
     repo: spring-projects/spring-session-data-mongodb
     base: ((branch))
 
+- name: spring-session-data-mongodb-release
+  type: git
+  source:
+    uri: https://github.com/spring-projects/spring-session-data-mongodb.git
+    branch: ((release-branch))
+    
 - name: spring-session-data-mongodb-status
   type: github-status
   source:
@@ -94,6 +100,9 @@ groups:
 - name: pull-requests
   jobs:
   - spring-session-data-mongodb-pull-requests
+- name: release
+  jobs:
+  - spring-session-data-mongodb-release
 
 jobs:
 - name: Test - JDK 8
@@ -609,6 +618,59 @@ jobs:
       params:
         path: spring-session-data-mongodb-github
         status: success
+    - put: slack
+      params:
+        attachments:
+          - color: good
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
+            text: "Build has succeeded!"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+- name: spring-session-data-mongodb-release
+  serial: true
+  public: true
+  plan:
+  - get: spring-session-data-mongodb-github
+    resource: spring-session-data-mongodb-release
+    trigger: true
+  - put: spring-session-data-mongodb-status
+    params:
+      commit: spring-session-data-mongodb-github
+      state: pending
+  - task: build
+    file: spring-session-data-mongodb-github/ci/build.yml
+  - put: spring-session-data-mongodb-artifactory
+    params:
+      build_number:   ${BUILD_NAME}
+      build_uri:      ${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}
+      repo:           libs-release-local
+      folder:         spring-session-data-mongodb-artifactory
+      artifact_set:
+      - include:
+        - "/**"
+        properties:
+          archives: '*:*:*:*@zip zip.name:spring-session-data-mongodb, zip.displayname:Spring Session Data MongoDB, zip.deployed:false'
+  on_failure:
+    aggregate:
+    - put: spring-session-data-mongodb-status
+      params:
+        commit: spring-session-data-mongodb-github
+        state: failure
+    - put: slack
+      params:
+        attachments:
+          - color: danger
+            fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+            text: "Build has failed"
+            title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+            title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_success:
+    aggregate:
+    - put: spring-session-data-mongodb-status
+      params:
+        commit: spring-session-data-mongodb-github
+        state: success
     - put: slack
       params:
         attachments:
