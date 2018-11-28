@@ -685,13 +685,12 @@ jobs:
 - name: promote-to-bintray
   serial: true
   plan:
+  - get: spring-session-data-mongodb-github
   - get: spring-session-data-mongodb-artifactory
     trigger: true
     passed: [release-to-artifactory]
     params:
       save_build_info: true
-  - get: spring-session-data-mongodb-github
-    resource: spring-session-data-mongodb-release
   - task: promote-to-bintray
     file: spring-session-data-mongodb-github/ci/promote-to-bintray.yml
     params:
@@ -730,7 +729,6 @@ jobs:
   serial: true
   plan:
   - get: spring-session-data-mongodb-github
-    resource: spring-session-data-mongodb-release
   - get: spring-session-data-mongodb-artifactory
     trigger: true
     passed: [promote-to-bintray]
