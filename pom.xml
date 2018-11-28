@@ -78,8 +78,8 @@
 		<mongo.version>3.5.0</mongo.version>
 		<mongo-reactivestreams.version>1.6.0</mongo-reactivestreams.version>
 		<reactor.version>Bismuth-SR14</reactor.version>
-		<spring.version>5.0.10.RELEASE</spring.version>
-		<spring-data.version>Kay-SR11</spring-data.version>
+		<spring.version>5.0.11.RELEASE</spring.version>
+		<spring-data.version>Kay-SR12</spring-data.version>
 		<spring-security.version>5.0.9.RELEASE</spring-security.version>
 		<spring-session.version>2.0.7.RELEASE</spring-session.version>
 	</properties>
@@ -90,7 +90,7 @@
 			<id>spring5-next</id>
 			<properties>
 				<reactor.version>Bismuth-BUILD-SNAPSHOT</reactor.version>
-				<spring.version>5.0.11.BUILD-SNAPSHOT</spring.version>
+				<spring.version>5.0.12.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Kay-BUILD-SNAPSHOT</spring-data.version>
 				<spring-security.version>5.0.10.BUILD-SNAPSHOT</spring-security.version>
 				<spring-session.version>2.0.8.BUILD-SNAPSHOT</spring-session.version>
@@ -109,8 +109,8 @@
 				<reactor.version>Californium-SR3</reactor.version>
 				<mongo.version>3.8.0</mongo.version>
 				<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
-				<spring.version>5.1.2.RELEASE</spring.version>
-				<spring-data.version>Lovelace-SR2</spring-data.version>
+				<spring.version>5.1.3.RELEASE</spring.version>
+				<spring-data.version>Lovelace-SR3</spring-data.version>
 				<spring-security.version>5.1.1.RELEASE</spring-security.version>
 				<spring-session.version>2.1.1.RELEASE</spring-session.version>
 			</properties>
