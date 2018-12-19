@@ -473,11 +473,11 @@ slack-failure: &slack-failure
           title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
 slack-success: &slack-success
-  on_failure:
+  on_success:
     put: slack
     params:
       attachments:
-        - color: danger
+        - color: good
           fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
           text: "Test has succeeded"
           title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
