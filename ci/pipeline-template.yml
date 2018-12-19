@@ -368,6 +368,7 @@ jobs:
   serial: true
   plan:
   - get: spring-session-data-mongodb-github
+    resource: spring-session-data-mongodb-release
   - get: spring-session-data-mongodb-artifactory
     trigger: true
     passed: [release-to-artifactory]
@@ -411,6 +412,7 @@ jobs:
   serial: true
   plan:
   - get: spring-session-data-mongodb-github
+    resource: spring-session-data-mongodb-release
   - get: spring-session-data-mongodb-artifactory
     trigger: true
     passed: [promote-to-bintray]
