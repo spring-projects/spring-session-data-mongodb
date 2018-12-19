@@ -80,7 +80,7 @@
 		<reactor.version>Bismuth-SR14</reactor.version>
 		<spring.version>5.0.11.RELEASE</spring.version>
 		<spring-data.version>Kay-SR12</spring-data.version>
-		<spring-security.version>5.0.9.RELEASE</spring-security.version>
+		<spring-security.version>5.0.10.RELEASE</spring-security.version>
 		<spring-session.version>2.0.7.RELEASE</spring-session.version>
 	</properties>
 
@@ -92,7 +92,7 @@
 				<reactor.version>Bismuth-BUILD-SNAPSHOT</reactor.version>
 				<spring.version>5.0.12.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Kay-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.0.10.BUILD-SNAPSHOT</spring-security.version>
+				<spring-security.version>5.0.11.BUILD-SNAPSHOT</spring-security.version>
 				<spring-session.version>2.0.8.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
@@ -111,7 +111,7 @@
 				<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
 				<spring.version>5.1.3.RELEASE</spring.version>
 				<spring-data.version>Lovelace-SR3</spring-data.version>
-				<spring-security.version>5.1.1.RELEASE</spring-security.version>
+				<spring-security.version>5.1.2.RELEASE</spring-security.version>
 				<spring-session.version>2.1.1.RELEASE</spring-session.version>
 			</properties>
 			<repositories>
