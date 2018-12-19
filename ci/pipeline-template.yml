@@ -86,16 +86,10 @@ groups:
   jobs:
   - Test - JDK 8
   - Test - JDK 8 and Spring.NEXT
-  - Test - JDK 8 and Spring.NEXT 5.1
-  - Test - JDK 8 and Spring Data.NEXT
   - Test - JDK 11
   - Test - JDK 11 and Spring.NEXT
-  - Test - JDK 11 and Spring.NEXT 5.1
-  - Test - JDK 11 and Spring Data.NEXT
   - Test - JDK 12
   - Test - JDK 12 and Spring.NEXT
-  - Test - JDK 12 and Spring.NEXT 5.1
-  - Test - JDK 12 and Spring Data.NEXT
   - Build
 - name: pull-requests
   jobs:
@@ -118,24 +112,8 @@ jobs:
   - task: test
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  <<: *slack-success
+  <<: *slack-failure
 
 
 - name: Test - JDK 8 and Spring.NEXT
@@ -148,85 +126,9 @@ jobs:
     trigger: true
   - task: test
     file: spring-session-data-mongodb-github/ci/test.yml
-    params: { PROFILE: "spring5-next,convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-
-- name: Test - JDK 8 and Spring.NEXT 5.1
-  serial: true
-  public: true
-  plan:
-  - get: spring-session-data-mongodb-github
-    trigger: true
-  - get: openjdk:8-jdk
-    trigger: true
-  - task: test
-    file: spring-session-data-mongodb-github/ci/test.yml
-    params: { PROFILE: "spring51-next,convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-
-- name: Test - JDK 8 and Spring Data.NEXT
-  serial: true
-  public: true
-  plan:
-  - get: spring-session-data-mongodb-github
-    trigger: true
-  - get: openjdk:8-jdk
-    trigger: true
-  - task: test
-    file: spring-session-data-mongodb-github/ci/test.yml
-    params: { PROFILE: "springdata-next,convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    params: { PROFILE: "spring-next,convergence" }
+  <<: *slack-success
+  <<: *slack-failure
 
 - name: Test - JDK 11
   serial: true
@@ -240,24 +142,8 @@ jobs:
     image: openjdk:11-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  <<: *slack-success
+  <<: *slack-failure
 
 - name: Test - JDK 11 and Spring.NEXT
   serial: true
@@ -270,87 +156,9 @@ jobs:
   - task: test
     image: openjdk:11-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
-    params: { PROFILE: "spring5-next,convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-
-- name: Test - JDK 11 and Spring.NEXT 5.1
-  serial: true
-  public: true
-  plan:
-  - get: spring-session-data-mongodb-github
-    trigger: true
-  - get: openjdk:11-jdk
-    trigger: true
-  - task: test
-    image: openjdk:11-jdk
-    file: spring-session-data-mongodb-github/ci/test.yml
-    params: { PROFILE: "spring51-next,convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-
-- name: Test - JDK 11 and Spring Data.NEXT
-  serial: true
-  public: true
-  plan:
-  - get: spring-session-data-mongodb-github
-    trigger: true
-  - get: openjdk:11-jdk
-    trigger: true
-  - task: test
-    image: openjdk:11-jdk
-    file: spring-session-data-mongodb-github/ci/test.yml
-    params: { PROFILE: "springdata-next,convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    params: { PROFILE: "spring-next,convergence" }
+  <<: *slack-success
+  <<: *slack-failure
 
 - name: Test - JDK 12
   serial: true
@@ -364,24 +172,8 @@ jobs:
     image: openjdk:12-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  <<: *slack-success
+  <<: *slack-failure
 
 - name: Test - JDK 12 and Spring.NEXT
   serial: true
@@ -394,87 +186,9 @@ jobs:
   - task: test
     image: openjdk:12-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
-    params: { PROFILE: "spring5-next,convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-
-- name: Test - JDK 12 and Spring.NEXT 5.1
-  serial: true
-  public: true
-  plan:
-  - get: spring-session-data-mongodb-github
-    trigger: true
-  - get: openjdk:12-jdk
-    trigger: true
-  - task: test
-    image: openjdk:12-jdk
-    file: spring-session-data-mongodb-github/ci/test.yml
-    params: { PROFILE: "spring51-next,convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-
-- name: Test - JDK 12 and Spring Data.NEXT
-  serial: true
-  public: true
-  plan:
-  - get: spring-session-data-mongodb-github
-    trigger: true
-  - get: openjdk:12-jdk
-    trigger: true
-  - task: test
-    image: openjdk:12-jdk
-    file: spring-session-data-mongodb-github/ci/test.yml
-    params: { PROFILE: "springdata-next,convergence" }
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Build has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <SUCCESS>"
-          text: "Build has succeeded!"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+    params: { PROFILE: "spring-next,convergence" }
+  <<: *slack-success
+  <<: *slack-failure
 
 - name: Build
   serial: true
@@ -485,16 +199,10 @@ jobs:
     passed: [
       Test - JDK 8,
       Test - JDK 8 and Spring.NEXT,
-      Test - JDK 8 and Spring.NEXT 5.1,
-      Test - JDK 8 and Spring Data.NEXT,
       Test - JDK 11,
       Test - JDK 11 and Spring.NEXT,
-      Test - JDK 11 and Spring.NEXT 5.1,
-      Test - JDK 11 and Spring Data.NEXT,
       Test - JDK 12,
-      Test - JDK 12 and Spring.NEXT,
-      Test - JDK 12 and Spring.NEXT 5.1,
-      Test - JDK 12 and Spring Data.NEXT
+      Test - JDK 12 and Spring.NEXT
     ]
   - put: spring-session-data-mongodb-status
     params:
@@ -564,13 +272,7 @@ jobs:
       params: { PROFILE: "convergence" }
     - task: test (JDK 8 and Spring.NEXT)
       file: spring-session-data-mongodb-github/ci/test.yml
-      params: { PROFILE: "spring5-next,convergence" }
-    - task: test (JDK 8 and Spring.NEXT 5.1)
-      file: spring-session-data-mongodb-github/ci/test.yml
-      params: { PROFILE: "spring51-next,convergence" }
-    - task: test (JDK 8 and Spring Data.NEXT)
-      file: spring-session-data-mongodb-github/ci/test.yml
-      params: { PROFILE: "springdata-next,convergence" }
+      params: { PROFILE: "spring-next,convergence" }
     - task: test (JDK 11)
       image: openjdk:11-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
@@ -578,15 +280,7 @@ jobs:
     - task: test (JDK 11 and Spring.NEXT)
       image: openjdk:11-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
-      params: { PROFILE: "spring5-next,convergence" }
-    - task: test (JDK 11 and Spring.NEXT 5.1)
-      image: openjdk:11-jdk
-      file: spring-session-data-mongodb-github/ci/test.yml
-      params: { PROFILE: "spring51-next,convergence" }
-    - task: test (JDK 11 and Spring Data.NEXT)
-      image: openjdk:11-jdk
-      file: spring-session-data-mongodb-github/ci/test.yml
-      params: { PROFILE: "springdata-next,java11,convergence" }
+      params: { PROFILE: "spring-next,convergence" }
     - task: test (JDK 12)
       image: openjdk:12-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
@@ -594,15 +288,7 @@ jobs:
     - task: test (JDK 12 and Spring.NEXT)
       image: openjdk:12-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
-      params: { PROFILE: "spring5-next,convergence" }
-    - task: test (JDK 12 and Spring.NEXT 5.1)
-      image: openjdk:12-jdk
-      file: spring-session-data-mongodb-github/ci/test.yml
-      params: { PROFILE: "spring51-next,convergence" }
-    - task: test (JDK 12 and Spring Data.NEXT)
-      image: openjdk:12-jdk
-      file: spring-session-data-mongodb-github/ci/test.yml
-      params: { PROFILE: "springdata-next,java11,convergence" }
+      params: { PROFILE: "spring-next,convergence" }
   on_failure:
     aggregate:
     - put: spring-session-data-mongodb-pull-requests
@@ -774,3 +460,26 @@ jobs:
             text: "Syncing to maven central has succeeded!"
             title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
             title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+slack-failure: &slack-failure
+  on_failure:
+    put: slack
+    params:
+      attachments:
+        - color: danger
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has failed"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
+slack-success: &slack-success
+  on_failure:
+    put: slack
+    params:
+      attachments:
+        - color: danger
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has succeeded"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+
