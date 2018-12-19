@@ -512,7 +512,10 @@ jobs:
       - include:
         - "/**"
         properties:
-          archives: '*:*:*:*@zip zip.name:spring-session-data-mongodb, zip.displayname:Spring Session Data MongoDB, zip.deployed:false'
+          zip.deployed: false
+          zip.displayname: "Spring Session Data MongoDB"
+          zip.name: "spring-session-data-mongodb"
+          zip.type: "docs"
   on_failure:
     aggregate:
     - put: spring-session-data-mongodb-status
