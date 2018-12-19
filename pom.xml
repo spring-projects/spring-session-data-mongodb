@@ -81,7 +81,7 @@
 		<reactor.version>Californium-SR3</reactor.version>
 		<spring.version>5.1.3.RELEASE</spring.version>
 		<spring-data.version>Lovelace-SR3</spring-data.version>
-		<spring-security.version>5.1.1.RELEASE</spring-security.version>
+		<spring-security.version>5.1.2.RELEASE</spring-security.version>
 		<spring-session.version>2.1.1.RELEASE</spring-session.version>
 	</properties>
 
@@ -93,7 +93,7 @@
 				<reactor.version>Californium-BUILD-SNAPSHOT</reactor.version>
 				<spring.version>5.1.4.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.1.2.BUILD-SNAPSHOT</spring-security.version>
+				<spring-security.version>5.1.3.BUILD-SNAPSHOT</spring-security.version>
 				<spring-session.version>2.1.2.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
