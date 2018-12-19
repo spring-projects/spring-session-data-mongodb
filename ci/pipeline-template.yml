@@ -327,7 +327,7 @@ jobs:
     trigger: true
   - put: spring-session-data-mongodb-status
     params:
-      commit: spring-session-data-mongodb-github
+      commit: spring-session-data-mongodb-release
       state: pending
   - task: build
     file: spring-session-data-mongodb-github/ci/build.yml
@@ -341,7 +341,10 @@ jobs:
       - include:
         - "/**"
         properties:
-          archives: '*:*:*:*@zip zip.name:spring-session-data-mongodb, zip.displayname:Spring Session Data MongoDB, zip.deployed:false'
+          zip.deployed: false
+          zip.displayname: "Spring Session Data MongoDB"
+          zip.name: "spring-session-data-mongodb"
+          zip.type: "docs"
   on_failure:
     aggregate:
     - put: spring-session-data-mongodb-status
@@ -375,6 +378,7 @@ jobs:
   serial: true
   plan:
   - get: spring-session-data-mongodb-github
+    resource: spring-session-data-mongodb-release
   - get: spring-session-data-mongodb-artifactory
     trigger: true
     passed: [release-to-artifactory]
@@ -418,6 +422,7 @@ jobs:
   serial: true
   plan:
   - get: spring-session-data-mongodb-github
+    resource: spring-session-data-mongodb-release
   - get: spring-session-data-mongodb-artifactory
     trigger: true
     passed: [promote-to-bintray]
