@@ -62,47 +62,46 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 	private MongoOperations blockingMongoOperations;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		
 		this.repository = new ReactiveMongoOperationsSessionRepository(this.mongoOperations);
 		this.repository.setMongoSessionConverter(this.converter);
 	}
 
 	@Test
-	public void shouldCreateSession() throws Exception {
+	public void shouldCreateSession() {
 
-		// when
-		Mono<MongoSession> session = this.repository.createSession();
-
-		// then
-		StepVerifier.create(session)
+		this.repository.createSession()
+			.as(StepVerifier::create)
 			.expectNextMatches(mongoSession -> {
 				assertThat(mongoSession.getId()).isNotEmpty();
 				assertThat(mongoSession.getMaxInactiveInterval().getSeconds())
 					.isEqualTo(ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 				return true;
-			});
+			})
+			.verifyComplete();
 	}
 
 	@Test
-	public void shouldCreateSessionWhenMaxInactiveIntervalNotDefined() throws Exception {
+	public void shouldCreateSessionWhenMaxInactiveIntervalNotDefined() {
 
 		// when
 		this.repository.setMaxInactiveIntervalInSeconds(null);
-		Mono<MongoSession> session = this.repository.createSession();
 
 		// then
-		StepVerifier.create(session)
+		this.repository.createSession()
+			.as(StepVerifier::create)
 			.expectNextMatches(mongoSession -> {
 				assertThat(mongoSession.getId()).isNotEmpty();
 				assertThat(mongoSession.getMaxInactiveInterval().getSeconds())
 					.isEqualTo(ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 				return true;
-			});
+			})
+			.verifyComplete();
 	}
 
 	@Test
-	public void shouldSaveSession() throws Exception {
+	public void shouldSaveSession() {
 
 		// given
 		MongoSession session = new MongoSession();
@@ -115,16 +114,15 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 		given(this.mongoOperations.save(dbSession, "sessions")).willReturn(Mono.just(dbSession));
 
 		// when
-		StepVerifier.create(this.repository.save(session))
-			.expectNextMatches(aVoid -> {
-				// then
-				verify(this.mongoOperations).save(dbSession, ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME);
-				return true;
-			});
+		this.repository.save(session)
+			.as(StepVerifier::create)
+			.verifyComplete();
+
+		verify(this.mongoOperations).save(dbSession, ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME);
 	}
 
 	@Test
-	public void shouldGetSession() throws Exception {
+	public void shouldGetSession() {
 
 		// given
 		String sessionId = UUID.randomUUID().toString();
@@ -139,16 +137,14 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 				TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
 
 		// when
-		StepVerifier.create(this.repository.findById(sessionId))
-			.expectNextMatches(retrievedSession -> {
-				// then
-				assertThat(retrievedSession).isEqualTo(session);
-				return true;
-			});
+		this.repository.findById(sessionId)
+			.as(StepVerifier::create)
+			.expectNext(session)
+			.verifyComplete();
 	}
 
 	@Test
-	public void shouldHandleExpiredSession() throws Exception {
+	public void shouldHandleExpiredSession() {
 
 		// given
 		String sessionId = UUID.randomUUID().toString();
@@ -157,6 +153,9 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 		given(this.mongoOperations.findById(sessionId, Document.class,
 			ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(Mono.just(sessionDocument));
 
+		given(this.mongoOperations.remove(sessionDocument, ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME))
+			.willReturn(Mono.just(DeleteResult.acknowledged(1)));
+
 		MongoSession session = mock(MongoSession.class);
 
 		given(session.isExpired()).willReturn(true);
@@ -164,36 +163,40 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 			TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
 
 		// when
-		StepVerifier.create(this.repository.findById(sessionId))
-			.expectNextMatches(mongoSession -> {
-				// then
-				verify(this.mongoOperations).remove(any(Document.class),
-					eq(ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
-				return true;
-			});
+		this.repository.findById(sessionId)
+			.as(StepVerifier::create)
+			.verifyComplete();
 
+		// then
+		verify(this.mongoOperations).remove(any(Document.class),
+			eq(ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
 	}
 
 	@Test
-	public void shouldDeleteSession() throws Exception {
+	public void shouldDeleteSession() {
 		
 		// given
 		String sessionId = UUID.randomUUID().toString();
-
 		Document sessionDocument = new Document();
 
-		given(this.mongoOperations.findById(eq(sessionId), eq(Document.class),
-			eq(ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME))).willReturn(Mono.just(sessionDocument));
-		given(this.mongoOperations.remove((Mono<? extends Object>) any(), eq("sessions"))).willReturn(Mono.just(DeleteResult.acknowledged(1)));
+		given(this.mongoOperations.findById(sessionId, Document.class,
+			ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(Mono.just(sessionDocument));
+
+		given(this.mongoOperations.remove(sessionDocument, "sessions"))
+			.willReturn(Mono.just(DeleteResult.acknowledged(1)));
+
+		MongoSession session = mock(MongoSession.class);
+
+		given(this.converter.convert(sessionDocument, TypeDescriptor.valueOf(Document.class),
+			TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
 
 		// when
-		StepVerifier.create(this.repository.deleteById(sessionId))
-			.expectNextMatches(aVoid -> {
-				// then
-				verify(this.mongoOperations).remove(any(Document.class),
-					eq(ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
-				return true;
-			});
+		this.repository.deleteById(sessionId)
+			.as(StepVerifier::create)
+			.verifyComplete();
+
+		verify(this.mongoOperations).remove(any(Document.class),
+			eq(ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
 	}
 
 	@Test
