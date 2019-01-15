@@ -141,7 +141,7 @@ public class ReactiveMongoOperationsSessionRepository
 		return findSession(id)
 			.flatMap(document -> this.mongoOperations.remove(document, this.collectionName).then(Mono.just(document)))
 			.map(document -> convertToSession(this.mongoSessionConverter, document))
-			.map(mongoSession -> Mono.fromRunnable(() -> publishEvent(new SessionDeletedEvent(this, mongoSession))))
+			.doOnSuccess(mongoSession -> publishEvent(new SessionDeletedEvent(this, mongoSession)))
 			.then();
 	}
 

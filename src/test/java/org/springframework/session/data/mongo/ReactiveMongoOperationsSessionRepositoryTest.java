@@ -17,7 +17,11 @@
 package org.springframework.session.data.mongo;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.UUID;
@@ -30,11 +34,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
+import org.springframework.session.events.SessionDeletedEvent;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -61,11 +66,15 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 	@Mock
 	private MongoOperations blockingMongoOperations;
 
+	@Mock
+	private ApplicationEventPublisher eventPublisher;
+
 	@Before
 	public void setUp() {
 		
 		this.repository = new ReactiveMongoOperationsSessionRepository(this.mongoOperations);
 		this.repository.setMongoSessionConverter(this.converter);
+		this.repository.setApplicationEventPublisher(this.eventPublisher);
 	}
 
 	@Test
@@ -197,6 +206,8 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 
 		verify(this.mongoOperations).remove(any(Document.class),
 			eq(ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
+
+		verify(this.eventPublisher).publishEvent(any(SessionDeletedEvent.class));
 	}
 
 	@Test
