@@ -51,6 +51,7 @@ public class MongoSession implements Session {
 	private long intervalSeconds;
 	@Getter @Setter private Date expireAt;
 	private Map<String, Object> attrs = new HashMap<>();
+	private boolean isNew = true;
 
 	public MongoSession() {
 		this(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
@@ -127,6 +128,14 @@ public class MongoSession implements Session {
 
 	public boolean isExpired() {
 		return this.intervalSeconds >= 0 && new Date().after(this.expireAt);
+	}
+
+	public void setNew(boolean isNew) {
+		this.isNew = isNew;
+	}
+	
+	public boolean isNew() {
+		return this.isNew;
 	}
 
 	static String coverDot(String attributeName) {

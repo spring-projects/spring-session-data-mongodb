@@ -107,9 +107,18 @@ public class ReactiveMongoOperationsSessionRepository
 	@Override
 	public Mono<Void> save(MongoSession session) {
 
-		return this.mongoOperations
-			.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName)
-			.then();
+		if (session.isNew()) {
+
+			session.setNew(false);
+			return this.mongoOperations.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName)
+				.then();
+		} else {
+
+			return findSession(session.getId())
+				.map(document -> this.mongoOperations.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName))
+				.switchIfEmpty(Mono.error(new IllegalStateException("Session was invalidated")))
+				.then();
+		}
 	}
 
 	/**

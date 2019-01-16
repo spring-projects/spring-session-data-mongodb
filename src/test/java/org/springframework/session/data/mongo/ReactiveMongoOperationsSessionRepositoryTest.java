@@ -23,6 +23,7 @@ import static org.mockito.BDDMockito.*;
 import static org.mockito.BDDMockito.mock;
 import static org.mockito.BDDMockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME;
 
 import java.util.UUID;
 
@@ -84,6 +85,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 			.as(StepVerifier::create)
 			.expectNextMatches(mongoSession -> {
 				assertThat(mongoSession.getId()).isNotEmpty();
+				assertThat(mongoSession.isNew()).isTrue();
 				assertThat(mongoSession.getMaxInactiveInterval().getSeconds())
 					.isEqualTo(ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 				return true;
@@ -102,6 +104,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 			.as(StepVerifier::create)
 			.expectNextMatches(mongoSession -> {
 				assertThat(mongoSession.getId()).isNotEmpty();
+				assertThat(mongoSession.isNew()).isTrue();
 				assertThat(mongoSession.getMaxInactiveInterval().getSeconds())
 					.isEqualTo(ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 				return true;
@@ -114,7 +117,11 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 
 		// given
 		MongoSession session = new MongoSession();
+		Document sessionDocument = new Document();
 		BasicDBObject dbSession = new BasicDBObject();
+
+		given(this.mongoOperations.findById(session.getId(), Document.class,
+			DEFAULT_COLLECTION_NAME)).willReturn(Mono.just(sessionDocument));
 
 		given(this.converter.convert(session,
 				TypeDescriptor.valueOf(MongoSession.class),
@@ -127,7 +134,30 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 			.as(StepVerifier::create)
 			.verifyComplete();
 
-		verify(this.mongoOperations).save(dbSession, ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME);
+		assertThat(session.isNew()).isFalse();
+		verify(this.mongoOperations).save(dbSession, DEFAULT_COLLECTION_NAME);
+		verifyNoMoreInteractions(this.mongoOperations);
+	}
+
+	@Test
+	public void shouldCreateAnErrorWhenSavingSessionNotInMongo() {
+
+		// given
+		MongoSession session = new MongoSession();
+		session.setNew(false);
+
+		given(this.mongoOperations.findById(session.getId(), Document.class,
+			DEFAULT_COLLECTION_NAME)).willReturn(Mono.empty());
+
+		// when
+		this.repository.save(session)
+			.as(StepVerifier::create)
+			.verifyErrorMessage("Session was invalidated");
+
+		assertThat(session.isNew()).isFalse();
+		
+		verify(this.mongoOperations).findById(session.getId(), Document.class, DEFAULT_COLLECTION_NAME);
+		verifyNoMoreInteractions(this.mongoOperations);
 	}
 
 	@Test
@@ -138,7 +168,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 		Document sessionDocument = new Document();
 
 		given(this.mongoOperations.findById(sessionId, Document.class,
-			ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(Mono.just(sessionDocument));
+			DEFAULT_COLLECTION_NAME)).willReturn(Mono.just(sessionDocument));
 
 		MongoSession session = new MongoSession();
 
@@ -160,9 +190,9 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 		Document sessionDocument = new Document();
 
 		given(this.mongoOperations.findById(sessionId, Document.class,
-			ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(Mono.just(sessionDocument));
+			DEFAULT_COLLECTION_NAME)).willReturn(Mono.just(sessionDocument));
 
-		given(this.mongoOperations.remove(sessionDocument, ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME))
+		given(this.mongoOperations.remove(sessionDocument, DEFAULT_COLLECTION_NAME))
 			.willReturn(Mono.just(DeleteResult.acknowledged(1)));
 
 		MongoSession session = mock(MongoSession.class);
@@ -177,8 +207,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 			.verifyComplete();
 
 		// then
-		verify(this.mongoOperations).remove(any(Document.class),
-			eq(ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
+		verify(this.mongoOperations).remove(any(Document.class), eq(DEFAULT_COLLECTION_NAME));
 	}
 
 	@Test
@@ -189,7 +218,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 		Document sessionDocument = new Document();
 
 		given(this.mongoOperations.findById(sessionId, Document.class,
-			ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(Mono.just(sessionDocument));
+			DEFAULT_COLLECTION_NAME)).willReturn(Mono.just(sessionDocument));
 
 		given(this.mongoOperations.remove(sessionDocument, "sessions"))
 			.willReturn(Mono.just(DeleteResult.acknowledged(1)));
@@ -204,9 +233,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 			.as(StepVerifier::create)
 			.verifyComplete();
 
-		verify(this.mongoOperations).remove(any(Document.class),
-			eq(ReactiveMongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
-
+		verify(this.mongoOperations).remove(any(Document.class), eq(DEFAULT_COLLECTION_NAME));
 		verify(this.eventPublisher).publishEvent(any(SessionDeletedEvent.class));
 	}
 
@@ -225,5 +252,8 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 		// then
 		verify(this.blockingMongoOperations, times(1)).indexOps((String) any());
 		verify(this.converter, times(1)).ensureIndexes(indexOperations);
+		
+		verifyNoMoreInteractions(this.blockingMongoOperations);
+		verifyNoMoreInteractions(this.converter);
 	}
 }

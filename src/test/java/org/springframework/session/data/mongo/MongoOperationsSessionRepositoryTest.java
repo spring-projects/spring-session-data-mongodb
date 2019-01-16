@@ -62,36 +62,42 @@ public class MongoOperationsSessionRepositoryTest {
 	private MongoOperationsSessionRepository repository;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
+		
 		this.repository = new MongoOperationsSessionRepository(this.mongoOperations);
 		this.repository.setMongoSessionConverter(this.converter);
 	}
 
 	@Test
-	public void shouldCreateSession() throws Exception {
+	public void shouldCreateSession() {
+
 		// when
 		MongoSession session = this.repository.createSession();
 
 		// then
 		assertThat(session.getId()).isNotEmpty();
+		assertThat(session.isNew()).isTrue();
 		assertThat(session.getMaxInactiveInterval().getSeconds())
 				.isEqualTo(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 	}
 
 	@Test
-	public void shouldCreateSessionWhenMaxInactiveIntervalNotDefined() throws Exception {
+	public void shouldCreateSessionWhenMaxInactiveIntervalNotDefined() {
+
 		// when
 		this.repository.setMaxInactiveIntervalInSeconds(null);
 		MongoSession session = this.repository.createSession();
 
 		// then
 		assertThat(session.getId()).isNotEmpty();
+		assertThat(session.isNew()).isTrue();
 		assertThat(session.getMaxInactiveInterval().getSeconds())
 				.isEqualTo(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 	}
 
 	@Test
-	public void shouldSaveSession() throws Exception {
+	public void shouldSaveNewSession() {
+
 		// given
 		MongoSession session = new MongoSession();
 		BasicDBObject dbSession = new BasicDBObject();
@@ -99,6 +105,44 @@ public class MongoOperationsSessionRepositoryTest {
 		given(this.converter.convert(session,
 				TypeDescriptor.valueOf(MongoSession.class),
 				TypeDescriptor.valueOf(DBObject.class))).willReturn(dbSession);
+		
+		// when
+		this.repository.save(session);
+
+		// then
+		verify(this.mongoOperations).save(dbSession, MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME);
+
+		assertThat(session.isNew()).isFalse();
+	}
+
+	@Test
+	public void shouldHandleInvalidatedSession() {
+
+		MongoSession session = new MongoSession();
+		session.setNew(false);
+
+		assertThatIllegalStateException().isThrownBy(() -> {
+			this.repository.save(session);
+		}).withMessage("Session was invalidated");
+	}
+
+	@Test
+	public void shouldSaveExistingSession() {
+
+		// given
+		MongoSession session = new MongoSession();
+		session.setNew(false);
+		BasicDBObject dbSession = new BasicDBObject();
+
+		Document sessionDocument = new Document();
+
+		given(this.mongoOperations.findById(session.getId(), Document.class,
+			MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(sessionDocument);
+
+		given(this.converter.convert(session,
+			TypeDescriptor.valueOf(MongoSession.class),
+			TypeDescriptor.valueOf(DBObject.class))).willReturn(dbSession);
+
 		// when
 		this.repository.save(session);
 
@@ -107,7 +151,8 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldGetSession() throws Exception {
+	public void shouldGetSession() {
+
 		// given
 		String sessionId = UUID.randomUUID().toString();
 		Document sessionDocument = new Document();
@@ -128,7 +173,8 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldHandleExpiredSession() throws Exception {
+	public void shouldHandleExpiredSession() {
+
 		// given
 		String sessionId = UUID.randomUUID().toString();
 		Document sessionDocument = new Document();
@@ -152,7 +198,8 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldDeleteSession() throws Exception {
+	public void shouldDeleteSession() {
+
 		// given
 		String sessionId = UUID.randomUUID().toString();
 
@@ -175,7 +222,8 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldGetSessionsMapByPrincipal() throws Exception {
+	public void shouldGetSessionsMapByPrincipal() {
+
 		// given
 		String principalNameIndexName = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
 
@@ -203,7 +251,8 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldReturnEmptyMapForNotSupportedIndex() throws Exception {
+	public void shouldReturnEmptyMapForNotSupportedIndex() {
+		
 		// given
 		String index = "some_not_supported_index_name";
 

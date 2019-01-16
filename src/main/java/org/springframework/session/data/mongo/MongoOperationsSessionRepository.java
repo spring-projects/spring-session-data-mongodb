@@ -95,7 +95,19 @@ public class MongoOperationsSessionRepository
 
 	@Override
 	public void save(MongoSession session) {
-		this.mongoOperations.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName);
+
+		if (session.isNew()) {
+
+			session.setNew(false);
+			this.mongoOperations.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName);
+		} else {
+
+			if (findSession(session.getId()) == null) {
+				throw new IllegalStateException("Session was invalidated");
+			} else {
+				this.mongoOperations.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName);
+			}
+		}
 	}
 
 	@Override
