@@ -36,11 +36,11 @@ resources:
     repository: openjdk
     tag:        11-jdk
 
-- name: openjdk:12-jdk
+- name: openjdk:13-jdk
   type: docker-image
   source:
     repository: openjdk
-    tag:        12-jdk
+    tag:        13-jdk
 
 - name: spring-session-data-mongodb-github
   type: git
@@ -88,8 +88,8 @@ groups:
   - Test - JDK 8 and Spring.NEXT
   - Test - JDK 11
   - Test - JDK 11 and Spring.NEXT
-  - Test - JDK 12
-  - Test - JDK 12 and Spring.NEXT
+  - Test - JDK 13
+  - Test - JDK 13 and Spring.NEXT
   - Build
 - name: pull-requests
   jobs:
@@ -160,31 +160,31 @@ jobs:
   <<: *slack-success
   <<: *slack-failure
 
-- name: Test - JDK 12
+- name: Test - JDK 13
   serial: true
   public: true
   plan:
   - get: spring-session-data-mongodb-github
     trigger: true
-  - get: openjdk:12-jdk
+  - get: openjdk:13-jdk
     trigger: true
   - task: test
-    image: openjdk:12-jdk
+    image: openjdk:13-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "convergence" }
   <<: *slack-success
   <<: *slack-failure
 
-- name: Test - JDK 12 and Spring.NEXT
+- name: Test - JDK 13 and Spring.NEXT
   serial: true
   public: true
   plan:
   - get: spring-session-data-mongodb-github
     trigger: true
-  - get: openjdk:12-jdk
+  - get: openjdk:13-jdk
     trigger: true
   - task: test
-    image: openjdk:12-jdk
+    image: openjdk:13-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "spring-next,convergence" }
   <<: *slack-success
@@ -201,8 +201,8 @@ jobs:
       Test - JDK 8 and Spring.NEXT,
       Test - JDK 11,
       Test - JDK 11 and Spring.NEXT,
-      Test - JDK 12,
-      Test - JDK 12 and Spring.NEXT
+      Test - JDK 13,
+      Test - JDK 13 and Spring.NEXT
     ]
   - put: spring-session-data-mongodb-status
     params:
@@ -221,7 +221,7 @@ jobs:
         - "/**"
         properties:
           zip.deployed: false
-          zip.displayname: "Spring Session Data MongoDB"
+          zip.displayname: "spring-session-data-mongodb"
           zip.name: "spring-session-data-mongodb"
           zip.type: "docs"
   on_failure:
@@ -261,7 +261,7 @@ jobs:
     trigger: true
     version: every
   - get: openjdk:11-jdk
-  - get: openjdk:12-jdk
+  - get: openjdk:13-jdk
   - put: spring-session-data-mongodb-pull-requests
     params:
       path: spring-session-data-mongodb-github
@@ -281,12 +281,12 @@ jobs:
       image: openjdk:11-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
       params: { PROFILE: "spring-next,convergence" }
-    - task: test (JDK 12)
-      image: openjdk:12-jdk
+    - task: test (JDK 13)
+      image: openjdk:13-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
       params: { PROFILE: "convergence" }
-    - task: test (JDK 12 and Spring.NEXT)
-      image: openjdk:12-jdk
+    - task: test (JDK 13 and Spring.NEXT)
+      image: openjdk:13-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
       params: { PROFILE: "spring-next,convergence" }
   on_failure:
@@ -327,7 +327,7 @@ jobs:
     trigger: true
   - put: spring-session-data-mongodb-status
     params:
-      commit: spring-session-data-mongodb-release
+      commit: spring-session-data-mongodb-github
       state: pending
   - task: build
     file: spring-session-data-mongodb-github/ci/build.yml
@@ -342,7 +342,7 @@ jobs:
         - "/**"
         properties:
           zip.deployed: false
-          zip.displayname: "Spring Session Data MongoDB"
+          zip.displayname: "spring-session-data-mongodb"
           zip.name: "spring-session-data-mongodb"
           zip.type: "docs"
   on_failure:

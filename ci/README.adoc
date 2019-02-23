@@ -45,3 +45,19 @@ With these pipelines in place, you can now activate and expose them:
 % fly -t spring-team unpause-pipeline -p spring-session-data-mongodb-2.0.x
 % fly -t spring-team expose-pipeline -p spring-session-data-mongodb-2.x
 ----
+
+=== Making a release
+
+1. Create a new release (on the main branch).
+----
+% ci/create-release.sh <release version> <next snapshot version>
+----
+
+2. With the release tagged, push the tagged version to the release branch.
+----
+% git checkout -b release
+% git reset --hard <tag>
+% git push -f origin release
+----
+
+NOTE: You can chain the previous set of commands together using `&&`.
