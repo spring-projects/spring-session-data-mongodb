@@ -48,7 +48,7 @@ resources:
     uri: https://repo.spring.io
     username: ((artifactory-username))
     password: ((artifactory-password))
-    build_name: spring-session-data-mongodb
+    build_name: spring-session-data-mongodb-2.x
 
 - name: spring-session-data-mongodb-pull-requests
   type: pull-request
@@ -106,8 +106,8 @@ jobs:
   - task: test
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  <<: *slack-test-success
+  <<: *slack-test-failure
 
 - name: Test - JDK 8 and Spring.NEXT
   serial: true
@@ -120,8 +120,8 @@ jobs:
   - task: test
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "spring5-next,convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  <<: *slack-test-success
+  <<: *slack-test-failure
 
 - name: Test - JDK 8 and Spring.NEXT 5.1
   serial: true
@@ -134,8 +134,8 @@ jobs:
   - task: test
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "spring51-next,convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  <<: *slack-test-success
+  <<: *slack-test-failure
 
 - name: Test - JDK 11
   serial: true
@@ -149,8 +149,8 @@ jobs:
     image: openjdk:11-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  <<: *slack-test-success
+  <<: *slack-test-failure
 
 - name: Test - JDK 11 and Spring.NEXT
   serial: true
@@ -164,8 +164,8 @@ jobs:
     image: openjdk:11-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "spring5-next,convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  <<: *slack-test-success
+  <<: *slack-test-failure
 
 - name: Test - JDK 11 and Spring.NEXT 5.1
   serial: true
@@ -179,8 +179,8 @@ jobs:
     image: openjdk:11-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "spring51-next,convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  <<: *slack-test-success
+  <<: *slack-test-failure
 
 - name: Build
   serial: true
@@ -213,8 +213,8 @@ jobs:
         - "/**"
         properties:
           zip.deployed: false
-          zip.displayname: "Spring Session Data MongoDB"
-          zip.name: "spring-session-data-mongodb"
+          zip.displayname: "spring-session-data-mongodb-2.x"
+          zip.name: "spring-session-data-mongodb-2.x"
           zip.type: "docs"
   on_failure:
     aggregate:
@@ -332,8 +332,8 @@ jobs:
         - "/**"
         properties:
           zip.deployed: false
-          zip.displayname: "Spring Session Data MongoDB"
-          zip.name: "spring-session-data-mongodb"
+          zip.displayname: "spring-session-data-mongodb-2.x"
+          zip.name: "spring-session-data-mongodb-2.x"
           zip.type: "docs"
   on_failure:
     aggregate:
@@ -456,7 +456,7 @@ jobs:
             title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
             title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
-slack-failure: &slack-failure
+slack-test-failure: &slack-test-failure
   on_failure:
     put: slack
     params:
@@ -467,7 +467,7 @@ slack-failure: &slack-failure
           title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
           title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
-slack-success: &slack-success
+slack-test-success: &slack-test-success
   on_success:
     put: slack
     params:
