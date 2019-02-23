@@ -49,7 +49,7 @@ With these pipelines in place, you can now activate and expose them:
 ----
 % git checkout release-2.0.x
 % git reset --hard <tag>
-% git push -f origin release
+% git push -f origin release-2.0.x
 ----
 
 NOTE: You can chain the previous set of commands together using `&&`.
