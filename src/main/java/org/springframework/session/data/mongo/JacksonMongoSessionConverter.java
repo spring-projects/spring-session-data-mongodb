@@ -55,6 +55,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 
 	private static final String ATTRS_FIELD_NAME = "attrs.";
 	private static final String PRINCIPAL_FIELD_NAME = "principal";
+	private static final String EXPIRE_AT_FIELD_NAME = "expireAt";
 
 	private final ObjectMapper objectMapper;
 
@@ -123,7 +124,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 
 		try {
 			DBObject dbSession = (DBObject) JSON.parse(this.objectMapper.writeValueAsString(source));
-			dbSession.put("expireAt", source.getExpireAt());
+			dbSession.put(EXPIRE_AT_FIELD_NAME, source.getExpireAt());
 			dbSession.put(PRINCIPAL_FIELD_NAME, extractPrincipal(source));
 			return dbSession;
 		} catch (JsonProcessingException e) {
@@ -134,8 +135,8 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	@Override
 	protected MongoSession convert(Document source) {
 
-		Date expireAt = source.getDate("expireAt");
-		source.remove("expireAt");
+		Date expireAt = source.getDate(EXPIRE_AT_FIELD_NAME);
+		source.remove(EXPIRE_AT_FIELD_NAME);
 		String json = source.toJson(JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build());
 
 		try {
