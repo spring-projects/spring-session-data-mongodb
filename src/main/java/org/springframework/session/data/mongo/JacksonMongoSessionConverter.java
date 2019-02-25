@@ -17,6 +17,7 @@ package org.springframework.session.data.mongo;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
@@ -45,6 +46,7 @@ import com.mongodb.util.JSON;
  *
  * @author Jakub Kubrynski
  * @author Greg Turnquist
+ * @author Michael Ruf
  * @since 1.2
  */
 public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter {
@@ -121,6 +123,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 
 		try {
 			DBObject dbSession = (DBObject) JSON.parse(this.objectMapper.writeValueAsString(source));
+			dbSession.put("expireAt", source.getExpireAt());
 			dbSession.put(PRINCIPAL_FIELD_NAME, extractPrincipal(source));
 			return dbSession;
 		} catch (JsonProcessingException e) {
@@ -131,10 +134,14 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	@Override
 	protected MongoSession convert(Document source) {
 
+		Date expireAt = source.getDate("expireAt");
+		source.remove("expireAt");
 		String json = source.toJson(JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build());
-		
+
 		try {
-			return this.objectMapper.readValue(json, MongoSession.class);
+			MongoSession mongoSession = this.objectMapper.readValue(json, MongoSession.class);
+			mongoSession.setExpireAt(expireAt);
+			return mongoSession;
 		} catch (IOException e) {
 			LOG.error("Error during Mongo Session deserialization", e);
 			return null;
@@ -145,7 +152,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 
 		@Override
 		public String translate(String propertyName) {
-			
+
 			switch (propertyName) {
 				case "id":
 					return "_id";
