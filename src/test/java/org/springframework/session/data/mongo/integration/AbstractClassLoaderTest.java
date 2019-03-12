@@ -25,6 +25,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.serializer.DefaultDeserializer;
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
+import org.springframework.session.data.mongo.Assert;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
 import org.springframework.util.ReflectionUtils;
 
@@ -43,7 +44,7 @@ public abstract class AbstractClassLoaderTest<T> extends AbstractITest {
 	public void verifyContainerClassLoaderLoadedIntoConverter() {
 
 		Field mongoSessionConverterField = ReflectionUtils.findField(sessionRepository.getClass(), "mongoSessionConverter");
-		ReflectionUtils.makeAccessible(mongoSessionConverterField);
+		ReflectionUtils.makeAccessible(Assert.requireNonNull(mongoSessionConverterField, "mongoSessionConverter must not be null!"));
 		AbstractMongoSessionConverter sessionConverter = (AbstractMongoSessionConverter) ReflectionUtils
 				.getField(mongoSessionConverterField, this.sessionRepository);
 
@@ -63,7 +64,7 @@ public abstract class AbstractClassLoaderTest<T> extends AbstractITest {
 	private static Object extractField(Class<?> clazz, String fieldName, Object obj) {
 
 		Field field = ReflectionUtils.findField(clazz, fieldName);
-		ReflectionUtils.makeAccessible(field);
+		ReflectionUtils.makeAccessible(Assert.requireNonNull(field, fieldName + " must not be null!"));
 		return ReflectionUtils.getField(field, obj);
 	}
 

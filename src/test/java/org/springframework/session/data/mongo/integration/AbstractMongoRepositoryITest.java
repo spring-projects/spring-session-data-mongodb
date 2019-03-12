@@ -60,7 +60,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 	@Autowired protected MongoOperationsSessionRepository repository;
 
 	@Test
-	public void saves() throws InterruptedException {
+	public void saves() {
 
 		String username = "saves-" + System.currentTimeMillis();
 

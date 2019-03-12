@@ -17,6 +17,7 @@ package org.springframework.session.data.mongo;
 
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.lang.Nullable;
 
 /**
  * Utility class to extract principal name from {@code Authentication} object.
@@ -38,7 +39,8 @@ final class AuthenticationParser {
 	 * @param authentication Authentication object
 	 * @return principal name
 	 */
-	static String extractName(Object authentication) {
+	@Nullable
+	static String extractName(@Nullable Object authentication) {
 
 		if (authentication == null) {
 			return null;

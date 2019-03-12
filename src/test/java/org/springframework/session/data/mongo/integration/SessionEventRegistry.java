@@ -24,8 +24,8 @@ import org.springframework.session.events.AbstractSessionEvent;
 
 public class SessionEventRegistry implements ApplicationListener<AbstractSessionEvent> {
 
-	private Map<String, AbstractSessionEvent> events = new HashMap<String, AbstractSessionEvent>();
-	private Map<String, Object> locks = new HashMap<String, Object>();
+	private Map<String, AbstractSessionEvent> events = new HashMap<>();
+	private Map<String, Object> locks = new HashMap<>();
 
 	public void onApplicationEvent(AbstractSessionEvent event) {
 
@@ -67,12 +67,7 @@ public class SessionEventRegistry implements ApplicationListener<AbstractSession
 	private Object getLock(String sessionId) {
 
 		synchronized (this.locks) {
-			Object lock = this.locks.get(sessionId);
-			if (lock == null) {
-				lock = new Object();
-				this.locks.put(sessionId, lock);
-			}
-			return lock;
+			return this.locks.computeIfAbsent(sessionId, k -> new Object());
 		}
 	}
 }

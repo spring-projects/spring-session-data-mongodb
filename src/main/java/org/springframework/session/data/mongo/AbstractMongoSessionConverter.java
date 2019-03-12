@@ -29,6 +29,7 @@ import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.data.mongodb.core.index.IndexInfo;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.lang.Nullable;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 
@@ -55,6 +56,7 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 	 * @param indexValue value to query against
 	 * @return built query or null if indexName is not supported
 	 */
+	@Nullable
 	protected abstract Query getQueryForIndex(String indexName, Object indexValue);
 
 	/**
@@ -95,6 +97,7 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 	}
 
 	@SuppressWarnings("unchecked")
+	@Nullable
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 
 		if (source == null) {

@@ -29,6 +29,7 @@ import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.lang.Nullable;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.util.Assert;
@@ -64,7 +65,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 
 	public JdkMongoSessionConverter(Converter<Object, byte[]> serializer, Converter<byte[], Object> deserializer,
 			Duration maxInactiveInterval) {
-		
+
 		Assert.notNull(serializer, "serializer cannot be null");
 		Assert.notNull(deserializer, "deserializer cannot be null");
 		Assert.notNull(maxInactiveInterval, "maxInactiveInterval cannot be null");
@@ -74,6 +75,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 	}
 
 	@Override
+	@Nullable
 	public Query getQueryForIndex(String indexName, Object indexValue) {
 
 		if (FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME.equals(indexName)) {
@@ -130,6 +132,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 		return session;
 	}
 
+	@Nullable
 	private byte[] serializeAttributes(Session session) {
 
 		Map<String, Object> attributes = new HashMap<>();
@@ -151,8 +154,10 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 
 		Map<String, Object> attributes = (Map<String, Object>) this.deserializer.convert(attributesBytes);
 
-		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
-			session.setAttribute(entry.getKey(), entry.getValue());
+		if (attributes != null) {
+			for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+				session.setAttribute(entry.getKey(), entry.getValue());
+			}
 		}
 	}
 }

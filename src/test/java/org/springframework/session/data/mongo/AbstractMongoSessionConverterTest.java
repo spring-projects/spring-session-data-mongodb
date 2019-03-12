@@ -22,6 +22,7 @@ import java.time.Duration;
 import org.bson.Document;
 import org.junit.Test;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.session.FindByIndexNameSessionRepository;
@@ -125,11 +126,13 @@ public abstract class AbstractMongoSessionConverterTest {
 		assertThat(convertedSession.getMaxInactiveInterval()).isEqualTo(Duration.ofMinutes(30));
 	}
 
+	@Nullable
 	MongoSession convertToSession(DBObject session) {
 		return (MongoSession) getMongoSessionConverter().convert(session, TypeDescriptor.valueOf(DBObject.class),
 				TypeDescriptor.valueOf(MongoSession.class));
 	}
 
+	@Nullable
 	DBObject convertToDBObject(MongoSession session) {
 		return (DBObject) getMongoSessionConverter().convert(session, TypeDescriptor.valueOf(MongoSession.class),
 				TypeDescriptor.valueOf(DBObject.class));

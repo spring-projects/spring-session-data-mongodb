@@ -26,6 +26,7 @@ import org.bson.json.JsonMode;
 import org.bson.json.JsonWriterSettings;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.lang.Nullable;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.util.Assert;
@@ -72,6 +73,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 		this.objectMapper = objectMapper;
 	}
 
+	@Nullable
 	protected Query getQueryForIndex(String indexName, Object indexValue) {
 
 		if (FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME.equals(indexName)) {
@@ -114,6 +116,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	}
 
 	@Override
+	@Nullable
 	protected MongoSession convert(Document source) {
 
 		String json = source.toJson(JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build());

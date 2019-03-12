@@ -35,6 +35,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
+import org.springframework.lang.Nullable;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.events.SessionCreatedEvent;
 import org.springframework.session.events.SessionDeletedEvent;
@@ -89,10 +90,12 @@ public class MongoOperationsSessionRepository
 
 	@Override
 	public void save(MongoSession session) {
-		this.mongoOperations.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName);
+		this.mongoOperations.save(Assert.requireNonNull(convertToDBObject(this.mongoSessionConverter, session),
+				"convertToDBObject must not null!"), this.collectionName);
 	}
 
 	@Override
+	@Nullable
 	public MongoSession findById(String id) {
 
 		Document sessionWrapper = findSession(id);
@@ -103,7 +106,7 @@ public class MongoOperationsSessionRepository
 
 		MongoSession session = convertToSession(this.mongoSessionConverter, sessionWrapper);
 
-		if (session.isExpired()) {
+		if (session != null && session.isExpired()) {
 
 			publishEvent(new SessionExpiredEvent(this, session));
 			deleteById(id);
@@ -135,7 +138,12 @@ public class MongoOperationsSessionRepository
 	public void deleteById(String id) {
 
 		Optional.ofNullable(findSession(id)).ifPresent(document -> {
-			publishEvent(new SessionDeletedEvent(this, convertToSession(this.mongoSessionConverter, document)));
+
+			MongoSession session = convertToSession(this.mongoSessionConverter, document);
+			if (session != null) {
+				publishEvent(new SessionDeletedEvent(this, session));
+			}
+
 			this.mongoOperations.remove(document, this.collectionName);
 		});
 	}
@@ -147,6 +155,7 @@ public class MongoOperationsSessionRepository
 		this.mongoSessionConverter.ensureIndexes(indexOperations);
 	}
 
+	@Nullable
 	private Document findSession(String id) {
 		return this.mongoOperations.findById(id, Document.class, this.collectionName);
 	}

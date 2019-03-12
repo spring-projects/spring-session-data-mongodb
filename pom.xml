@@ -73,6 +73,7 @@
 		<flapdoodle.version>1.50.5</flapdoodle.version>
 		<hamcrest.version>1.3</hamcrest.version>
 		<jackson.version>2.9.1</jackson.version>
+		<jsr305.version>3.0.2</jsr305.version>
 		<junit.version>4.12</junit.version>
 		<lombok.version>1.18.0</lombok.version>
 		<mockito.version>2.18.3</mockito.version>
@@ -528,6 +529,12 @@
 					<artifactId>slf4j-api</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>${jsr305.version}</version>
 		</dependency>
 
 		<dependency>

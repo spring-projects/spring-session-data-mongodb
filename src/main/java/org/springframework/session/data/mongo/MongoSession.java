@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.lang.Nullable;
 import org.springframework.session.Session;
 
 /**
@@ -83,6 +84,7 @@ public class MongoSession implements Session {
 	}
 
 	@Override
+	@Nullable
 	public <T> T getAttribute(String attributeName) {
 		return (T) this.attrs.get(coverDot(attributeName));
 	}

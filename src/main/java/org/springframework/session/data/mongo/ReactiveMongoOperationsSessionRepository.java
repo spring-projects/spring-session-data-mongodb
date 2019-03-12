@@ -37,6 +37,8 @@ import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.events.SessionCreatedEvent;
 import org.springframework.session.events.SessionDeletedEvent;
 
+import com.mongodb.DBObject;
+
 /**
  * @author Greg Turnquist
  */
@@ -100,8 +102,12 @@ public class ReactiveMongoOperationsSessionRepository
 	@Override
 	public Mono<Void> save(MongoSession session) {
 
-		return this.mongoOperations.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName)
-				.then();
+		DBObject dbObject = convertToDBObject(this.mongoSessionConverter, session);
+		if (dbObject != null) {
+			return this.mongoOperations.save(dbObject, this.collectionName).then();
+		} else {
+			return Mono.empty();
+		}
 	}
 
 	/**

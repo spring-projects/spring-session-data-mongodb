@@ -95,9 +95,13 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 		AnnotationAttributes attributes = AnnotationAttributes
 				.fromMap(importMetadata.getAnnotationAttributes(EnableMongoWebSession.class.getName()));
 
-		this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
+		if (attributes != null) {
+			this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
+		} else {
+			this.maxInactiveIntervalInSeconds = ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL;
+		}
 
-		String collectionNameValue = attributes.getString("collectionName");
+		String collectionNameValue = attributes != null ? attributes.getString("collectionName") : "";
 		if (StringUtils.hasText(collectionNameValue)) {
 			this.collectionName = this.embeddedValueResolver.resolveStringValue(collectionNameValue);
 		}
