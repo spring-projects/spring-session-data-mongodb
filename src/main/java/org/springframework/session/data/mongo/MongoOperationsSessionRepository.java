@@ -129,7 +129,8 @@ public class MongoOperationsSessionRepository
 
 		return Optional.ofNullable(this.mongoSessionConverter.getQueryForIndex(indexName, indexValue))
 				.map(query -> this.mongoOperations.find(query, Document.class, this.collectionName))
-				.orElse(Collections.emptyList()).stream()
+				.orElse(Collections.emptyList()) //
+				.stream() //
 				.map(dbSession -> convertToSession(this.mongoSessionConverter, dbSession))
 				.collect(Collectors.toMap(MongoSession::getId, mapSession -> mapSession));
 	}
