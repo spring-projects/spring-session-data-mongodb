@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
@@ -53,22 +52,22 @@ import com.mongodb.DBObject;
 @RunWith(MockitoJUnitRunner.class)
 public class MongoOperationsSessionRepositoryTest {
 
-	@Mock
-	private AbstractMongoSessionConverter converter;
+	@Mock private AbstractMongoSessionConverter converter;
 
-	@Mock
-	private MongoOperations mongoOperations;
+	@Mock private MongoOperations mongoOperations;
 
 	private MongoOperationsSessionRepository repository;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
+
 		this.repository = new MongoOperationsSessionRepository(this.mongoOperations);
 		this.repository.setMongoSessionConverter(this.converter);
 	}
 
 	@Test
-	public void shouldCreateSession() throws Exception {
+	public void shouldCreateSession() {
+
 		// when
 		MongoSession session = this.repository.createSession();
 
@@ -79,7 +78,8 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldCreateSessionWhenMaxInactiveIntervalNotDefined() throws Exception {
+	public void shouldCreateSessionWhenMaxInactiveIntervalNotDefined() {
+
 		// when
 		this.repository.setMaxInactiveIntervalInSeconds(null);
 		MongoSession session = this.repository.createSession();
@@ -91,13 +91,13 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldSaveSession() throws Exception {
+	public void shouldSaveSession() {
+
 		// given
 		MongoSession session = new MongoSession();
 		BasicDBObject dbSession = new BasicDBObject();
 
-		given(this.converter.convert(session,
-				TypeDescriptor.valueOf(MongoSession.class),
+		given(this.converter.convert(session, TypeDescriptor.valueOf(MongoSession.class),
 				TypeDescriptor.valueOf(DBObject.class))).willReturn(dbSession);
 		// when
 		this.repository.save(session);
@@ -107,13 +107,14 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldGetSession() throws Exception {
+	public void shouldGetSession() {
+
 		// given
 		String sessionId = UUID.randomUUID().toString();
 		Document sessionDocument = new Document();
 
 		given(this.mongoOperations.findById(sessionId, Document.class,
-			MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(sessionDocument);
+				MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(sessionDocument);
 
 		MongoSession session = new MongoSession();
 
@@ -128,19 +129,20 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldHandleExpiredSession() throws Exception {
+	public void shouldHandleExpiredSession() {
+
 		// given
 		String sessionId = UUID.randomUUID().toString();
 		Document sessionDocument = new Document();
 
 		given(this.mongoOperations.findById(sessionId, Document.class,
-			MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(sessionDocument);
+				MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(sessionDocument);
 
 		MongoSession session = mock(MongoSession.class);
 
 		given(session.isExpired()).willReturn(true);
 		given(this.converter.convert(sessionDocument, TypeDescriptor.valueOf(Document.class),
-			TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
+				TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
 		given(session.getId()).willReturn("sessionId");
 
 		// when
@@ -152,7 +154,8 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldDeleteSession() throws Exception {
+	public void shouldDeleteSession() {
+
 		// given
 		String sessionId = UUID.randomUUID().toString();
 
@@ -162,20 +165,21 @@ public class MongoOperationsSessionRepositoryTest {
 		MongoSession mongoSession = new MongoSession(sessionId, MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 
 		given(this.converter.convert(sessionDocument, TypeDescriptor.valueOf(Document.class),
-			TypeDescriptor.valueOf(MongoSession.class))).willReturn(mongoSession);
+				TypeDescriptor.valueOf(MongoSession.class))).willReturn(mongoSession);
 		given(this.mongoOperations.findById(eq(sessionId), eq(Document.class),
-			eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME))).willReturn(sessionDocument);
+				eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME))).willReturn(sessionDocument);
 
 		// when
 		this.repository.deleteById(sessionId);
 
 		// then
 		verify(this.mongoOperations).remove(any(Document.class),
-			eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
+				eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
 	}
 
 	@Test
-	public void shouldGetSessionsMapByPrincipal() throws Exception {
+	public void shouldGetSessionsMapByPrincipal() {
+
 		// given
 		String principalNameIndexName = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
 
@@ -183,8 +187,7 @@ public class MongoOperationsSessionRepositoryTest {
 
 		given(this.converter.getQueryForIndex(anyString(), any(Object.class))).willReturn(mock(Query.class));
 		given(this.mongoOperations.find(any(Query.class), eq(Document.class),
-				eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)))
-						.willReturn(Collections.singletonList(document));
+				eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME))).willReturn(Collections.singletonList(document));
 
 		String sessionId = UUID.randomUUID().toString();
 
@@ -194,8 +197,8 @@ public class MongoOperationsSessionRepositoryTest {
 				TypeDescriptor.valueOf(MongoSession.class))).willReturn(session);
 
 		// when
-		Map<String, MongoSession> sessionsMap =
-			this.repository.findByIndexNameAndIndexValue(principalNameIndexName, "john");
+		Map<String, MongoSession> sessionsMap = this.repository.findByIndexNameAndIndexValue(principalNameIndexName,
+				"john");
 
 		// then
 		assertThat(sessionsMap).containsOnlyKeys(sessionId);
@@ -203,13 +206,13 @@ public class MongoOperationsSessionRepositoryTest {
 	}
 
 	@Test
-	public void shouldReturnEmptyMapForNotSupportedIndex() throws Exception {
+	public void shouldReturnEmptyMapForNotSupportedIndex() {
+
 		// given
 		String index = "some_not_supported_index_name";
 
 		// when
-		Map<String, MongoSession> sessionsMap = this.repository
-				.findByIndexNameAndIndexValue(index, "some_value");
+		Map<String, MongoSession> sessionsMap = this.repository.findByIndexNameAndIndexValue(index, "some_value");
 
 		// then
 		assertThat(sessionsMap).isEmpty();

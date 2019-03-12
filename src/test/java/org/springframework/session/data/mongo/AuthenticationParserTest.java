@@ -18,7 +18,6 @@ package org.springframework.session.data.mongo;
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Test;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextImpl;
 

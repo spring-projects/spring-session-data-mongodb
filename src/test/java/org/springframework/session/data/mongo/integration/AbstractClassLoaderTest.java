@@ -35,36 +35,36 @@ import org.springframework.util.ReflectionUtils;
  */
 public abstract class AbstractClassLoaderTest<T> extends AbstractITest {
 
-	@Autowired
-	T sessionRepository;
-	
-	@Autowired
-	ApplicationContext applicationContext;
+	@Autowired T sessionRepository;
+
+	@Autowired ApplicationContext applicationContext;
 
 	@Test
 	public void verifyContainerClassLoaderLoadedIntoConverter() {
 
 		Field mongoSessionConverterField = ReflectionUtils.findField(sessionRepository.getClass(), "mongoSessionConverter");
 		ReflectionUtils.makeAccessible(mongoSessionConverterField);
-		AbstractMongoSessionConverter sessionConverter = (AbstractMongoSessionConverter) ReflectionUtils.getField(mongoSessionConverterField, this.sessionRepository);
+		AbstractMongoSessionConverter sessionConverter = (AbstractMongoSessionConverter) ReflectionUtils
+				.getField(mongoSessionConverterField, this.sessionRepository);
 
 		assertThat(sessionConverter).isInstanceOf(JdkMongoSessionConverter.class);
 
 		JdkMongoSessionConverter jdkMongoSessionConverter = (JdkMongoSessionConverter) sessionConverter;
 
-		Field converterField = ReflectionUtils.findField(JdkMongoSessionConverter.class, "deserializer");
-		ReflectionUtils.makeAccessible(converterField);
-		DeserializingConverter deserializingConverter = (DeserializingConverter) ReflectionUtils.getField(converterField, jdkMongoSessionConverter);
-
-		Field deserializerField = ReflectionUtils.findField(DeserializingConverter.class, "deserializer");
-		ReflectionUtils.makeAccessible(deserializerField);
-		DefaultDeserializer deserializer = (DefaultDeserializer) ReflectionUtils.getField(deserializerField, deserializingConverter);
-
-		Field classLoaderField = ReflectionUtils.findField(DefaultDeserializer.class, "classLoader");
-		ReflectionUtils.makeAccessible(classLoaderField);
-		ClassLoader classLoader = (ClassLoader) ReflectionUtils.getField(classLoaderField, deserializer);
+		DeserializingConverter deserializingConverter = (DeserializingConverter) extractField(
+				JdkMongoSessionConverter.class, "deserializer", jdkMongoSessionConverter);
+		DefaultDeserializer deserializer = (DefaultDeserializer) extractField(DeserializingConverter.class, "deserializer",
+				deserializingConverter);
+		ClassLoader classLoader = (ClassLoader) extractField(DefaultDeserializer.class, "classLoader", deserializer);
 
 		assertThat(classLoader).isEqualTo(applicationContext.getClassLoader());
+	}
+
+	private static Object extractField(Class<?> clazz, String fieldName, Object obj) {
+
+		Field field = ReflectionUtils.findField(clazz, fieldName);
+		ReflectionUtils.makeAccessible(field);
+		return ReflectionUtils.getField(field, obj);
 	}
 
 }

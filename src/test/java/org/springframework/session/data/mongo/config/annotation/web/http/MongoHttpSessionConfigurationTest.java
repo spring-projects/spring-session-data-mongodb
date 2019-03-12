@@ -25,7 +25,6 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -51,8 +50,7 @@ public class MongoHttpSessionConfigurationTest {
 
 	private static final int MAX_INACTIVE_INTERVAL_IN_SECONDS = 600;
 
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	@Rule public final ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -78,8 +76,7 @@ public class MongoHttpSessionConfigurationTest {
 
 		registerAndRefresh(DefaultConfiguration.class);
 
-		assertThat(this.context.getBean(MongoOperationsSessionRepository.class))
-			.isNotNull();
+		assertThat(this.context.getBean(MongoOperationsSessionRepository.class)).isNotNull();
 	}
 
 	@Test
@@ -90,8 +87,7 @@ public class MongoHttpSessionConfigurationTest {
 		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
 
 		assertThat(repository).isNotNull();
-		assertThat(ReflectionTestUtils.getField(repository, "collectionName"))
-			.isEqualTo(COLLECTION_NAME);
+		assertThat(ReflectionTestUtils.getField(repository, "collectionName")).isEqualTo(COLLECTION_NAME);
 	}
 
 	@Test
@@ -102,8 +98,7 @@ public class MongoHttpSessionConfigurationTest {
 		MongoHttpSessionConfiguration session = this.context.getBean(MongoHttpSessionConfiguration.class);
 
 		assertThat(session).isNotNull();
-		assertThat(ReflectionTestUtils.getField(session, "collectionName"))
-			.isEqualTo(COLLECTION_NAME);
+		assertThat(ReflectionTestUtils.getField(session, "collectionName")).isEqualTo(COLLECTION_NAME);
 	}
 
 	@Test
@@ -115,7 +110,7 @@ public class MongoHttpSessionConfigurationTest {
 
 		assertThat(repository).isNotNull();
 		assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds"))
-			.isEqualTo(MAX_INACTIVE_INTERVAL_IN_SECONDS);
+				.isEqualTo(MAX_INACTIVE_INTERVAL_IN_SECONDS);
 	}
 
 	@Test
@@ -140,8 +135,7 @@ public class MongoHttpSessionConfigurationTest {
 
 		assertThat(repository).isNotNull();
 		assertThat(mongoSessionConverter).isNotNull();
-		assertThat(ReflectionTestUtils.getField(repository, "mongoSessionConverter"))
-				.isEqualTo(mongoSessionConverter);
+		assertThat(ReflectionTestUtils.getField(repository, "mongoSessionConverter")).isEqualTo(mongoSessionConverter);
 	}
 
 	@Test
@@ -152,8 +146,7 @@ public class MongoHttpSessionConfigurationTest {
 
 		MongoHttpSessionConfiguration configuration = this.context.getBean(MongoHttpSessionConfiguration.class);
 
-		assertThat(ReflectionTestUtils.getField(configuration, "collectionName"))
-			.isEqualTo(COLLECTION_NAME);
+		assertThat(ReflectionTestUtils.getField(configuration, "collectionName")).isEqualTo(COLLECTION_NAME);
 	}
 
 	private void registerAndRefresh(Class<?>... annotatedClasses) {

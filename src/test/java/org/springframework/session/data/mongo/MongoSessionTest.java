@@ -31,6 +31,7 @@ public class MongoSessionTest {
 
 	@Test
 	public void isExpiredWhenIntervalNegativeThenFalse() {
+
 		MongoSession session = new MongoSession();
 		session.setMaxInactiveInterval(Duration.ofSeconds(-1));
 		session.setLastAccessedTime(Instant.ofEpochMilli(0L));

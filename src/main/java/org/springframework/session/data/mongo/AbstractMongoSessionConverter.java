@@ -35,9 +35,8 @@ import org.springframework.session.Session;
 import com.mongodb.DBObject;
 
 /**
- * Base class for serializing and deserializing session objects. To create custom
- * serializer you have to implement this interface and simply register your class as a
- * bean.
+ * Base class for serializing and deserializing session objects. To create custom serializer you have to implement this
+ * interface and simply register your class as a bean.
  *
  * @author Jakub Kubrynski
  * @author Greg Turnquist
@@ -45,14 +44,13 @@ import com.mongodb.DBObject;
  */
 public abstract class AbstractMongoSessionConverter implements GenericConverter {
 
-	private static final Log LOG = LogFactory.getLog(AbstractMongoSessionConverter.class);
-
 	static final String EXPIRE_AT_FIELD_NAME = "expireAt";
-
+	private static final Log LOG = LogFactory.getLog(AbstractMongoSessionConverter.class);
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 
 	/**
 	 * Returns query to be executed to return sessions based on a particular index.
+	 * 
 	 * @param indexName name of the index
 	 * @param indexValue value to query against
 	 * @return built query or null if indexName is not supported
@@ -60,12 +58,10 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 	protected abstract Query getQueryForIndex(String indexName, Object indexValue);
 
 	/**
-	 * Method ensures that there is a TTL index on {@literal expireAt} field. It's has
-	 * {@literal expireAfterSeconds} set to zero seconds, so the expiration time is
-	 * controlled by the application.
-	 *
-	 * It can be extended in custom converters when there is a need for creating
-	 * additional custom indexes.
+	 * Method ensures that there is a TTL index on {@literal expireAt} field. It's has {@literal expireAfterSeconds} set
+	 * to zero seconds, so the expiration time is controlled by the application. It can be extended in custom converters
+	 * when there is a need for creating additional custom indexes.
+	 * 
 	 * @param sessionCollectionIndexes {@link IndexOperations} to use
 	 */
 	protected void ensureIndexes(IndexOperations sessionCollectionIndexes) {
@@ -79,7 +75,7 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 
 		LOG.info("Creating TTL index on field " + EXPIRE_AT_FIELD_NAME);
 		sessionCollectionIndexes
-			.ensureIndex(new Index(EXPIRE_AT_FIELD_NAME, Sort.Direction.ASC).named(EXPIRE_AT_FIELD_NAME).expire(0));
+				.ensureIndex(new Index(EXPIRE_AT_FIELD_NAME, Sort.Direction.ASC).named(EXPIRE_AT_FIELD_NAME).expire(0));
 	}
 
 	protected String extractPrincipal(Session expiringSession) {
@@ -95,13 +91,12 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
 
-		return Collections.singleton(
-				new ConvertiblePair(DBObject.class, MongoSession.class));
+		return Collections.singleton(new ConvertiblePair(DBObject.class, MongoSession.class));
 	}
 
 	@SuppressWarnings("unchecked")
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		
+
 		if (source == null) {
 			return null;
 		}

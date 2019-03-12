@@ -26,10 +26,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 
 /**
- * Add this annotation to a {@code @Configuration} class to expose the
- * SessionRepositoryFilter as a bean named "springSessionRepositoryFilter" and backed by
- * Mongo. Use {@code collectionName} to change default name of the collection used to
- * store sessions. <pre>
+ * Add this annotation to a {@code @Configuration} class to expose the SessionRepositoryFilter as a bean named
+ * "springSessionRepositoryFilter" and backed by Mongo. Use {@code collectionName} to change default name of the
+ * collection used to store sessions.
+ * 
+ * <pre>
  * <code>
  * {@literal @EnableMongoHttpSession}
  * public class MongoHttpSessionConfig {
@@ -40,7 +41,8 @@ import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
  *     }
  *
  * }
- * </code> </pre>
+ * </code>
+ * </pre>
  *
  * @author Jakub Kubrynski
  * @since 1.2

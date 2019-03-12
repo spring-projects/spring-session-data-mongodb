@@ -26,7 +26,6 @@ import java.util.UUID;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import org.junit.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
@@ -58,19 +57,19 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 	protected static final String INDEX_NAME = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
 
-	@Autowired
-	protected MongoOperationsSessionRepository repository;
+	@Autowired protected MongoOperationsSessionRepository repository;
 
 	@Test
 	public void saves() throws InterruptedException {
+
 		String username = "saves-" + System.currentTimeMillis();
 
 		MongoSession toSave = this.repository.createSession();
 		String expectedAttributeName = "a";
 		String expectedAttributeValue = "b";
 		toSave.setAttribute(expectedAttributeName, expectedAttributeValue);
-		Authentication toSaveToken = new UsernamePasswordAuthenticationToken(username,
-				"password", AuthorityUtils.createAuthorityList("ROLE_USER"));
+		Authentication toSaveToken = new UsernamePasswordAuthenticationToken(username, "password",
+				AuthorityUtils.createAuthorityList("ROLE_USER"));
 		SecurityContext toSaveContext = SecurityContextHolder.createEmptyContext();
 		toSaveContext.setAuthentication(toSaveToken);
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, toSaveContext);
@@ -82,7 +81,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		assertThat(session.getId()).isEqualTo(toSave.getId());
 		assertThat(session.getAttributeNames()).isEqualTo(toSave.getAttributeNames());
-		assertThat(session.<String>getAttribute(expectedAttributeName))
+		assertThat(session.<String> getAttribute(expectedAttributeName))
 				.isEqualTo(toSave.getAttribute(expectedAttributeName));
 
 		this.repository.deleteById(toSave.getId());
@@ -107,8 +106,8 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		Session session = this.repository.findById(toSave.getId());
 		assertThat(session.getAttributeNames().size()).isEqualTo(2);
-		assertThat(session.<String>getAttribute("a")).isEqualTo("b");
-		assertThat(session.<String>getAttribute("1")).isEqualTo("2");
+		assertThat(session.<String> getAttribute("a")).isEqualTo("b");
+		assertThat(session.<String> getAttribute("1")).isEqualTo("2");
 
 		this.repository.deleteById(toSave.getId());
 	}
@@ -122,16 +121,15 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, principalName);
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				principalName);
 
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
 
 		this.repository.deleteById(toSave.getId());
 
-		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
-				principalName);
+		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME, principalName);
 
 		assertThat(findByPrincipalName).hasSize(0);
 		assertThat(findByPrincipalName.keySet()).doesNotContain(toSave.getId());
@@ -144,9 +142,8 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 	@Test
 	public void findByPrincipalNameNoPrincipalNameChange() throws Exception {
-		
-		String principalName = "findByPrincipalNameNoPrincipalNameChange"
-				+ UUID.randomUUID();
+
+		String principalName = "findByPrincipalNameNoPrincipalNameChange" + UUID.randomUUID();
 		MongoSession toSave = this.repository.createSession();
 		toSave.setAttribute(INDEX_NAME, principalName);
 
@@ -155,8 +152,8 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		toSave.setAttribute("other", "value");
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, principalName);
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				principalName);
 
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
@@ -165,8 +162,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 	@Test
 	public void findByPrincipalNameNoPrincipalNameChangeReload() throws Exception {
 
-		String principalName = "findByPrincipalNameNoPrincipalNameChangeReload"
-				+ UUID.randomUUID();
+		String principalName = "findByPrincipalNameNoPrincipalNameChangeReload" + UUID.randomUUID();
 		MongoSession toSave = this.repository.createSession();
 		toSave.setAttribute(INDEX_NAME, principalName);
 
@@ -177,8 +173,8 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		toSave.setAttribute("other", "value");
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, principalName);
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				principalName);
 
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
@@ -196,8 +192,8 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		toSave.setAttribute(INDEX_NAME, null);
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, principalName);
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				principalName);
 
 		assertThat(findByPrincipalName).isEmpty();
 	}
@@ -215,12 +211,11 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		toSave.setAttribute(INDEX_NAME, principalNameChanged);
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, principalName);
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				principalName);
 		assertThat(findByPrincipalName).isEmpty();
 
-		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
-				principalNameChanged);
+		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME, principalNameChanged);
 
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
@@ -239,8 +234,8 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		getSession.setAttribute(INDEX_NAME, null);
 		this.repository.save(getSession);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, principalName);
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				principalName);
 
 		assertThat(findByPrincipalName).isEmpty();
 	}
@@ -260,12 +255,11 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		getSession.setAttribute(INDEX_NAME, principalNameChanged);
 		this.repository.save(getSession);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, principalName);
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				principalName);
 		assertThat(findByPrincipalName).isEmpty();
 
-		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
-				principalNameChanged);
+		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME, principalNameChanged);
 
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
@@ -279,16 +273,15 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, getSecurityName());
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				getSecurityName());
 
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
 
 		this.repository.deleteById(toSave.getId());
 
-		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
-				getSecurityName());
+		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME, getSecurityName());
 
 		assertThat(findByPrincipalName).hasSize(0);
 		assertThat(findByPrincipalName.keySet()).doesNotContain(toSave.getId());
@@ -305,8 +298,8 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		toSave.setAttribute("other", "value");
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, getSecurityName());
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				getSecurityName());
 
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
@@ -323,8 +316,8 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, null);
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, getSecurityName());
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				getSecurityName());
 
 		assertThat(findByPrincipalName).isEmpty();
 	}
@@ -340,12 +333,11 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		toSave.setAttribute(SPRING_SECURITY_CONTEXT, this.changedContext);
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, getSecurityName());
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				getSecurityName());
 		assertThat(findByPrincipalName).isEmpty();
 
-		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
-				getChangedSecurityName());
+		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME, getChangedSecurityName());
 
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
@@ -364,12 +356,11 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		getSession.setAttribute(SPRING_SECURITY_CONTEXT, this.changedContext);
 		this.repository.save(getSession);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, getSecurityName());
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				getSecurityName());
 		assertThat(findByPrincipalName).isEmpty();
 
-		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
-				getChangedSecurityName());
+		findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME, getChangedSecurityName());
 
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());
@@ -377,7 +368,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 	@Test
 	public void loadExpiredSession() throws Exception {
-		
+
 		// given
 		MongoSession expiredSession = this.repository.createSession();
 		Instant thirtyOneMinutesAgo = Instant.ofEpochMilli(System.currentTimeMillis()).minus(Duration.ofMinutes(31));
@@ -385,8 +376,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		this.repository.save(expiredSession);
 
 		// then
-		MongoSession expiredSessionFromDb = this.repository
-				.findById(expiredSession.getId());
+		MongoSession expiredSessionFromDb = this.repository.findById(expiredSession.getId());
 		assertThat(expiredSessionFromDb).isNull();
 	}
 

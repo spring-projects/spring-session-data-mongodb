@@ -30,6 +30,8 @@ final class AuthenticationParser {
 
 	private static final SpelExpressionParser PARSER = new SpelExpressionParser();
 
+	private AuthenticationParser() {}
+
 	/**
 	 * Extracts principal name from authentication.
 	 *
@@ -46,6 +48,4 @@ final class AuthenticationParser {
 
 		return expression.getValue(authentication, String.class);
 	}
-
-	private AuthenticationParser() {}
 }

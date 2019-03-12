@@ -52,8 +52,8 @@ public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositor
 		getSession.setAttribute(INDEX_NAME, null);
 		this.repository.save(getSession);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, getChangedSecurityName());
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				getChangedSecurityName());
 
 		assertThat(findByPrincipalName).isEmpty();
 	}
@@ -71,8 +71,8 @@ public class MongoRepositoryJdkSerializationITest extends AbstractMongoRepositor
 		toSave.setAttribute("other", "value");
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByPrincipalName = this.repository
-				.findByIndexNameAndIndexValue(INDEX_NAME, getSecurityName());
+		Map<String, MongoSession> findByPrincipalName = this.repository.findByIndexNameAndIndexValue(INDEX_NAME,
+				getSecurityName());
 
 		assertThat(findByPrincipalName).hasSize(1);
 		assertThat(findByPrincipalName.keySet()).containsOnly(toSave.getId());

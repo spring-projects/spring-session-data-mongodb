@@ -51,8 +51,7 @@ public class MongoRepositoryJacksonITest extends AbstractMongoRepositoryITest {
 
 		this.repository.save(toSave);
 
-		Map<String, MongoSession> findByCartId = this.repository
-				.findByIndexNameAndIndexValue("cartId", cartId);
+		Map<String, MongoSession> findByCartId = this.repository.findByIndexNameAndIndexValue("cartId", cartId);
 
 		assertThat(findByCartId).hasSize(1);
 		assertThat(findByCartId.keySet()).containsOnly(toSave.getId());

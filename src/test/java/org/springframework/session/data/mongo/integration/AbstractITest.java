@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -41,8 +40,7 @@ public abstract class AbstractITest {
 
 	protected SecurityContext changedContext;
 
-	@Autowired(required = false)
-	protected SessionEventRegistry registry;
+	@Autowired(required = false) protected SessionEventRegistry registry;
 
 	@Before
 	public void setup() {
@@ -52,14 +50,12 @@ public abstract class AbstractITest {
 		}
 
 		this.context = SecurityContextHolder.createEmptyContext();
-		this.context.setAuthentication(
-				new UsernamePasswordAuthenticationToken("username-" + UUID.randomUUID(),
-						"na", AuthorityUtils.createAuthorityList("ROLE_USER")));
+		this.context.setAuthentication(new UsernamePasswordAuthenticationToken("username-" + UUID.randomUUID(), "na",
+				AuthorityUtils.createAuthorityList("ROLE_USER")));
 
 		this.changedContext = SecurityContextHolder.createEmptyContext();
-		this.changedContext.setAuthentication(new UsernamePasswordAuthenticationToken(
-				"changedContext-" + UUID.randomUUID(), "na",
-				AuthorityUtils.createAuthorityList("ROLE_USER")));
+		this.changedContext.setAuthentication(new UsernamePasswordAuthenticationToken("changedContext-" + UUID.randomUUID(),
+				"na", AuthorityUtils.createAuthorityList("ROLE_USER")));
 	}
 
 }

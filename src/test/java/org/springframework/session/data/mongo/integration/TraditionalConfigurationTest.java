@@ -26,9 +26,8 @@ import org.springframework.test.context.ContextConfiguration;
  */
 @ContextConfiguration
 public class TraditionalConfigurationTest extends AbstractClassLoaderTest<MongoOperationsSessionRepository> {
-	
+
 	@Configuration
 	@EnableMongoHttpSession
-	static class Config extends BaseConfig {
-	}
+	static class Config extends BaseConfig {}
 }

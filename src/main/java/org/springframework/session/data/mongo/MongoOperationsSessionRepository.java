@@ -41,12 +41,9 @@ import org.springframework.session.events.SessionDeletedEvent;
 import org.springframework.session.events.SessionExpiredEvent;
 
 /**
- * Session repository implementation which stores sessions in Mongo. Uses
- * {@link AbstractMongoSessionConverter} to transform session objects from/to native Mongo
- * representation ({@code DBObject}).
- *
- * Repository is also responsible for removing expired sessions from database. Cleanup is
- * done every minute.
+ * Session repository implementation which stores sessions in Mongo. Uses {@link AbstractMongoSessionConverter} to
+ * transform session objects from/to native Mongo representation ({@code DBObject}). Repository is also responsible for
+ * removing expired sessions from database. Cleanup is done every minute.
  *
  * @author Jakub Kubrynski
  * @author Greg Turnquist
@@ -55,24 +52,21 @@ import org.springframework.session.events.SessionExpiredEvent;
 public class MongoOperationsSessionRepository
 		implements FindByIndexNameSessionRepository<MongoSession>, ApplicationEventPublisherAware, InitializingBean {
 
-	private static final Logger logger = LoggerFactory.getLogger(MongoOperationsSessionRepository.class);
-
 	/**
 	 * The default time period in seconds in which a session will expire.
 	 */
 	public static final int DEFAULT_INACTIVE_INTERVAL = 1800;
-
 	/**
 	 * the default collection name for storing session.
 	 */
 	public static final String DEFAULT_COLLECTION_NAME = "sessions";
-
+	private static final Logger logger = LoggerFactory.getLogger(MongoOperationsSessionRepository.class);
 	private final MongoOperations mongoOperations;
 
 	@Setter private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
 	@Setter private String collectionName = DEFAULT_COLLECTION_NAME;
 	@Setter private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
-		Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
+			Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
 	private ApplicationEventPublisher eventPublisher;
 
 	public MongoOperationsSessionRepository(MongoOperations mongoOperations) {
@@ -113,19 +107,17 @@ public class MongoOperationsSessionRepository
 
 			publishEvent(new SessionExpiredEvent(this, session));
 			deleteById(id);
-			
+
 			return null;
 		}
-		
+
 		return session;
 	}
 
 	/**
-	 * Currently this repository allows only querying against
-	 * {@code PRINCIPAL_NAME_INDEX_NAME}.
+	 * Currently this repository allows only querying against {@code PRINCIPAL_NAME_INDEX_NAME}.
 	 *
-	 * @param indexName the name if the index (i.e.
-	 * {@link FindByIndexNameSessionRepository#PRINCIPAL_NAME_INDEX_NAME})
+	 * @param indexName the name if the index (i.e. {@link FindByIndexNameSessionRepository#PRINCIPAL_NAME_INDEX_NAME})
 	 * @param indexValue the value of the index to search for.
 	 * @return sessions map
 	 */
@@ -133,21 +125,19 @@ public class MongoOperationsSessionRepository
 	public Map<String, MongoSession> findByIndexNameAndIndexValue(String indexName, String indexValue) {
 
 		return Optional.ofNullable(this.mongoSessionConverter.getQueryForIndex(indexName, indexValue))
-			.map(query -> this.mongoOperations.find(query, Document.class, this.collectionName))
-			.orElse(Collections.emptyList())
-			.stream()
-			.map(dbSession -> convertToSession(this.mongoSessionConverter, dbSession))
-			.collect(Collectors.toMap(MongoSession::getId, mapSession -> mapSession));
-		}
+				.map(query -> this.mongoOperations.find(query, Document.class, this.collectionName))
+				.orElse(Collections.emptyList()).stream()
+				.map(dbSession -> convertToSession(this.mongoSessionConverter, dbSession))
+				.collect(Collectors.toMap(MongoSession::getId, mapSession -> mapSession));
+	}
 
 	@Override
 	public void deleteById(String id) {
-		
-		Optional.ofNullable(findSession(id))
-			.ifPresent(document -> {
-				publishEvent(new SessionDeletedEvent(this, convertToSession(this.mongoSessionConverter, document)));
-				this.mongoOperations.remove(document, this.collectionName);
-			});
+
+		Optional.ofNullable(findSession(id)).ifPresent(document -> {
+			publishEvent(new SessionDeletedEvent(this, convertToSession(this.mongoSessionConverter, document)));
+			this.mongoOperations.remove(document, this.collectionName);
+		});
 	}
 
 	@Override
@@ -167,10 +157,10 @@ public class MongoOperationsSessionRepository
 	}
 
 	private void publishEvent(ApplicationEvent event) {
+
 		try {
 			this.eventPublisher.publishEvent(event);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			logger.error("Error publishing " + event + ".", ex);
 		}
 	}

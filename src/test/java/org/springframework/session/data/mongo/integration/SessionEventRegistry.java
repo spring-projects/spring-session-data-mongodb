@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.session.events.AbstractSessionEvent;
 
 public class SessionEventRegistry implements ApplicationListener<AbstractSessionEvent> {
-	
+
 	private Map<String, AbstractSessionEvent> events = new HashMap<String, AbstractSessionEvent>();
 	private Map<String, Object> locks = new HashMap<String, Object>();
 
@@ -48,14 +48,12 @@ public class SessionEventRegistry implements ApplicationListener<AbstractSession
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E extends AbstractSessionEvent> E getEvent(String sessionId)
-			throws InterruptedException {
+	public <E extends AbstractSessionEvent> E getEvent(String sessionId) throws InterruptedException {
 		return (E) waitForEvent(sessionId);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <E extends AbstractSessionEvent> E waitForEvent(String sessionId)
-			throws InterruptedException {
+	private <E extends AbstractSessionEvent> E waitForEvent(String sessionId) throws InterruptedException {
 
 		Object lock = getLock(sessionId);
 		synchronized (lock) {

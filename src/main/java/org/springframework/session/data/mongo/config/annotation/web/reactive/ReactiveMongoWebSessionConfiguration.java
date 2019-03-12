@@ -32,7 +32,6 @@ import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.config.annotation.web.server.SpringWebSessionConfiguration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
@@ -52,22 +51,21 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 	private String collectionName;
 	private StringValueResolver embeddedValueResolver;
 
-	@Autowired(required = false)
-	private MongoOperations mongoOperations;
+	@Autowired(required = false) private MongoOperations mongoOperations;
 	private ClassLoader classLoader;
 
 	@Bean
-	public ReactiveMongoOperationsSessionRepository reactiveMongoOperationsSessionRepository(ReactiveMongoOperations operations) {
-		
+	public ReactiveMongoOperationsSessionRepository reactiveMongoOperationsSessionRepository(
+			ReactiveMongoOperations operations) {
+
 		ReactiveMongoOperationsSessionRepository repository = new ReactiveMongoOperationsSessionRepository(operations);
 
 		if (this.mongoSessionConverter != null) {
 			repository.setMongoSessionConverter(this.mongoSessionConverter);
 		} else {
-			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
-				new SerializingConverter(),
-				new DeserializingConverter(this.classLoader),
-				Duration.ofSeconds(ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL));
+			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(new SerializingConverter(),
+					new DeserializingConverter(this.classLoader),
+					Duration.ofSeconds(ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL));
 			repository.setMongoSessionConverter(mongoSessionConverter);
 		}
 
@@ -82,7 +80,7 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 		if (this.mongoOperations != null) {
 			repository.setBlockingMongoOperations(this.mongoOperations);
 		}
-		
+
 		return repository;
 	}
 
@@ -94,8 +92,8 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 	@Override
 	public void setImportMetadata(AnnotationMetadata importMetadata) {
 
-		AnnotationAttributes attributes = AnnotationAttributes.fromMap(
-			importMetadata.getAnnotationAttributes(EnableMongoWebSession.class.getName()));
+		AnnotationAttributes attributes = AnnotationAttributes
+				.fromMap(importMetadata.getAnnotationAttributes(EnableMongoWebSession.class.getName()));
 
 		this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
 
@@ -115,6 +113,7 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 	public void setEmbeddedValueResolver(StringValueResolver embeddedValueResolver) {
 		this.embeddedValueResolver = embeddedValueResolver;
 	}
+
 	public Integer getMaxInactiveIntervalInSeconds() {
 		return maxInactiveIntervalInSeconds;
 	}

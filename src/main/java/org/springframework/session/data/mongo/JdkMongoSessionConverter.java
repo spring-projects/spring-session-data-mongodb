@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.bson.types.Binary;
-
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
@@ -63,8 +62,9 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 		this(new SerializingConverter(), new DeserializingConverter(), maxInactiveInterval);
 	}
 
-	public JdkMongoSessionConverter(Converter<Object, byte[]> serializer,
-			Converter<byte[], Object> deserializer, Duration maxInactiveInterval) {
+	public JdkMongoSessionConverter(Converter<Object, byte[]> serializer, Converter<byte[], Object> deserializer,
+			Duration maxInactiveInterval) {
+		
 		Assert.notNull(serializer, "serializer cannot be null");
 		Assert.notNull(deserializer, "deserializer cannot be null");
 		Assert.notNull(maxInactiveInterval, "maxInactiveInterval cannot be null");
@@ -76,8 +76,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 	@Override
 	public Query getQueryForIndex(String indexName, Object indexValue) {
 
-		if (FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME
-				.equals(indexName)) {
+		if (FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME.equals(indexName)) {
 			return Query.query(Criteria.where(PRINCIPAL_FIELD_NAME).is(indexValue));
 		} else {
 			return null;
@@ -88,7 +87,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 	protected DBObject convert(MongoSession session) {
 
 		BasicDBObject basicDBObject = new BasicDBObject();
-		
+
 		basicDBObject.put(ID, session.getId());
 		basicDBObject.put(CREATION_TIME, session.getCreationTime());
 		basicDBObject.put(LAST_ACCESSED_TIME, session.getLastAccessedTime());
@@ -105,12 +104,10 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 
 		Object maxInterval = sessionWrapper.getOrDefault(MAX_INTERVAL, this.maxInactiveInterval);
 
-		Duration maxIntervalDuration = (maxInterval instanceof Duration)
-			? (Duration) maxInterval
-			: Duration.parse(maxInterval.toString());
+		Duration maxIntervalDuration = (maxInterval instanceof Duration) ? (Duration) maxInterval
+				: Duration.parse(maxInterval.toString());
 
-		MongoSession session = new MongoSession(
-			sessionWrapper.getString(ID), maxIntervalDuration.getSeconds());
+		MongoSession session = new MongoSession(sessionWrapper.getString(ID), maxIntervalDuration.getSeconds());
 
 		Object creationTime = sessionWrapper.get(CREATION_TIME);
 		if (creationTime instanceof Instant) {
@@ -127,7 +124,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 		}
 
 		session.setExpireAt((Date) sessionWrapper.get(EXPIRE_AT_FIELD_NAME));
-		
+
 		deserializeAttributes(sessionWrapper, session);
 
 		return session;
@@ -140,20 +137,20 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 		for (String attrName : session.getAttributeNames()) {
 			attributes.put(attrName, session.getAttribute(attrName));
 		}
-		
+
 		return this.serializer.convert(attributes);
 	}
 
 	@SuppressWarnings("unchecked")
 	private void deserializeAttributes(Document sessionWrapper, Session session) {
-		
+
 		Object sessionAttributes = sessionWrapper.get(ATTRIBUTES);
 
-		byte[] attributesBytes = (sessionAttributes instanceof Binary
-			? ((Binary) sessionAttributes).getData() : (byte[]) sessionAttributes);
+		byte[] attributesBytes = (sessionAttributes instanceof Binary ? ((Binary) sessionAttributes).getData()
+				: (byte[]) sessionAttributes);
 
 		Map<String, Object> attributes = (Map<String, Object>) this.deserializer.convert(attributesBytes);
-		
+
 		for (Map.Entry<String, Object> entry : attributes.entrySet()) {
 			session.setAttribute(entry.getKey(), entry.getValue());
 		}

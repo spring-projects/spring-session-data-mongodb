@@ -77,8 +77,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 		if (FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME.equals(indexName)) {
 			return Query.query(Criteria.where(PRINCIPAL_FIELD_NAME).is(indexValue));
 		} else {
-			return Query.query(Criteria.where(ATTRS_FIELD_NAME +
-				MongoSession.coverDot(indexName)).is(indexValue));
+			return Query.query(Criteria.where(ATTRS_FIELD_NAME + MongoSession.coverDot(indexName)).is(indexValue));
 		}
 	}
 
@@ -102,20 +101,6 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 		return objectMapper;
 	}
 
-	/**
-	 * Used to whitelist {@link MongoSession} for {@link SecurityJackson2Modules}.
-	 */
-	private static class MongoSessionMixin {
-		// Nothing special
-	}
-
-	/**
-	 * Used to whitelist {@link HashMap} for {@link SecurityJackson2Modules}.
-	 */
-	private static class HashMapMixin {
-		// Nothing special
-	}
-
 	@Override
 	protected DBObject convert(MongoSession source) {
 
@@ -132,7 +117,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	protected MongoSession convert(Document source) {
 
 		String json = source.toJson(JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build());
-		
+
 		try {
 			return this.objectMapper.readValue(json, MongoSession.class);
 		} catch (IOException e) {
@@ -141,11 +126,25 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 		}
 	}
 
+	/**
+	 * Used to whitelist {@link MongoSession} for {@link SecurityJackson2Modules}.
+	 */
+	private static class MongoSessionMixin {
+		// Nothing special
+	}
+
+	/**
+	 * Used to whitelist {@link HashMap} for {@link SecurityJackson2Modules}.
+	 */
+	private static class HashMapMixin {
+		// Nothing special
+	}
+
 	private static class MongoIdNamingStrategy extends PropertyNamingStrategy.PropertyNamingStrategyBase {
 
 		@Override
 		public String translate(String propertyName) {
-			
+
 			switch (propertyName) {
 				case "id":
 					return "_id";

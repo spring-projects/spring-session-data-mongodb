@@ -41,7 +41,7 @@ import org.springframework.session.events.SessionDeletedEvent;
  * @author Greg Turnquist
  */
 public class ReactiveMongoOperationsSessionRepository
-	implements ReactiveSessionRepository<MongoSession>, ApplicationEventPublisherAware, InitializingBean {
+		implements ReactiveSessionRepository<MongoSession>, ApplicationEventPublisherAware, InitializingBean {
 
 	/**
 	 * The default time period in seconds in which a session will expire.
@@ -60,7 +60,7 @@ public class ReactiveMongoOperationsSessionRepository
 	@Getter @Setter private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
 	@Getter @Setter private String collectionName = DEFAULT_COLLECTION_NAME;
 	@Setter private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
-		Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
+			Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
 
 	@Setter private MongoOperations blockingMongoOperations;
 	private ApplicationEventPublisher eventPublisher;
@@ -70,36 +70,29 @@ public class ReactiveMongoOperationsSessionRepository
 	}
 
 	/**
-	 * Creates a new {@link MongoSession} that is capable of being persisted by this
-	 * {@link ReactiveSessionRepository}.
+	 * Creates a new {@link MongoSession} that is capable of being persisted by this {@link ReactiveSessionRepository}.
 	 * <p>
-	 * This allows optimizations and customizations in how the {@link MongoSession} is
-	 * persisted. For example, the implementation returned might keep track of the changes
-	 * ensuring that only the delta needs to be persisted on a save.
+	 * This allows optimizations and customizations in how the {@link MongoSession} is persisted. For example, the
+	 * implementation returned might keep track of the changes ensuring that only the delta needs to be persisted on a
+	 * save.
 	 * </p>
 	 *
-	 * @return a new {@link MongoSession} that is capable of being persisted by this
-	 * {@link ReactiveSessionRepository}
+	 * @return a new {@link MongoSession} that is capable of being persisted by this {@link ReactiveSessionRepository}
 	 */
 	@Override
 	public Mono<MongoSession> createSession() {
 
-		return Mono.justOrEmpty(this.maxInactiveIntervalInSeconds)
-			.map(MongoSession::new)
-			.map(mongoSession -> {
-				publishEvent(new SessionCreatedEvent(this, mongoSession));
-				return mongoSession;
-			})
-			.switchIfEmpty(Mono.just(new MongoSession()));
+		return Mono.justOrEmpty(this.maxInactiveIntervalInSeconds) //
+				.map(MongoSession::new) //
+				.doOnNext(mongoSession -> publishEvent(new SessionCreatedEvent(this, mongoSession))) //
+				.switchIfEmpty(Mono.just(new MongoSession()));
 	}
 
 	/**
-	 * Ensures the {@link MongoSession} created by
-	 * {@link ReactiveSessionRepository#createSession()} is saved.
+	 * Ensures the {@link MongoSession} created by {@link ReactiveSessionRepository#createSession()} is saved.
 	 * <p>
-	 * Some implementations may choose to save as the {@link MongoSession} is updated by
-	 * returning a {@link MongoSession} that immediately persists any changes. In this case,
-	 * this method may not actually do anything.
+	 * Some implementations may choose to save as the {@link MongoSession} is updated by returning a {@link MongoSession}
+	 * that immediately persists any changes. In this case, this method may not actually do anything.
 	 * </p>
 	 *
 	 * @param session the {@link MongoSession} to save
@@ -107,9 +100,8 @@ public class ReactiveMongoOperationsSessionRepository
 	@Override
 	public Mono<Void> save(MongoSession session) {
 
-		return this.mongoOperations
-			.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName)
-			.then();
+		return this.mongoOperations.save(convertToDBObject(this.mongoSessionConverter, session), this.collectionName)
+				.then();
 	}
 
 	/**
@@ -118,20 +110,20 @@ public class ReactiveMongoOperationsSessionRepository
 	 *
 	 * @param id the {@link MongoSession#getId()} to lookup
 	 * @return the {@link MongoSession} by the {@link MongoSession#getId()} or {@link Mono#empty()} if no
-	 * {@link MongoSession} is found.
+	 *         {@link MongoSession} is found.
 	 */
 	@Override
 	public Mono<MongoSession> findById(String id) {
 
-		return findSession(id)
-			.map(document -> convertToSession(this.mongoSessionConverter, document))
-			.filter(mongoSession -> !mongoSession.isExpired())
-			.switchIfEmpty(Mono.defer(() -> this.deleteById(id).then(Mono.empty())));
+		return findSession(id) //
+				.map(document -> convertToSession(this.mongoSessionConverter, document)) //
+				.filter(mongoSession -> !mongoSession.isExpired()) //
+				.switchIfEmpty(Mono.defer(() -> this.deleteById(id).then(Mono.empty())));
 	}
 
 	/**
-	 * Deletes the {@link MongoSession} with the given {@link MongoSession#getId()} or does nothing
-	 * if the {@link MongoSession} is not found.
+	 * Deletes the {@link MongoSession} with the given {@link MongoSession#getId()} or does nothing if the
+	 * {@link MongoSession} is not found.
 	 *
 	 * @param id the {@link MongoSession#getId()} to delete
 	 */
@@ -139,10 +131,10 @@ public class ReactiveMongoOperationsSessionRepository
 	public Mono<Void> deleteById(String id) {
 
 		return findSession(id)
-			.flatMap(document -> this.mongoOperations.remove(document, this.collectionName).then(Mono.just(document)))
-			.map(document -> convertToSession(this.mongoSessionConverter, document))
-			.doOnSuccess(mongoSession -> publishEvent(new SessionDeletedEvent(this, mongoSession)))
-			.then();
+				.flatMap(document -> this.mongoOperations.remove(document, this.collectionName).then(Mono.just(document)))
+				.map(document -> convertToSession(this.mongoSessionConverter, document))
+				.doOnSuccess(mongoSession -> publishEvent(new SessionDeletedEvent(this, mongoSession))) //
+				.then();
 	}
 
 	/**
@@ -153,6 +145,7 @@ public class ReactiveMongoOperationsSessionRepository
 	public void afterPropertiesSet() {
 
 		if (this.blockingMongoOperations != null) {
+
 			IndexOperations indexOperations = this.blockingMongoOperations.indexOps(this.collectionName);
 			this.mongoSessionConverter.ensureIndexes(indexOperations);
 		}
@@ -168,10 +161,10 @@ public class ReactiveMongoOperationsSessionRepository
 	}
 
 	private void publishEvent(ApplicationEvent event) {
+
 		try {
 			this.eventPublisher.publishEvent(event);
-		}
-		catch (Throwable ex) {
+		} catch (Throwable ex) {
 			logger.error("Error publishing " + event + ".", ex);
 		}
 	}

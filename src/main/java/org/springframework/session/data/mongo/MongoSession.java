@@ -37,7 +37,7 @@ import org.springframework.session.Session;
  * @author Greg Turnquist
  * @since 1.2
  */
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode(of = { "id" })
 public class MongoSession implements Session {
 
 	/**
@@ -67,6 +67,14 @@ public class MongoSession implements Session {
 		setLastAccessedTime(Instant.ofEpochMilli(this.createdMillis));
 	}
 
+	static String coverDot(String attributeName) {
+		return attributeName.replace('.', DOT_COVER_CHAR);
+	}
+
+	static String uncoverDot(String attributeName) {
+		return attributeName.replace(DOT_COVER_CHAR, '.');
+	}
+
 	public String changeSessionId() {
 
 		String changedId = UUID.randomUUID().toString();
@@ -81,9 +89,7 @@ public class MongoSession implements Session {
 
 	public Set<String> getAttributeNames() {
 
-		return this.attrs.keySet().stream()
-			.map(MongoSession::uncoverDot)
-			.collect(Collectors.toSet());
+		return this.attrs.keySet().stream().map(MongoSession::uncoverDot).collect(Collectors.toSet());
 	}
 
 	public void setAttribute(String attributeName, Object attributeValue) {
@@ -107,33 +113,25 @@ public class MongoSession implements Session {
 		this.createdMillis = created;
 	}
 
+	public Instant getLastAccessedTime() {
+		return Instant.ofEpochMilli(this.accessedMillis);
+	}
+
 	public void setLastAccessedTime(Instant lastAccessedTime) {
 
 		this.accessedMillis = lastAccessedTime.toEpochMilli();
 		this.expireAt = Date.from(lastAccessedTime.plus(Duration.ofSeconds(this.intervalSeconds)));
 	}
 
-	public Instant getLastAccessedTime() {
-		return Instant.ofEpochMilli(this.accessedMillis);
+	public Duration getMaxInactiveInterval() {
+		return Duration.ofSeconds(this.intervalSeconds);
 	}
 
 	public void setMaxInactiveInterval(Duration interval) {
 		this.intervalSeconds = interval.getSeconds();
 	}
 
-	public Duration getMaxInactiveInterval() {
-		return Duration.ofSeconds(this.intervalSeconds);
-	}
-
 	public boolean isExpired() {
 		return this.intervalSeconds >= 0 && new Date().after(this.expireAt);
-	}
-
-	static String coverDot(String attributeName) {
-		return attributeName.replace('.', DOT_COVER_CHAR);
-	}
-
-	static String uncoverDot(String attributeName) {
-		return attributeName.replace(DOT_COVER_CHAR, '.');
 	}
 }

@@ -57,8 +57,7 @@ public abstract class AbstractMongoSessionConverterTest {
 		MongoSession toSerialize = new MongoSession();
 		String principalName = "john_the_springer";
 		SecurityContextImpl context = new SecurityContextImpl();
-		context.setAuthentication(
-			new UsernamePasswordAuthenticationToken(principalName, null));
+		context.setAuthentication(new UsernamePasswordAuthenticationToken(principalName, null));
 		toSerialize.setAttribute("SPRING_SECURITY_CONTEXT", context);
 
 		// when
@@ -66,14 +65,14 @@ public abstract class AbstractMongoSessionConverterTest {
 		MongoSession deserialized = convertToSession(serialized);
 
 		// then
-		assertThat(deserialized).isEqualToComparingOnlyGivenFields(toSerialize,
-			"id", "createdMillis", "accessedMillis", "intervalSeconds", "expireAt");
+		assertThat(deserialized).isEqualToComparingOnlyGivenFields(toSerialize, "id", "createdMillis", "accessedMillis",
+				"intervalSeconds", "expireAt");
 
 		SecurityContextImpl springSecurityContextBefore = toSerialize.getAttribute("SPRING_SECURITY_CONTEXT");
 		SecurityContextImpl springSecurityContextAfter = deserialized.getAttribute("SPRING_SECURITY_CONTEXT");
 
 		assertThat(springSecurityContextBefore).isEqualToComparingOnlyGivenFields(springSecurityContextAfter,
-			"authentication.principal", "authentication.authorities", "authentication.authenticated");
+				"authentication.principal", "authentication.authorities", "authentication.authenticated");
 		assertThat(springSecurityContextAfter.getAuthentication().getPrincipal()).isEqualTo("john_the_springer");
 		assertThat(springSecurityContextAfter.getAuthentication().getCredentials()).isNull();
 	}
@@ -84,9 +83,7 @@ public abstract class AbstractMongoSessionConverterTest {
 		// given
 		MongoSession toSerialize = new MongoSession();
 		String principalName = "john_the_springer";
-		toSerialize.setAttribute(
-			FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME,
-			principalName);
+		toSerialize.setAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME, principalName);
 
 		// when
 		DBObject dbObject = convertToDBObject(toSerialize);
@@ -102,8 +99,7 @@ public abstract class AbstractMongoSessionConverterTest {
 		MongoSession toSerialize = new MongoSession();
 		String principalName = "john_the_springer";
 		SecurityContextImpl context = new SecurityContextImpl();
-		context.setAuthentication(
-			new UsernamePasswordAuthenticationToken(principalName, null));
+		context.setAuthentication(new UsernamePasswordAuthenticationToken(principalName, null));
 		toSerialize.setAttribute("SPRING_SECURITY_CONTEXT", context);
 
 		// when
@@ -130,16 +126,13 @@ public abstract class AbstractMongoSessionConverterTest {
 	}
 
 	MongoSession convertToSession(DBObject session) {
-		return (MongoSession) getMongoSessionConverter().convert(session,
-			TypeDescriptor.valueOf(DBObject.class),
-			TypeDescriptor.valueOf(MongoSession.class));
+		return (MongoSession) getMongoSessionConverter().convert(session, TypeDescriptor.valueOf(DBObject.class),
+				TypeDescriptor.valueOf(MongoSession.class));
 	}
 
 	DBObject convertToDBObject(MongoSession session) {
-		return (DBObject) getMongoSessionConverter().convert(session,
-			TypeDescriptor.valueOf(MongoSession.class),
-			TypeDescriptor.valueOf(DBObject.class));
+		return (DBObject) getMongoSessionConverter().convert(session, TypeDescriptor.valueOf(MongoSession.class),
+				TypeDescriptor.valueOf(DBObject.class));
 	}
-
 
 }

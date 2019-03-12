@@ -52,7 +52,7 @@ import org.springframework.web.server.session.WebSessionManager;
 public class ReactiveMongoWebSessionConfigurationTest {
 
 	private AnnotationConfigApplicationContext context;
-	
+
 	@After
 	public void tearDown() {
 
@@ -84,8 +84,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.register(BadConfig.class);
 
-		assertThatExceptionOfType(UnsatisfiedDependencyException.class)
-				.isThrownBy(this.context::refresh)
+		assertThatExceptionOfType(UnsatisfiedDependencyException.class).isThrownBy(this.context::refresh)
 				.withMessageContaining("Error creating bean with name 'reactiveMongoOperationsSessionRepository'")
 				.withMessageContaining("No qualifying bean of type '" + ReactiveMongoOperations.class.getCanonicalName());
 	}
@@ -97,13 +96,12 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(GoodConfig.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoOperationsSessionRepository repository = this.context
+				.getBean(ReactiveMongoOperationsSessionRepository.class);
 
 		AbstractMongoSessionConverter converter = findMongoSessionConverter(repository);
 
-		assertThat(converter)
-			.extracting(AbstractMongoSessionConverter::getClass)
-			.contains(JdkMongoSessionConverter.class);
+		assertThat(converter).extracting(AbstractMongoSessionConverter::getClass).contains(JdkMongoSessionConverter.class);
 	}
 
 	@Test
@@ -113,13 +111,13 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(OverrideSessionConverterConfig.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoOperationsSessionRepository repository = this.context
+				.getBean(ReactiveMongoOperationsSessionRepository.class);
 
 		AbstractMongoSessionConverter converter = findMongoSessionConverter(repository);
 
-		assertThat(converter)
-			.extracting(AbstractMongoSessionConverter::getClass)
-			.contains(JacksonMongoSessionConverter.class);
+		assertThat(converter).extracting(AbstractMongoSessionConverter::getClass)
+				.contains(JacksonMongoSessionConverter.class);
 	}
 
 	@Test
@@ -129,13 +127,16 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(OverrideMongoParametersConfig.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoOperationsSessionRepository repository = this.context
+				.getBean(ReactiveMongoOperationsSessionRepository.class);
 
-		Field inactiveField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class, "maxInactiveIntervalInSeconds");
+		Field inactiveField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class,
+				"maxInactiveIntervalInSeconds");
 		ReflectionUtils.makeAccessible(inactiveField);
 		Integer inactiveSeconds = (Integer) inactiveField.get(repository);
 
-		Field collectionNameField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class, "collectionName");
+		Field collectionNameField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class,
+				"collectionName");
 		ReflectionUtils.makeAccessible(collectionNameField);
 		String collectionName = (String) collectionNameField.get(repository);
 
@@ -165,14 +166,16 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(CustomizedReactiveConfiguration.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoOperationsSessionRepository repository = this.context
+				.getBean(ReactiveMongoOperationsSessionRepository.class);
+
 		assertThat(repository.getCollectionName()).isEqualTo("custom-collection");
 		assertThat(repository.getMaxInactiveIntervalInSeconds()).isEqualTo(123);
 	}
 
 	/**
-	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the {@link ReactiveMongoOperationsSessionRepository}.
-	 * This is to avoid expanding the surface area of the API.
+	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the
+	 * {@link ReactiveMongoOperationsSessionRepository}. This is to avoid expanding the surface area of the API.
 	 * 
 	 * @param repository
 	 * @return
@@ -249,7 +252,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 
 		@Bean
 		MongoOperations mongoOperations(IndexOperations indexOperations) {
-			
+
 			MongoOperations mongoOperations = mock(MongoOperations.class);
 			given(mongoOperations.indexOps((String) any())).willReturn(indexOperations);
 			return mongoOperations;
@@ -259,15 +262,15 @@ public class ReactiveMongoWebSessionConfigurationTest {
 	@EnableSpringWebSession
 	static class CustomizedReactiveConfiguration extends ReactiveMongoWebSessionConfiguration {
 
-		@Bean
-		ReactiveMongoOperations reactiveMongoOperations() {
-			return mock(ReactiveMongoOperations.class);
-		}
-
 		public CustomizedReactiveConfiguration() {
 
 			this.setCollectionName("custom-collection");
 			this.setMaxInactiveIntervalInSeconds(123);
+		}
+
+		@Bean
+		ReactiveMongoOperations reactiveMongoOperations() {
+			return mock(ReactiveMongoOperations.class);
 		}
 	}
 }

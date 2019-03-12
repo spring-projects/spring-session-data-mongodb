@@ -36,8 +36,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
 /**
- * Configuration class registering {@code MongoSessionRepository} bean. To import this
- * configuration use {@link EnableMongoHttpSession} annotation.
+ * Configuration class registering {@code MongoSessionRepository} bean. To import this configuration use
+ * {@link EnableMongoHttpSession} annotation.
  *
  * @author Jakub Kubrynski
  * @author Eddú Meléndez
@@ -62,10 +62,9 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 		if (this.mongoSessionConverter != null) {
 			repository.setMongoSessionConverter(this.mongoSessionConverter);
 		} else {
-			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
-				new SerializingConverter(),
-				new DeserializingConverter(this.classLoader),
-				Duration.ofSeconds(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL));
+			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(new SerializingConverter(),
+					new DeserializingConverter(this.classLoader),
+					Duration.ofSeconds(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL));
 			repository.setMongoSessionConverter(mongoSessionConverter);
 		}
 
@@ -86,8 +85,8 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 
 	public void setImportMetadata(AnnotationMetadata importMetadata) {
 
-		AnnotationAttributes attributes = AnnotationAttributes.fromMap(
-			importMetadata.getAnnotationAttributes(EnableMongoHttpSession.class.getName()));
+		AnnotationAttributes attributes = AnnotationAttributes
+				.fromMap(importMetadata.getAnnotationAttributes(EnableMongoHttpSession.class.getName()));
 
 		this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
 

@@ -15,12 +15,11 @@
  */
 package org.springframework.session.data.mongo;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 import java.lang.reflect.Field;
 
 import org.junit.Test;
-
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
 
@@ -43,13 +42,13 @@ public class JacksonMongoSessionConverterTest extends AbstractMongoSessionConver
 	@Test
 	public void shouldSaveIdField() throws Exception {
 
-		//given
+		// given
 		MongoSession session = new MongoSession();
 
-		//when
+		// when
 		DBObject convert = this.mongoSessionConverter.convert(session);
 
-		//then
+		// then
 		assertThat(convert.get("_id")).isEqualTo(session.getId());
 		assertThat(convert.get("id")).isNull();
 	}
@@ -57,10 +56,10 @@ public class JacksonMongoSessionConverterTest extends AbstractMongoSessionConver
 	@Test
 	public void shouldQueryAgainstAttribute() throws Exception {
 
-		//when
+		// when
 		Query cart = this.mongoSessionConverter.getQueryForIndex("cart", "my-cart");
 
-		//then
+		// then
 		assertThat(cart.getQueryObject().get("attrs.cart")).isEqualTo("my-cart");
 	}
 
@@ -72,7 +71,6 @@ public class JacksonMongoSessionConverterTest extends AbstractMongoSessionConver
 
 		// when
 		JacksonMongoSessionConverter converter = new JacksonMongoSessionConverter(myMapper);
-
 
 		// then
 		Field objectMapperField = ReflectionUtils.findField(JacksonMongoSessionConverter.class, "objectMapper");
