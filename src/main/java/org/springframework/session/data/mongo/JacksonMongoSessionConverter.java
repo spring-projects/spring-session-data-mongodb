@@ -111,8 +111,10 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 
 		try {
 			DBObject dbSession = (DBObject) JSON.parse(this.objectMapper.writeValueAsString(source));
-			dbSession.put(EXPIRE_AT_FIELD_NAME, source.getExpireAt());
+
+			// Override default serialization with proper values.
 			dbSession.put(PRINCIPAL_FIELD_NAME, extractPrincipal(source));
+			dbSession.put(EXPIRE_AT_FIELD_NAME, source.getExpireAt());
 			return dbSession;
 		} catch (JsonProcessingException e) {
 			throw new IllegalStateException("Cannot convert MongoExpiringSession", e);
@@ -123,8 +125,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	@Nullable
 	protected MongoSession convert(Document source) {
 
-		Date expireAt = source.getDate(EXPIRE_AT_FIELD_NAME);
-		source.remove(EXPIRE_AT_FIELD_NAME);
+		Date expireAt = (Date) source.remove(EXPIRE_AT_FIELD_NAME);
 		String json = source.toJson(JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build());
 
 		try {

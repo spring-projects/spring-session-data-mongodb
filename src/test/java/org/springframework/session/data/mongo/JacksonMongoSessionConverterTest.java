@@ -44,7 +44,7 @@ public class JacksonMongoSessionConverterTest extends AbstractMongoSessionConver
 	}
 
 	@Test
-	public void shouldSaveIdField() throws Exception {
+	public void shouldSaveIdField() {
 
 		// given
 		MongoSession session = new MongoSession();
@@ -109,16 +109,19 @@ public class JacksonMongoSessionConverterTest extends AbstractMongoSessionConver
 
 		// given
 		Date now = new Date();
-		HashMap data = new HashMap();
+		HashMap<String, Object> data = new HashMap<>();
+
 		data.put("expireAt", now);
 		data.put("@class", MongoSession.class.getName());
 		data.put("_id", new ObjectId().toString());
+		
 		Document document = new Document(data);
 
 		// when
 		MongoSession convertedSession = this.mongoSessionConverter.convert(document);
 
 		// then
+		assertThat(convertedSession).isNotNull();
 		assertThat(convertedSession.getExpireAt()).isEqualTo(now);
 	}
 
