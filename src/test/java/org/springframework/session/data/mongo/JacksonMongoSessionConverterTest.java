@@ -18,7 +18,11 @@ package org.springframework.session.data.mongo;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import java.lang.reflect.Field;
+import java.util.Date;
+import java.util.HashMap;
 
+import org.bson.Document;
+import org.bson.types.ObjectId;
 import org.junit.Test;
 
 import org.springframework.data.mongodb.core.query.Query;
@@ -87,4 +91,37 @@ public class JacksonMongoSessionConverterTest extends AbstractMongoSessionConver
 
 		new JacksonMongoSessionConverter((ObjectMapper) null);
 	}
+
+	@Test
+	public void shouldSaveExpireAtAsDate() {
+
+		//given
+		MongoSession session = new MongoSession();
+
+		//when
+		DBObject convert = this.mongoSessionConverter.convert(session);
+
+		//then
+		assertThat(convert.get("expireAt")).isInstanceOf(Date.class);
+		assertThat(convert.get("expireAt")).isEqualTo(session.getExpireAt());
+	}
+
+	@Test
+	public void shouldLoadExpireAtFromDocument() {
+
+		// given
+		Date now = new Date();
+		HashMap data = new HashMap();
+		data.put("expireAt", now);
+		data.put("@class", MongoSession.class.getName());
+		data.put("_id", new ObjectId().toString());
+		Document document = new Document(data);
+
+		// when
+		MongoSession convertedSession = this.mongoSessionConverter.convert(document);
+
+		// then
+		assertThat(convertedSession.getExpireAt()).isEqualTo(now);
+	}
+
 }
