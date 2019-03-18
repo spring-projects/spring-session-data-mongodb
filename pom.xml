@@ -4,7 +4,7 @@
 
 	<groupId>org.springframework.session</groupId>
 	<artifactId>spring-session-data-mongodb</artifactId>
-	<version>2.1.3.BUILD-SNAPSHOT</version>
+	<version>2.2.0.BUILD-SNAPSHOT</version>
 
 	<name>Spring Session MongoDB</name>
 	<url>https://spring.io/projects/spring-session-data-mongodb</url>
@@ -12,7 +12,7 @@
 		Persist session data in MongoDB
 	</description>
 
-	<inceptionYear>2014-2018</inceptionYear>
+	<inceptionYear>2014-2019</inceptionYear>
 
 	<organization>
 		<name>Pivotal, Inc.</name>
@@ -47,7 +47,7 @@
 			<name>Apache License, Version 2.0</name>
 			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
 			<comments>
-				Copyright 2011-2018 the original author or authors.
+				Copyright 2011-2019 the original author or authors.
 
 				Licensed under the Apache License, Version 2.0 (the "License");
 				you may not use this file except in compliance with the License.
@@ -69,21 +69,21 @@
 		<source.level>1.8</source.level>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		
-		<assertj.version>3.9.1</assertj.version>
-		<flapdoodle.version>1.50.5</flapdoodle.version>
+		<assertj.version>3.12.2</assertj.version>
+		<flapdoodle.version>2.2.0</flapdoodle.version>
 		<hamcrest.version>1.3</hamcrest.version>
-		<jackson.version>2.9.1</jackson.version>
+		<jackson.version>2.9.8</jackson.version>
 		<jsr305.version>3.0.2</jsr305.version>
 		<junit.version>4.12</junit.version>
-		<lombok.version>1.18.0</lombok.version>
-		<mockito.version>2.18.3</mockito.version>
-		<mongo.version>3.8.0</mongo.version>
-		<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
+		<lombok.version>1.18.6</lombok.version>
+		<mockito.version>2.25.1</mockito.version>
+		<mongo.version>3.10.1</mongo.version>
+		<mongo-reactivestreams.version>1.11.0</mongo-reactivestreams.version>
 		<reactor.version>Californium-SR5</reactor.version>
-		<spring.version>5.1.5.RELEASE</spring.version>
-		<spring-data.version>Lovelace-SR5</spring-data.version>
+		<spring.version>5.2.0.BUILD-SNAPSHOT</spring.version>
+		<spring-data.version>Moore-M2</spring-data.version>
 		<spring-security.version>5.1.4.RELEASE</spring-security.version>
-		<spring-session.version>2.1.2.RELEASE</spring-session.version>
+		<spring-session.version>2.2.0.BUILD-SNAPSHOT</spring-session.version>
 	</properties>
 
 	<profiles>
@@ -92,10 +92,8 @@
 			<id>spring-next</id>
 			<properties>
 				<reactor.version>Californium-BUILD-SNAPSHOT</reactor.version>
-				<spring.version>5.1.6.BUILD-SNAPSHOT</spring.version>
-				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
+				<spring-data.version>Moore-BUILD-SNAPSHOT</spring-data.version>
 				<spring-security.version>5.1.5.BUILD-SNAPSHOT</spring-security.version>
-				<spring-session.version>2.1.3.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
@@ -589,6 +587,12 @@
 			<artifactId>mongodb-driver-reactivestreams</artifactId>
 			<version>${mongo-reactivestreams.version}</version>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mongodb</groupId>
+					<artifactId>mongodb-driver-async</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
