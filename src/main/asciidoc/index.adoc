@@ -12,7 +12,7 @@ Spring Session MongoDB provides an API and implementations for managing a user's
 [[introduction]]
 == Introduction
 
-For an introduction to Spring Session as a whole, visit http://docs.spring.io/spring-session/docs/{spring-session-version}/reference/html5/[Spring Session] itself.
+For an introduction to Spring Session as a whole, visit https://docs.spring.io/spring-session/docs/{spring-session-version}/reference/html5/[Spring Session] itself.
 
 [[samples]]
 == Samples and Guides (Start Here)
@@ -104,7 +104,7 @@ Please find additional information below.
 [[community-support]]
 === Support
 
-You can get help by asking questions on http://stackoverflow.com/questions/tagged/spring-session[StackOverflow with the tag spring-session].
+You can get help by asking questions on https://stackoverflow.com/questions/tagged/spring-session[StackOverflow with the tag spring-session].
 Similarly we encourage helping others by answering questions on StackOverflow.
 
 [[community-source]]
