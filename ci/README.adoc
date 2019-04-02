@@ -47,9 +47,9 @@ With this pipeline in place, you can now activate and expose it:
 
 2. With the release tagged, push the tagged version to the release branch.
 ----
-% git checkout -b release
+% git checkout -b release-2.1.x
 % git reset --hard <tag>
-% git push -f origin release
+% git push -f origin release-2.1.x
 ----
 
 NOTE: You can chain the previous set of commands together using `&&`.
