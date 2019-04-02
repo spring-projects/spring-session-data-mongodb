@@ -48,7 +48,7 @@ resources:
     uri: https://repo.spring.io
     username: ((artifactory-username))
     password: ((artifactory-password))
-    build_name: spring-session-data-mongodb-2.x
+    build_name: spring-session-data-mongodb-2.0.x
 
 - name: spring-session-data-mongodb-pull-requests
   type: pull-request
@@ -213,8 +213,8 @@ jobs:
         - "/**"
         properties:
           zip.deployed: false
-          zip.displayname: "spring-session-data-mongodb-2.x"
-          zip.name: "spring-session-data-mongodb-2.x"
+          zip.displayname: "spring-session-data-mongodb-2.0.x"
+          zip.name: "spring-session-data-mongodb-2.0.x"
           zip.type: "docs"
   on_failure:
     aggregate:
@@ -332,8 +332,8 @@ jobs:
         - "/**"
         properties:
           zip.deployed: false
-          zip.displayname: "spring-session-data-mongodb-2.x"
-          zip.name: "spring-session-data-mongodb-2.x"
+          zip.displayname: "spring-session-data-mongodb-2.0.x"
+          zip.name: "spring-session-data-mongodb-2.0.x"
           zip.type: "docs"
   on_failure:
     aggregate:
