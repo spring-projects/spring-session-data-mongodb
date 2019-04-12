@@ -9,7 +9,7 @@ buildName=$( cat spring-session-data-mongodb-artifactory/build-info.json | jq -r
 buildNumber=$( cat spring-session-data-mongodb-artifactory/build-info.json | jq -r '.buildInfo.number' )
 groupId=$( cat spring-session-data-mongodb-artifactory/build-info.json | jq -r '.buildInfo.modules[0].id' | sed 's/\(.*\):.*:.*/\1/' )
 version=$( cat spring-session-data-mongodb-artifactory/build-info.json | jq -r '.buildInfo.modules[0].id' | sed 's/.*:.*:\(.*\)/\1/' )
-targetRepo="libs-release-local"
+targetRepo="libs-milestone-local"
 
 echo "Promoting ${buildName}/${buildNumber} to ${targetRepo}"
 
@@ -19,7 +19,7 @@ curl \
 	--max-time 2700 \
 	-u ${ARTIFACTORY_USERNAME}:${ARTIFACTORY_PASSWORD} \
 	-H "Content-type:application/json" \
-	-d "{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\", \"async\":\"true\"}" \
+	-d "{\"sourceRepos\": [\"libs-milestone-local\"], \"targetRepo\" : \"spring-distributions\", \"async\":\"true\"}" \
 	-f \
 	-X \
 	POST "https://repo.spring.io/api/build/distribute/${buildName}/${buildNumber}" > /dev/null || { echo "Failed to distribute" >&2; exit 1; }
