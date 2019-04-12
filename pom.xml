@@ -83,7 +83,7 @@
 		<spring.version>5.2.0.M1</spring.version>
 		<spring-data.version>Moore-M3</spring-data.version>
 		<spring-security.version>5.1.5.RELEASE</spring-security.version>
-		<spring-session.version>2.2.0.BUILD-SNAPSHOT</spring-session.version>
+		<spring-session.version>2.2.0.M1</spring-session.version>
 	</properties>
 
 	<profiles>
