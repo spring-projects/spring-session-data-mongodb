@@ -335,7 +335,7 @@ jobs:
     params:
       build_number:   ${BUILD_NAME}
       build_uri:      ${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}
-      repo:           libs-release-local
+      repo:           libs-milestone-local
       folder:         spring-session-data-mongodb-artifactory
       artifact_set:
       - include:
