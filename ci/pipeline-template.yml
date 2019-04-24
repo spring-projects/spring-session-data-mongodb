@@ -1,55 +1,60 @@
 ---
 resource_types:
 - name: artifactory-resource
-  type: docker-image
+  type: registry-image
   source:
     repository: springio/artifactory-resource
     tag:        0.0.6
 
 - name: github-status
-  type: docker-image
+  type: registry-image
   source:
     repository: dpb587/github-status-resource
     tag:        master
 
 - name: pull-request
-  type: docker-image
+  type: registry-image
   source:
     repository: jtarchie/pr
     tag:        latest
     
 - name: slack-notification
-  type: docker-image
+  type: registry-image
   source:
     repository: nebhale/slack-notification-resource
 
 resources:
 - name: openjdk:8-jdk
-  type: docker-image
+  type: registry-image
+  icon: docker
   source:
     repository: openjdk
     tag:        8-jdk
 
 - name: openjdk:11-jdk
-  type: docker-image
+  type: registry-image
+  icon: docker
   source:
     repository: openjdk
     tag:        11-jdk
 
 - name: openjdk:13-jdk
-  type: docker-image
+  type: registry-image
+  icon: docker
   source:
     repository: openjdk
     tag:        13-jdk
 
 - name: spring-session-data-mongodb-github
   type: git
+  icon: github-circle
   source:
     uri: https://github.com/spring-projects/spring-session-data-mongodb.git
     branch: ((branch))
 
 - name: spring-session-data-mongodb-artifactory
   type: artifactory-resource
+  icon: package-variant
   source:
     uri: https://repo.spring.io
     username: ((artifactory-username))
@@ -58,6 +63,7 @@ resources:
 
 - name: spring-session-data-mongodb-pull-requests
   type: pull-request
+  icon: source-pull
   source:
     access_token: ((github-access-token))
     repo: spring-projects/spring-session-data-mongodb
@@ -65,12 +71,14 @@ resources:
 
 - name: spring-session-data-mongodb-release
   type: git
+  icon: github-circle
   source:
     uri: https://github.com/spring-projects/spring-session-data-mongodb.git
-    branch: ((release-branch))
+    tag_filter: v*
 
 - name: spring-session-data-mongodb-status
   type: github-status
+  icon: eye-check
   source:
     access_token: ((github-access-token))
     repository:   spring-projects/spring-session-data-mongodb
@@ -78,19 +86,20 @@ resources:
 
 - name: slack
   type: slack-notification
+  icon: slack
   source:
     url: ((slack))
 
 groups:
 - name: spring-session-data-mongodb
   jobs:
-  - Test - JDK 8
-  - Test - JDK 8 and Spring.NEXT
-  - Test - JDK 11
-  - Test - JDK 11 and Spring.NEXT
-  - Test - JDK 13
-  - Test - JDK 13 and Spring.NEXT
-  - Build
+  - spring-session-data-mongodb-test-jdk8
+  - spring-session-data-mongodb-test-jdk8-spring-next
+  - spring-session-data-mongodb-test-jdk11
+  - spring-session-data-mongodb-test-jdk11-spring-next
+  - spring-session-data-mongodb-test-jdk13
+  - spring-session-data-mongodb-test-jdk13-spring-next
+  - build
 - name: pull-requests
   jobs:
   - spring-session-data-mongodb-pull-requests
@@ -101,7 +110,7 @@ groups:
   - sync-to-maven-central
 
 jobs:
-- name: Test - JDK 8
+- name: spring-session-data-mongodb-test-jdk8
   serial: true
   public: true
   plan:
@@ -112,11 +121,27 @@ jobs:
   - task: test
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  on_success:
+    put: slack
+    params:
+      attachments:
+        - color: good
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has succeeded"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_failure:
+    put: slack
+    params:
+      attachments:
+        - color: danger
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has failed"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
 
-- name: Test - JDK 8 and Spring.NEXT
+- name: spring-session-data-mongodb-test-jdk8-spring-next
   serial: true
   public: true
   plan:
@@ -127,10 +152,26 @@ jobs:
   - task: test
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "spring-next,convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  on_success:
+    put: slack
+    params:
+      attachments:
+        - color: good
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has succeeded"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_failure:
+    put: slack
+    params:
+      attachments:
+        - color: danger
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has failed"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
-- name: Test - JDK 11
+- name: spring-session-data-mongodb-test-jdk11
   serial: true
   public: true
   plan:
@@ -142,10 +183,26 @@ jobs:
     image: openjdk:11-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  on_success:
+    put: slack
+    params:
+      attachments:
+        - color: good
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has succeeded"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_failure:
+    put: slack
+    params:
+      attachments:
+        - color: danger
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has failed"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
-- name: Test - JDK 11 and Spring.NEXT
+- name: spring-session-data-mongodb-test-jdk11-spring-next
   serial: true
   public: true
   plan:
@@ -157,10 +214,26 @@ jobs:
     image: openjdk:11-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "spring-next,convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  on_success:
+    put: slack
+    params:
+      attachments:
+        - color: good
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has succeeded"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_failure:
+    put: slack
+    params:
+      attachments:
+        - color: danger
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has failed"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
-- name: Test - JDK 13
+- name: spring-session-data-mongodb-test-jdk13
   serial: true
   public: true
   plan:
@@ -172,10 +245,26 @@ jobs:
     image: openjdk:13-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  on_success:
+    put: slack
+    params:
+      attachments:
+        - color: good
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has succeeded"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_failure:
+    put: slack
+    params:
+      attachments:
+        - color: danger
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has failed"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
-- name: Test - JDK 13 and Spring.NEXT
+- name: spring-session-data-mongodb-test-jdk13-spring-next
   serial: true
   public: true
   plan:
@@ -187,22 +276,38 @@ jobs:
     image: openjdk:13-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "spring-next,convergence" }
-  <<: *slack-success
-  <<: *slack-failure
+  on_success:
+    put: slack
+    params:
+      attachments:
+        - color: good
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has succeeded"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
+  on_failure:
+    put: slack
+    params:
+      attachments:
+        - color: danger
+          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
+          text: "Test has failed"
+          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
+          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
-- name: Build
+- name: build
   serial: true
   public: true
   plan:
   - get: spring-session-data-mongodb-github
     trigger: true
     passed: [
-      Test - JDK 8,
-      Test - JDK 8 and Spring.NEXT,
-      Test - JDK 11,
-      Test - JDK 11 and Spring.NEXT,
-      Test - JDK 13,
-      Test - JDK 13 and Spring.NEXT
+      spring-session-data-mongodb-test-jdk8,
+      spring-session-data-mongodb-test-jdk8-spring-next,
+      spring-session-data-mongodb-test-jdk11,
+      spring-session-data-mongodb-test-jdk11-spring-next,
+      spring-session-data-mongodb-test-jdk13,
+      spring-session-data-mongodb-test-jdk13-spring-next
     ]
   - put: spring-session-data-mongodb-status
     params:
@@ -267,25 +372,25 @@ jobs:
       path: spring-session-data-mongodb-github
       status: pending
   - aggregate:
-    - task: test (JDK 8)
+    - task: test-jdk8
       file: spring-session-data-mongodb-github/ci/test.yml
       params: { PROFILE: "convergence" }
-    - task: test (JDK 8 and Spring.NEXT)
+    - task: test-jdk8-spring-next
       file: spring-session-data-mongodb-github/ci/test.yml
       params: { PROFILE: "spring-next,convergence" }
-    - task: test (JDK 11)
+    - task: test-jdk11
       image: openjdk:11-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
       params: { PROFILE: "convergence" }
-    - task: test (JDK 11 and Spring.NEXT)
+    - task: test-jdk11-spring-next
       image: openjdk:11-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
       params: { PROFILE: "spring-next,convergence" }
-    - task: test (JDK 13)
+    - task: test-jdk13
       image: openjdk:13-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
       params: { PROFILE: "convergence" }
-    - task: test (JDK 13 and Spring.NEXT)
+    - task: test-jdk13-spring-next
       image: openjdk:13-jdk
       file: spring-session-data-mongodb-github/ci/test.yml
       params: { PROFILE: "spring-next,convergence" }
@@ -465,26 +570,4 @@ jobs:
             text: "Syncing to maven central has succeeded!"
             title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
             title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-
-slack-failure: &slack-failure
-  on_failure:
-    put: slack
-    params:
-      attachments:
-        - color: danger
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Test has failed"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
-
-slack-success: &slack-success
-  on_success:
-    put: slack
-    params:
-      attachments:
-        - color: good
-          fallback: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME <FAILURE>"
-          text: "Test has succeeded"
-          title: "$BUILD_PIPELINE_NAME/$BUILD_JOB_NAME #$BUILD_NAME"
-          title_link: $ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME
 
