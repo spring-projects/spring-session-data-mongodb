@@ -44,7 +44,7 @@ With this pipeline in place, you can now activate and expose it:
 ----
 % ci/create-release.sh <release version> <next snapshot version>
 ----
-
++
 2. With the release officially tagged, just push it to master.
 ----
 % git push
