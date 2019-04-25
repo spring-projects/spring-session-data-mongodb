@@ -177,9 +177,10 @@ jobs:
   plan:
   - get: spring-session-data-mongodb-github
     trigger: true
-  - get: openjdk:8-jdk
+  - get: openjdk:11-jdk
     trigger: true
   - task: test
+    image: openjdk:11-jdk
     file: spring-session-data-mongodb-github/ci/test.yml
     params: { PROFILE: "convergence" }
   on_success:
