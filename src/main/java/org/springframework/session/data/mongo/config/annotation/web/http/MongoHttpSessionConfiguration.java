@@ -98,8 +98,8 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 
 	public void setImportMetadata(AnnotationMetadata importMetadata) {
 
-		AnnotationAttributes attributes = AnnotationAttributes.fromMap(
-				importMetadata.getAnnotationAttributes(EnableMongoHttpSession.class.getName()));
+		AnnotationAttributes attributes = AnnotationAttributes
+				.fromMap(importMetadata.getAnnotationAttributes(EnableMongoHttpSession.class.getName()));
 
 		if (attributes != null) {
 			this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");

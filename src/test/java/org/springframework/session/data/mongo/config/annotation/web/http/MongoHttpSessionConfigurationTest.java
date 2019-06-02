@@ -15,12 +15,21 @@
  */
 package org.springframework.session.data.mongo.config.annotation.web.http;
 
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.*;
+
+
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
@@ -28,12 +37,6 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
 
 /**
  * Tests for {@link MongoHttpSessionConfiguration}.
@@ -47,8 +50,7 @@ public class MongoHttpSessionConfigurationTest {
 
 	private static final int MAX_INACTIVE_INTERVAL_IN_SECONDS = 600;
 
-	@Rule
-	public final ExpectedException thrown = ExpectedException.none();
+	@Rule public final ExpectedException thrown = ExpectedException.none();
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
@@ -106,8 +108,8 @@ public class MongoHttpSessionConfigurationTest {
 		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
 
 		assertThat(repository).isNotNull();
-		assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds")).isEqualTo(
-				MAX_INACTIVE_INTERVAL_IN_SECONDS);
+		assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds"))
+				.isEqualTo(MAX_INACTIVE_INTERVAL_IN_SECONDS);
 	}
 
 	@Test
@@ -118,8 +120,8 @@ public class MongoHttpSessionConfigurationTest {
 		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
 
 		assertThat(repository).isNotNull();
-		assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds")).isEqualTo(
-				MAX_INACTIVE_INTERVAL_IN_SECONDS);
+		assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds"))
+				.isEqualTo(MAX_INACTIVE_INTERVAL_IN_SECONDS);
 	}
 
 	@Test
@@ -138,8 +140,7 @@ public class MongoHttpSessionConfigurationTest {
 	@Test
 	public void resolveCollectionNameByPropertyPlaceholder() {
 
-		this.context.setEnvironment(
-				new MockEnvironment().withProperty("session.mongo.collectionName", COLLECTION_NAME));
+		this.context.setEnvironment(new MockEnvironment().withProperty("session.mongo.collectionName", COLLECTION_NAME));
 		registerAndRefresh(CustomMongoJdbcSessionConfiguration.class);
 
 		MongoHttpSessionConfiguration configuration = this.context.getBean(MongoHttpSessionConfiguration.class);
