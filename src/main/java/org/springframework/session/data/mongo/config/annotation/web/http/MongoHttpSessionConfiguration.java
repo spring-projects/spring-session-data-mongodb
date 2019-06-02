@@ -69,7 +69,7 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 	@Bean
 	public MongoOperationsSessionRepository mongoSessionRepository() {
 
-		MongoOperationsSessionRepository repository = new MongoOperationsSessionRepository(mongoOperations);
+		MongoOperationsSessionRepository repository = new MongoOperationsSessionRepository(this.mongoOperations);
 		repository.setMaxInactiveIntervalInSeconds(this.maxInactiveIntervalInSeconds);
 
 		if (this.mongoSessionConverter != null) {
