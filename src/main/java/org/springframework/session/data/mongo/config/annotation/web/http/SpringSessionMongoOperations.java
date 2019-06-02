@@ -19,17 +19,17 @@ import java.lang.annotation.*;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * Qualifier annotation for a {@link org.springframework.data.mongodb.core.MongoOperations} to be injected in
  * {@link org.springframework.session.data.mongo.MongoOperationsSessionRepository}.
- *
+ * <p>
  * This will enable us to have multiple MongoOperations in the application.
  *
  * @author Visweshwar Ganesh
  * @since 2.2.0
  */
-@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
-        ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Qualifier

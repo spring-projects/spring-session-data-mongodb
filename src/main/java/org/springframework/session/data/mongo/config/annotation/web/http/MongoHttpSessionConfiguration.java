@@ -46,86 +46,86 @@ import org.springframework.util.StringValueResolver;
  */
 @Configuration
 public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguration
-        implements BeanClassLoaderAware, EmbeddedValueResolverAware, ImportAware {
+		implements BeanClassLoaderAware, EmbeddedValueResolverAware, ImportAware {
 
-    private AbstractMongoSessionConverter mongoSessionConverter;
-    private Integer maxInactiveIntervalInSeconds;
-    private String collectionName;
-    private StringValueResolver embeddedValueResolver;
-    private ClassLoader classLoader;
-    private MongoOperations mongoOperations;
+	private AbstractMongoSessionConverter mongoSessionConverter;
+	private Integer maxInactiveIntervalInSeconds;
+	private String collectionName;
+	private StringValueResolver embeddedValueResolver;
+	private ClassLoader classLoader;
+	private MongoOperations mongoOperations;
 
-    @Autowired
-    public void setMongoOperations(
-            @SpringSessionMongoOperations ObjectProvider<MongoOperations> springSessionMongoOperations,
-            ObjectProvider<MongoOperations> mongoOperations) {
-        MongoOperations mongoOperationsToUse = springSessionMongoOperations.getIfAvailable();
-        if (mongoOperationsToUse == null) {
-            mongoOperationsToUse = mongoOperations.getObject();
-        }
-        this.mongoOperations = mongoOperationsToUse;
-    }
+	@Autowired
+	public void setMongoOperations(
+			@SpringSessionMongoOperations ObjectProvider<MongoOperations> springSessionMongoOperations,
+			ObjectProvider<MongoOperations> mongoOperations) {
+		MongoOperations mongoOperationsToUse = springSessionMongoOperations.getIfAvailable();
+		if (mongoOperationsToUse == null) {
+			mongoOperationsToUse = mongoOperations.getObject();
+		}
+		this.mongoOperations = mongoOperationsToUse;
+	}
 
-    @Bean
-    public MongoOperationsSessionRepository mongoSessionRepository() {
+	@Bean
+	public MongoOperationsSessionRepository mongoSessionRepository() {
 
-        MongoOperationsSessionRepository repository = new MongoOperationsSessionRepository(mongoOperations);
-        repository.setMaxInactiveIntervalInSeconds(this.maxInactiveIntervalInSeconds);
+		MongoOperationsSessionRepository repository = new MongoOperationsSessionRepository(mongoOperations);
+		repository.setMaxInactiveIntervalInSeconds(this.maxInactiveIntervalInSeconds);
 
-        if (this.mongoSessionConverter != null) {
-            repository.setMongoSessionConverter(this.mongoSessionConverter);
-        } else {
-            JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(new SerializingConverter(),
-                    new DeserializingConverter(this.classLoader),
-                    Duration.ofSeconds(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL));
-            repository.setMongoSessionConverter(mongoSessionConverter);
-        }
+		if (this.mongoSessionConverter != null) {
+			repository.setMongoSessionConverter(this.mongoSessionConverter);
+		} else {
+			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(new SerializingConverter(),
+					new DeserializingConverter(this.classLoader),
+					Duration.ofSeconds(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL));
+			repository.setMongoSessionConverter(mongoSessionConverter);
+		}
 
-        if (StringUtils.hasText(this.collectionName)) {
-            repository.setCollectionName(this.collectionName);
-        }
+		if (StringUtils.hasText(this.collectionName)) {
+			repository.setCollectionName(this.collectionName);
+		}
 
-        return repository;
-    }
+		return repository;
+	}
 
-    public void setCollectionName(String collectionName) {
-        this.collectionName = collectionName;
-    }
+	public void setCollectionName(String collectionName) {
+		this.collectionName = collectionName;
+	}
 
-    public void setMaxInactiveIntervalInSeconds(Integer maxInactiveIntervalInSeconds) {
-        this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
-    }
+	public void setMaxInactiveIntervalInSeconds(Integer maxInactiveIntervalInSeconds) {
+		this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
+	}
 
-    public void setImportMetadata(AnnotationMetadata importMetadata) {
+	public void setImportMetadata(AnnotationMetadata importMetadata) {
 
-        AnnotationAttributes attributes = AnnotationAttributes
-                .fromMap(importMetadata.getAnnotationAttributes(EnableMongoHttpSession.class.getName()));
+		AnnotationAttributes attributes = AnnotationAttributes.fromMap(
+				importMetadata.getAnnotationAttributes(EnableMongoHttpSession.class.getName()));
 
-        if (attributes != null) {
-            this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
-        } else {
-            this.maxInactiveIntervalInSeconds = MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL;
-        }
+		if (attributes != null) {
+			this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
+		} else {
+			this.maxInactiveIntervalInSeconds = MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL;
+		}
 
-        String collectionNameValue = attributes != null ? attributes.getString("collectionName") : "";
-        if (StringUtils.hasText(collectionNameValue)) {
-            this.collectionName = this.embeddedValueResolver.resolveStringValue(collectionNameValue);
-        }
-    }
+		String collectionNameValue = attributes != null ? attributes.getString("collectionName") : "";
+		if (StringUtils.hasText(collectionNameValue)) {
+			this.collectionName = this.embeddedValueResolver.resolveStringValue(collectionNameValue);
+		}
+	}
 
-    @Autowired(required = false)
-    public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
-        this.mongoSessionConverter = mongoSessionConverter;
-    }
+	@Autowired(required = false)
+	public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
+		this.mongoSessionConverter = mongoSessionConverter;
+	}
 
-    @Override
-    public void setBeanClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
-    }
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
 
-    @Override
-    public void setEmbeddedValueResolver(StringValueResolver resolver) {
-        this.embeddedValueResolver = resolver;
-    }
+	@Override
+	public void setEmbeddedValueResolver(StringValueResolver resolver) {
+		this.embeddedValueResolver = resolver;
+	}
 
 }

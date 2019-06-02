@@ -43,364 +43,340 @@ import static org.mockito.BDDMockito.mock;
  */
 public class MongoHttpSessionConfigurationTest {
 
-    private static final String COLLECTION_NAME = "testSessions";
+	private static final String COLLECTION_NAME = "testSessions";
 
-    private static final int MAX_INACTIVE_INTERVAL_IN_SECONDS = 600;
+	private static final int MAX_INACTIVE_INTERVAL_IN_SECONDS = 600;
 
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
+	@Rule
+	public final ExpectedException thrown = ExpectedException.none();
 
+	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-    private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	@After
+	public void after() {
 
+		if (this.context != null) {
+			this.context.close();
+		}
+	}
 
-    @After
-    public void after() {
+	@Test
+	public void noMongoOperationsConfiguration() {
 
-        if (this.context != null) {
-            this.context.close();
-        }
-    }
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(
+				() -> registerAndRefresh(NoMongoOperationsConfiguration.class)).withMessageContaining(
+				"expected at least 1 bean which qualifies as autowire candidate");
+	}
 
-    @Test
-    public void noMongoOperationsConfiguration() {
+	@Test
+	public void defaultConfiguration() {
 
-        assertThatExceptionOfType(BeanCreationException.class)
-                .isThrownBy(() -> registerAndRefresh(NoMongoOperationsConfiguration.class))
-                .withMessageContaining(
-                        "expected at least 1 bean which qualifies as autowire candidate");
-    }
+		registerAndRefresh(DefaultConfiguration.class);
 
-    @Test
-    public void defaultConfiguration() {
+		assertThat(this.context.getBean(MongoOperationsSessionRepository.class)).isNotNull();
+	}
 
-        registerAndRefresh(DefaultConfiguration.class);
+	@Test
+	public void customCollectionName() {
 
-        assertThat(this.context.getBean(MongoOperationsSessionRepository.class)).isNotNull();
-    }
+		registerAndRefresh(CustomCollectionNameConfiguration.class);
 
-    @Test
-    public void customCollectionName() {
+		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
 
-        registerAndRefresh(CustomCollectionNameConfiguration.class);
+		assertThat(repository).isNotNull();
+		assertThat(ReflectionTestUtils.getField(repository, "collectionName")).isEqualTo(COLLECTION_NAME);
+	}
 
-        MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+	@Test
+	public void setCustomCollectionName() {
 
-        assertThat(repository).isNotNull();
-        assertThat(ReflectionTestUtils.getField(repository, "collectionName")).isEqualTo(COLLECTION_NAME);
-    }
+		registerAndRefresh(CustomCollectionNameSetConfiguration.class);
 
-    @Test
-    public void setCustomCollectionName() {
+		MongoHttpSessionConfiguration session = this.context.getBean(MongoHttpSessionConfiguration.class);
 
-        registerAndRefresh(CustomCollectionNameSetConfiguration.class);
+		assertThat(session).isNotNull();
+		assertThat(ReflectionTestUtils.getField(session, "collectionName")).isEqualTo(COLLECTION_NAME);
+	}
 
-        MongoHttpSessionConfiguration session = this.context.getBean(MongoHttpSessionConfiguration.class);
+	@Test
+	public void customMaxInactiveIntervalInSeconds() {
 
-        assertThat(session).isNotNull();
-        assertThat(ReflectionTestUtils.getField(session, "collectionName")).isEqualTo(COLLECTION_NAME);
-    }
+		registerAndRefresh(CustomMaxInactiveIntervalInSecondsConfiguration.class);
 
-    @Test
-    public void customMaxInactiveIntervalInSeconds() {
+		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
 
-        registerAndRefresh(CustomMaxInactiveIntervalInSecondsConfiguration.class);
+		assertThat(repository).isNotNull();
+		assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds")).isEqualTo(
+				MAX_INACTIVE_INTERVAL_IN_SECONDS);
+	}
 
-        MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+	@Test
+	public void setCustomMaxInactiveIntervalInSeconds() {
 
-        assertThat(repository).isNotNull();
-        assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds"))
-                .isEqualTo(MAX_INACTIVE_INTERVAL_IN_SECONDS);
-    }
+		registerAndRefresh(CustomMaxInactiveIntervalInSecondsSetConfiguration.class);
 
-    @Test
-    public void setCustomMaxInactiveIntervalInSeconds() {
+		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
 
-        registerAndRefresh(CustomMaxInactiveIntervalInSecondsSetConfiguration.class);
+		assertThat(repository).isNotNull();
+		assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds")).isEqualTo(
+				MAX_INACTIVE_INTERVAL_IN_SECONDS);
+	}
 
-        MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+	@Test
+	public void setCustomSessionConverterConfiguration() {
 
-        assertThat(repository).isNotNull();
-        assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds"))
-                .isEqualTo(MAX_INACTIVE_INTERVAL_IN_SECONDS);
-    }
+		registerAndRefresh(CustomSessionConverterConfiguration.class);
 
-    @Test
-    public void setCustomSessionConverterConfiguration() {
+		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		AbstractMongoSessionConverter mongoSessionConverter = this.context.getBean(AbstractMongoSessionConverter.class);
 
-        registerAndRefresh(CustomSessionConverterConfiguration.class);
+		assertThat(repository).isNotNull();
+		assertThat(mongoSessionConverter).isNotNull();
+		assertThat(ReflectionTestUtils.getField(repository, "mongoSessionConverter")).isEqualTo(mongoSessionConverter);
+	}
 
-        MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
-        AbstractMongoSessionConverter mongoSessionConverter = this.context.getBean(AbstractMongoSessionConverter.class);
+	@Test
+	public void resolveCollectionNameByPropertyPlaceholder() {
 
-        assertThat(repository).isNotNull();
-        assertThat(mongoSessionConverter).isNotNull();
-        assertThat(ReflectionTestUtils.getField(repository, "mongoSessionConverter")).isEqualTo(mongoSessionConverter);
-    }
+		this.context.setEnvironment(
+				new MockEnvironment().withProperty("session.mongo.collectionName", COLLECTION_NAME));
+		registerAndRefresh(CustomMongoJdbcSessionConfiguration.class);
 
-    @Test
-    public void resolveCollectionNameByPropertyPlaceholder() {
+		MongoHttpSessionConfiguration configuration = this.context.getBean(MongoHttpSessionConfiguration.class);
 
-        this.context.setEnvironment(new MockEnvironment().withProperty("session.mongo.collectionName", COLLECTION_NAME));
-        registerAndRefresh(CustomMongoJdbcSessionConfiguration.class);
+		assertThat(ReflectionTestUtils.getField(configuration, "collectionName")).isEqualTo(COLLECTION_NAME);
+	}
 
-        MongoHttpSessionConfiguration configuration = this.context.getBean(MongoHttpSessionConfiguration.class);
-
-        assertThat(ReflectionTestUtils.getField(configuration, "collectionName")).isEqualTo(COLLECTION_NAME);
-    }
-
-    private void registerAndRefresh(Class<?>... annotatedClasses) {
+	private void registerAndRefresh(Class<?>... annotatedClasses) {
 
-        this.context.register(annotatedClasses);
-        this.context.refresh();
-    }
+		this.context.register(annotatedClasses);
+		this.context.refresh();
+	}
 
-    @Test
-    public void multipleDataSourceConfiguration() {
-        assertThatExceptionOfType(BeanCreationException.class)
-                .isThrownBy(() -> registerAndRefresh(MongoOperationConfiguration.class,
-                        MultipleMongoOperationsConfiguration.class))
-                .withMessageContaining("expected single matching bean but found 2");
-    }
+	@Test
+	public void multipleDataSourceConfiguration() {
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(
+				() -> registerAndRefresh(MongoOperationConfiguration.class,
+						MultipleMongoOperationsConfiguration.class)).withMessageContaining(
+				"expected single matching bean but found 2");
+	}
 
+	@Test
+	public void primaryMongoOperationConfiguration() {
 
-    @Test
-    public void primaryMongoOperationConfiguration() {
+		registerAndRefresh(MongoOperationConfiguration.class, PrimaryMongoOperationsConfiguration.class);
 
-        registerAndRefresh(MongoOperationConfiguration.class,
-                PrimaryMongoOperationsConfiguration.class);
+		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		MongoOperations mongoOperations = this.context.getBean("primaryMongoOperations", MongoOperations.class);
+		assertThat(repository).isNotNull();
+		assertThat(mongoOperations).isNotNull();
+		MongoOperations mongoOperationsReflection = (MongoOperations) ReflectionTestUtils.getField(repository,
+				"mongoOperations");
+		assertThat(mongoOperationsReflection).isNotNull();
+		assertThat((mongoOperationsReflection)).isEqualTo(mongoOperations);
+	}
 
+	@Test
+	public void qualifiedDataSourceConfiguration() {
+		registerAndRefresh(MongoOperationConfiguration.class, QualifiedMongoOperationsConfiguration.class);
 
-        MongoOperationsSessionRepository repository = this.context
-                .getBean(MongoOperationsSessionRepository.class);
-        MongoOperations mongoOperations = this.context.getBean("primaryMongoOperations",
-                MongoOperations.class);
-        assertThat(repository).isNotNull();
-        assertThat(mongoOperations).isNotNull();
-        MongoOperations mongoOperationsReflection = (MongoOperations) ReflectionTestUtils
-                .getField(repository, "mongoOperations");
-        assertThat(mongoOperationsReflection).isNotNull();
-        assertThat((mongoOperationsReflection))
-                .isEqualTo(mongoOperations);
-    }
+		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		MongoOperations mongoOperations = this.context.getBean("qualifiedMongoOperations", MongoOperations.class);
+		assertThat(repository).isNotNull();
+		assertThat(mongoOperations).isNotNull();
+		MongoOperations mongoOperationsReflection = (MongoOperations) ReflectionTestUtils.getField(repository,
+				"mongoOperations");
+		assertThat(mongoOperationsReflection).isNotNull();
+		assertThat(mongoOperationsReflection).isEqualTo(mongoOperations);
+	}
 
+	@Test
+	public void qualifiedAndPrimaryDataSourceConfiguration() {
+		registerAndRefresh(MongoOperationConfiguration.class, QualifiedAndPrimaryMongoConfiguration.class);
 
-    @Test
-    public void qualifiedDataSourceConfiguration() {
-        registerAndRefresh(MongoOperationConfiguration.class,
-                QualifiedMongoOperationsConfiguration.class);
+		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		MongoOperations mongoOperations = this.context.getBean("qualifiedMongoOperations", MongoOperations.class);
+		assertThat(repository).isNotNull();
+		assertThat(mongoOperations).isNotNull();
+		MongoOperations mongoOperationsReflection = (MongoOperations) ReflectionTestUtils.getField(repository,
+				"mongoOperations");
+		assertThat(mongoOperations).isNotNull();
+		assertThat(mongoOperationsReflection).isEqualTo(mongoOperations);
+	}
 
-        MongoOperationsSessionRepository repository = this.context
-                .getBean(MongoOperationsSessionRepository.class);
-        MongoOperations mongoOperations = this.context.getBean("qualifiedMongoOperations",
-                MongoOperations.class);
-        assertThat(repository).isNotNull();
-        assertThat(mongoOperations).isNotNull();
-        MongoOperations mongoOperationsReflection = (MongoOperations) ReflectionTestUtils
-                .getField(repository, "mongoOperations");
-        assertThat(mongoOperationsReflection).isNotNull();
-        assertThat(mongoOperationsReflection)
-                .isEqualTo(mongoOperations);
-    }
+	@Configuration
+	@EnableMongoHttpSession
+	static class EmptyConfiguration {
 
+	}
 
-    @Test
-    public void qualifiedAndPrimaryDataSourceConfiguration() {
-        registerAndRefresh(MongoOperationConfiguration.class,
-                QualifiedAndPrimaryMongoConfiguration.class);
+	@Configuration
+	static class MongoOperationConfiguration {
 
-        MongoOperationsSessionRepository repository = this.context
-                .getBean(MongoOperationsSessionRepository.class);
-        MongoOperations mongoOperations = this.context.getBean("qualifiedMongoOperations",
-                MongoOperations.class);
-        assertThat(repository).isNotNull();
-        assertThat(mongoOperations).isNotNull();
-        MongoOperations mongoOperationsReflection = (MongoOperations) ReflectionTestUtils
-                .getField(repository, "mongoOperations");
-        assertThat(mongoOperations).isNotNull();
-        assertThat(mongoOperationsReflection)
-                .isEqualTo(mongoOperations);
-    }
+		@Bean
+		public MongoOperations defaultMongoOperations() {
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
 
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
 
-    @Configuration
-    @EnableMongoHttpSession
-    static class EmptyConfiguration {
+			return mongoOperations;
+		}
 
-    }
+	}
 
-    @Configuration
-    static class MongoOperationConfiguration {
+	static class BaseConfiguration {
 
-        @Bean
-        public MongoOperations defaultMongoOperations() {
-            MongoOperations mongoOperations = mock(MongoOperations.class);
-            IndexOperations indexOperations = mock(IndexOperations.class);
+		@Bean
+		public MongoOperations mongoOperations() {
 
-            given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
 
-            return mongoOperations;
-        }
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
 
-    }
+			return mongoOperations;
+		}
 
-    static class BaseConfiguration {
+	}
 
-        @Bean
-        public MongoOperations mongoOperations() {
+	@Configuration
+	@EnableMongoHttpSession
+	static class DefaultConfiguration extends BaseConfiguration {
 
-            MongoOperations mongoOperations = mock(MongoOperations.class);
-            IndexOperations indexOperations = mock(IndexOperations.class);
+	}
 
-            given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
+	@Configuration
+	static class MongoConfiguration extends BaseConfiguration {
 
-            return mongoOperations;
-        }
+	}
 
-    }
+	@Configuration
+	@EnableMongoHttpSession(collectionName = COLLECTION_NAME)
+	static class CustomCollectionNameConfiguration extends BaseConfiguration {
 
-    @Configuration
-    @EnableMongoHttpSession
-    static class DefaultConfiguration extends BaseConfiguration {
+	}
 
-    }
+	@Configuration
+	@Import(MongoConfiguration.class)
+	static class CustomCollectionNameSetConfiguration extends MongoHttpSessionConfiguration {
 
-    @Configuration
-    static class MongoConfiguration extends BaseConfiguration {
+		CustomCollectionNameSetConfiguration() {
+			setCollectionName(COLLECTION_NAME);
+		}
 
-    }
+	}
 
-    @Configuration
-    @EnableMongoHttpSession(collectionName = COLLECTION_NAME)
-    static class CustomCollectionNameConfiguration extends BaseConfiguration {
+	@Configuration
+	@EnableMongoHttpSession(maxInactiveIntervalInSeconds = MAX_INACTIVE_INTERVAL_IN_SECONDS)
+	static class CustomMaxInactiveIntervalInSecondsConfiguration extends BaseConfiguration {
 
-    }
+	}
 
-    @Configuration
-    @Import(MongoConfiguration.class)
-    static class CustomCollectionNameSetConfiguration extends MongoHttpSessionConfiguration {
+	@Configuration
+	@Import(MongoConfiguration.class)
+	static class CustomMaxInactiveIntervalInSecondsSetConfiguration extends MongoHttpSessionConfiguration {
 
-        CustomCollectionNameSetConfiguration() {
-            setCollectionName(COLLECTION_NAME);
-        }
+		CustomMaxInactiveIntervalInSecondsSetConfiguration() {
+			setMaxInactiveIntervalInSeconds(MAX_INACTIVE_INTERVAL_IN_SECONDS);
+		}
 
-    }
+	}
 
-    @Configuration
-    @EnableMongoHttpSession(maxInactiveIntervalInSeconds = MAX_INACTIVE_INTERVAL_IN_SECONDS)
-    static class CustomMaxInactiveIntervalInSecondsConfiguration extends BaseConfiguration {
+	@Configuration
+	@Import(MongoConfiguration.class)
+	static class CustomSessionConverterConfiguration extends MongoHttpSessionConfiguration {
 
-    }
+		@Bean
+		public AbstractMongoSessionConverter mongoSessionConverter() {
+			return mock(AbstractMongoSessionConverter.class);
+		}
 
-    @Configuration
-    @Import(MongoConfiguration.class)
-    static class CustomMaxInactiveIntervalInSecondsSetConfiguration extends MongoHttpSessionConfiguration {
+	}
 
-        CustomMaxInactiveIntervalInSecondsSetConfiguration() {
-            setMaxInactiveIntervalInSeconds(MAX_INACTIVE_INTERVAL_IN_SECONDS);
-        }
+	@Configuration
+	@EnableMongoHttpSession(collectionName = "${session.mongo.collectionName}")
+	static class CustomMongoJdbcSessionConfiguration extends BaseConfiguration {
 
-    }
+		@Bean
+		public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+			return new PropertySourcesPlaceholderConfigurer();
+		}
 
-    @Configuration
-    @Import(MongoConfiguration.class)
-    static class CustomSessionConverterConfiguration extends MongoHttpSessionConfiguration {
+	}
 
-        @Bean
-        public AbstractMongoSessionConverter mongoSessionConverter() {
-            return mock(AbstractMongoSessionConverter.class);
-        }
+	@EnableMongoHttpSession
+	static class NoMongoOperationsConfiguration {
 
-    }
+	}
 
-    @Configuration
-    @EnableMongoHttpSession(collectionName = "${session.mongo.collectionName}")
-    static class CustomMongoJdbcSessionConfiguration extends BaseConfiguration {
+	@EnableMongoHttpSession
+	static class MultipleMongoOperationsConfiguration {
 
-        @Bean
-        public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-            return new PropertySourcesPlaceholderConfigurer();
-        }
+		@Bean
+		public MongoOperations secondaryDataSource() {
+			return mock(MongoOperations.class);
+		}
 
-    }
+	}
 
+	@EnableMongoHttpSession
+	static class PrimaryMongoOperationsConfiguration {
 
-    @EnableMongoHttpSession
-    static class NoMongoOperationsConfiguration {
+		@Bean
+		@Primary
+		public MongoOperations primaryMongoOperations() {
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
 
-    }
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
 
+			return mongoOperations;
+		}
 
-    @EnableMongoHttpSession
-    static class MultipleMongoOperationsConfiguration {
+	}
 
-        @Bean
-        public MongoOperations secondaryDataSource() {
-            return mock(MongoOperations.class);
-        }
+	@EnableMongoHttpSession
+	static class QualifiedMongoOperationsConfiguration {
 
-    }
+		@Bean
+		@SpringSessionMongoOperations
+		public MongoOperations qualifiedMongoOperations() {
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
 
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
 
-    @EnableMongoHttpSession
-    static class PrimaryMongoOperationsConfiguration {
+			return mongoOperations;
+		}
 
-        @Bean
-        @Primary
-        public MongoOperations primaryMongoOperations() {
-            MongoOperations mongoOperations = mock(MongoOperations.class);
-            IndexOperations indexOperations = mock(IndexOperations.class);
+	}
 
-            given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
+	@EnableMongoHttpSession
+	static class QualifiedAndPrimaryMongoConfiguration {
 
-            return mongoOperations;
-        }
+		@Bean
+		@SpringSessionMongoOperations
+		public MongoOperations qualifiedMongoOperations() {
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
 
-    }
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
 
-    @EnableMongoHttpSession
-    static class QualifiedMongoOperationsConfiguration {
+			return mongoOperations;
+		}
 
-        @Bean
-        @SpringSessionMongoOperations
-        public MongoOperations qualifiedMongoOperations() {
-            MongoOperations mongoOperations = mock(MongoOperations.class);
-            IndexOperations indexOperations = mock(IndexOperations.class);
+		@Bean
+		@Primary
+		public MongoOperations primaryMongoOperations() {
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
 
-            given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
 
-            return mongoOperations;
-        }
+			return mongoOperations;
+		}
 
-    }
-
-    @EnableMongoHttpSession
-    static class QualifiedAndPrimaryMongoConfiguration {
-
-        @Bean
-        @SpringSessionMongoOperations
-        public MongoOperations qualifiedMongoOperations() {
-            MongoOperations mongoOperations = mock(MongoOperations.class);
-            IndexOperations indexOperations = mock(IndexOperations.class);
-
-            given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
-
-            return mongoOperations;
-        }
-
-
-        @Bean
-        @Primary
-        public MongoOperations primaryMongoOperations() {
-            MongoOperations mongoOperations = mock(MongoOperations.class);
-            IndexOperations indexOperations = mock(IndexOperations.class);
-
-            given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
-
-            return mongoOperations;
-        }
-
-
-    }
+	}
 
 }
