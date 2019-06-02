@@ -1,9 +1,3 @@
-package org.springframework.session.data.mongo.config.annotation.web.http;
-
-import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.lang.annotation.*;
-
 /*
  * Copyright 2019 the original author or authors.
  *
@@ -19,6 +13,17 @@ import java.lang.annotation.*;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+package org.springframework.session.data.mongo.config.annotation.web.http;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+
 
 /**
  * Qualifier annotation for a {@link org.springframework.data.mongodb.core.MongoOperations} to be injected in
