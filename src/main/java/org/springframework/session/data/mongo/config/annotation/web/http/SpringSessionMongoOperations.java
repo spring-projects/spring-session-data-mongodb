@@ -26,7 +26,7 @@ import java.lang.annotation.*;
  * This will enable us to have multiple MongoOperations in the application.
  *
  * @author Visweshwar Ganesh
- * @since 2.x.x
+ * @since 2.2.0
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE,
         ElementType.ANNOTATION_TYPE })
