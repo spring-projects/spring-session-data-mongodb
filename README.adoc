@@ -1,4 +1,8 @@
-image:https://badges.gitter.im/spring-projects/spring-session.svg[link="https://gitter.im/spring-projects/spring-session?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
+https://spring.io/projects/spring-session-data-mongodb[Spring Session for MongoDB] is part of the Spring Session umbrella.
+
+image:https://jenkins.spring.io/buildStatus/icon?job=spring-session-data-mongodb%2Fmaster&subject=Corn%20(master)[link=https://jenkins.spring.io/view/SpringData/job/spring-session-data-mongodb/]
+image:https://jenkins.spring.io/buildStatus/icon?job=spring-session-data-mongodb%2F2.1.x&subject=Bean%20(2.1.x)[link=https://jenkins.spring.io/view/SpringData/job/spring-session-data-mongodb/]
+image:https://jenkins.spring.io/buildStatus/icon?job=spring-session-data-mongodb%2F2.0.x&subject=Apple%20(2.0.x)[link=https://jenkins.spring.io/view/SpringData/job/spring-session-data-mongodb/]
 
 = Spring Session MongoDB
 
@@ -14,15 +18,91 @@ Spring Session MongoDB provides a solution for Spring Session in a MongoDB data 
 
 == Project Status
 
-See https://github.com/spring-projects/spring-session-data-mongodb#project-status[Project Status on the master branch] for status of this version.
+We go to great lengths to ensure smooth upgrades. We also seek to make your upgrade on major versions of Java can be as smooth
+as possible.
+
+[IMPORTANT]
+====
+* Spring Session for MongoDB 2.2.x runs on Spring Framework 5.2.
+* Spring Session for MongoDB  2.1.x runs on Spring Framework 5.1.
+
+Both of these have support for *JDK 11*.
+
+Spring Session for MongoDB *2.0* runs on Spring Framework 5.0 and is NOT supported on *JDK 11* despite
+our pipelines testing against it. The extra tests are designed to give you a smooth upgrade path. If you are going into production on
+JDK 11, you should be using at least Spring Session for MongoDB *2.1*.
+====
+
+IMPORTANT: *JDK 12* is Java's latest version and is unstable. We are testing against it to catch issues early on, but don't support it directly on any version of Spring Session for MongoDB.
 
 == Building Spring Session MongoDB
 
-. Run `mvn clean package`
+. Run `./mvnw clean package`
 
 This will generate the artifact.
 
 You can also import the project into your IDE.
+
+== Making a release
+
+1. Create a new release (on the main branch).
++
+----
+% ci/create-release.sh <release version> <next snapshot version>
+----
++
+2. With the release tagged, push the tagged version to the release branch.
++
+----
+% git checkout -b release-2.0
+% git reset --hard <tag>
+% git push -f origin release-2.0
+----
+
+NOTE: You can chain the previous set of commands together using `&&`.
+
+The pipeline will build and release the "release" branch. It will also build a new a new snapshot and stage it on artifactory.
+
+The pipeline will pick up the next tag and release it. It will also build a new snapshot and stage it on artifactory.
+
+=== Running CI tasks locally
+
+Since the pipeline uses Docker, it's easy to:
+
+* Debug what went wrong on your local machine.
+* Test out a a tweak to your `test.sh` script before sending it out.
+* Experiment against a new image before submitting your pull request.
+
+All of these use cases are great reasons to essentially run what Jenkins does on your local machine.
+
+IMPORTANT: To do this you must have Docker installed on your machine.
+
+1. `docker run -it --mount type=bind,source="$(pwd)",target=/spring-session-data-mongodb-github adoptopenjdk/openjdk8:latest /bin/bash`
++
+This will launch the Docker image and mount your source code at `spring-session-data-mongodb-github`.
++
+2. `cd spring-session-data-mongodb-github`
++
+Next, run the `test.sh` script from inside the container:
++
+2. `PROFILE=none ci/test.sh`
+
+Since the container is binding to your source, you can make edits from your IDE and continue to run build jobs.
+
+If you need to test the `build.sh` script, then do this:
+
+1. `docker run -it --mount type=bind,source="$(pwd)",target=/spring-session-data-mongodb-github --mount type=bind,source="/tmp/spring-session-data-mongodb-artifactory",target=/spring-session-data-mongodb-artifactory adoptopenjdk/openjdk8:latest /bin/bash`
++
+This will launch the Docker image and mount your source code at `spring-session-data-mongodb-github` and the temporary
+artifactory output directory at `spring-session-data-mongodb-artifactory`.
++
+Next, run the `build.sh` script from inside the container:
++
+2. `ci/build.sh`
+
+IMPORTANT: `build.sh` will attempt to push to Artifactory. If you don't supply credentials, it will fail.
+
+NOTE: Docker containers can eat up disk space fast! From time to time, run `docker system prune` to clean out old images.
 
 == Code of Conduct
 This project adheres to the Contributor Covenant link:CODE_OF_CONDUCT.adoc[code of conduct].
