@@ -1,44 +1,4 @@
-== Spring Session for MongoDB CI
-
-Spring Session for MongoDB uses Concourse as it's CI tool of choice. This provides support for:
-
-* Pipelines against the `master` and `2.0.x` branches
-* Support for pull requests
-
-=== Creating a pipeline
-
-Using the `fly` command, you can execute a series of commands to create multiple pipelines to manage everything. But
-first, some critical credentials are needed.
-
-Create a `credentials.yml` file like this:
-
-[source,yml]
-----
-github-access-token: <your Personal Access Token from github>
-slack: <your slack hook URL>
-docker-email: <your docker hub email address>
-docker-username: <your docker hub username>
-docker-password: <your docker hub password>
-artifactory-username: <your artifactory username>
-artifactory-password: <your artifactory encoded password>
-----
-
-WARNING: Do NOT check this file into source control! If you'll check, `credentials.yml` is listed in `.gitignore` to prevent tihs.
-
-With this in place, run the following `fly` commands to create pipelines:
-
-----
-% fly -t spring-team sp -p spring-session-data-mongodb -c ci/pipeline-template.yml -l credentials.yml -v branch=master
-----
-
-With this pipeline in place, you can now activate and expose it:
-
-----
-% fly -t spring-team unpause-pipeline -p spring-session-data-mongodb
-% fly -t spring-team expose-pipeline -p spring-session-data-mongodb
-----
-
-=== Making a release
+== Making a release
 
 1. Create a new release (on the main branch).
 +
@@ -67,7 +27,7 @@ All of these use cases are great reasons to essentially run what Concourse does 
 
 IMPORTANT: To do this you must have Docker installed on your machine.
 
-1. `docker run -it --mount type=bind,source="$(pwd)",target=/spring-session-data-mongodb-github openjdk:8-jdk /bin/bash`
+1. `docker run -it --mount type=bind,source="$(pwd)",target=/spring-session-data-mongodb-github adoptopenjdk/openjdk8:latest /bin/bash`
 +
 This will launch the Docker image and mount your source code at `spring-session-data-mongodb-github`.
 +
@@ -80,7 +40,7 @@ Since the container is binding to your source, you can make edits from your IDE 
 If you need to test the `build.sh` script, then do this:
 
 1. `mkdir /tmp/spring-session-data-mongodb-artifactory`
-2. `docker run -it --mount type=bind,source="$(pwd)",target=/spring-session-data-mongodb-github --mount type=bind,source="/tmp/spring-session-data-mongodb-artifactory",target=/spring-session-data-mongodb-artifactory openjdk:8-jdk /bin/bash`
+2. `docker run -it --mount type=bind,source="$(pwd)",target=/spring-session-data-mongodb-github --mount type=bind,source="/tmp/spring-session-data-mongodb-artifactory",target=/spring-session-data-mongodb-artifactory adoptopenjdk/openjdk8:latest /bin/bash`
 +
 This will launch the Docker image and mount your source code at `spring-session-data-mongodb-github` and the temporary
 artifactory output directory at `spring-session-data-mongodb-artifactory`.
