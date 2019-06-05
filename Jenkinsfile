@@ -10,21 +10,6 @@ pipeline {
 	}
 
 	stages {
-		stage('Publish OpenJDK 8 + jq docker image') {
-			when {
-				changeset "ci/Dockerfile"
-			}
-			agent any
-
-			steps {
-				script {
-					def image = docker.build("springci/spring-session-data-mongodb-openjdk8-with-jq", "ci/")
-					docker.withRegistry('', 'hub.docker.com-springbuildmaster') {
-						image.push()
-					}
-				}
-			}
-		}
 		stage("Test: baseline (jdk8)") {
 			agent {
 				docker {
