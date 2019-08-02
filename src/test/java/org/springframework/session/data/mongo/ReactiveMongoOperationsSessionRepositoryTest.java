@@ -27,11 +27,11 @@ import static org.mockito.Mockito.verify;
 import java.util.UUID;
 
 import org.bson.Document;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import org.springframework.context.ApplicationEventPublisher;
@@ -52,7 +52,7 @@ import com.mongodb.client.result.DeleteResult;
  * @author Vedran Pavic
  * @author Greg Turnquist
  */
-@RunWith(MockitoJUnitRunner.Silent.class)
+@ExtendWith(MockitoExtension.class)
 public class ReactiveMongoOperationsSessionRepositoryTest {
 
 	@Mock private AbstractMongoSessionConverter converter;
@@ -63,7 +63,7 @@ public class ReactiveMongoOperationsSessionRepositoryTest {
 
 	private ReactiveMongoOperationsSessionRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 		this.repository = new ReactiveMongoOperationsSessionRepository(this.mongoOperations);

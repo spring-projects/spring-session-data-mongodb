@@ -17,14 +17,14 @@ package org.springframework.session.data.mongo.integration;
 
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 /**
@@ -32,7 +32,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  *
  * @author Jakub Kubrynski
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebAppConfiguration
 public abstract class AbstractITest {
 
@@ -42,7 +42,7 @@ public abstract class AbstractITest {
 
 	@Autowired(required = false) protected SessionEventRegistry registry;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 
 		if (this.registry != null) {

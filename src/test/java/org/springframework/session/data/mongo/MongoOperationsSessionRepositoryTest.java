@@ -29,11 +29,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bson.Document;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
@@ -49,7 +49,7 @@ import com.mongodb.DBObject;
  * @author Vedran Pavic
  * @author Greg Turnquist
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class MongoOperationsSessionRepositoryTest {
 
 	@Mock private AbstractMongoSessionConverter converter;
@@ -58,7 +58,7 @@ public class MongoOperationsSessionRepositoryTest {
 
 	private MongoOperationsSessionRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 		this.repository = new MongoOperationsSessionRepository(this.mongoOperations);

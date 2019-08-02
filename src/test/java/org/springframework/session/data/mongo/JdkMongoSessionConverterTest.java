@@ -15,9 +15,11 @@
  */
 package org.springframework.session.data.mongo;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.time.Duration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
 
@@ -36,13 +38,17 @@ public class JdkMongoSessionConverterTest extends AbstractMongoSessionConverterT
 		return this.mongoSessionConverter;
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void constructorNullSerializer() {
-		new JdkMongoSessionConverter(null, new DeserializingConverter(), inactiveInterval);
+		assertThatIllegalArgumentException().isThrownBy(() -> {
+			new JdkMongoSessionConverter(null, new DeserializingConverter(), inactiveInterval);
+		});
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void constructorNullDeserializer() {
-		new JdkMongoSessionConverter(new SerializingConverter(), null, inactiveInterval);
+		assertThatIllegalArgumentException().isThrownBy(() -> {
+			new JdkMongoSessionConverter(new SerializingConverter(), null, inactiveInterval);
+		});
 	}
 }

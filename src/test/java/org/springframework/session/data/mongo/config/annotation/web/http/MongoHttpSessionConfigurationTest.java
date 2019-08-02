@@ -21,10 +21,8 @@ import static org.mockito.BDDMockito.*;
 
 import java.net.UnknownHostException;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -50,11 +48,9 @@ public class MongoHttpSessionConfigurationTest {
 
 	private static final int MAX_INACTIVE_INTERVAL_IN_SECONDS = 600;
 
-	@Rule public final ExpectedException thrown = ExpectedException.none();
-
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@After
+	@AfterEach
 	public void after() {
 
 		if (this.context != null) {
@@ -65,10 +61,9 @@ public class MongoHttpSessionConfigurationTest {
 	@Test
 	public void noMongoOperationsConfiguration() {
 
-		this.thrown.expect(UnsatisfiedDependencyException.class);
-		this.thrown.expectMessage("mongoSessionRepository");
-
-		registerAndRefresh(EmptyConfiguration.class);
+		assertThatExceptionOfType(UnsatisfiedDependencyException.class).isThrownBy(() -> {
+			registerAndRefresh(EmptyConfiguration.class);
+		}).withMessageContaining("mongoSessionRepository");
 	}
 
 	@Test
