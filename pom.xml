@@ -79,10 +79,10 @@
 		<mockito.version>2.25.1</mockito.version>
 		<mongo.version>3.10.1</mongo.version>
 		<mongo-reactivestreams.version>1.11.0</mongo-reactivestreams.version>
-		<reactor.version>Californium-SR6</reactor.version>
-		<spring.version>5.2.0.M3</spring.version>
-		<spring-data.version>Moore-M3</spring-data.version>
-		<spring-security.version>5.1.5.RELEASE</spring-security.version>
+		<reactor-bom.version>Dysprosium-M3</reactor-bom.version>
+		<spring-bom.version>5.2.0.M3</spring-bom.version>
+		<spring-data-bom.version>Moore-M3</spring-data-bom.version>
+		<spring-security-bom.version>5.1.5.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.2.0.M1</spring-session.version>
 	</properties>
 
@@ -91,7 +91,7 @@
 		<profile>
 			<id>spring-next</id>
 			<properties>
-				<reactor.version>Californium-BUILD-SNAPSHOT</reactor.version>
+				<reactor.version>Dysprosium-BUILD-SNAPSHOT</reactor.version>
 				<spring.version>5.2.0.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Moore-BUILD-SNAPSHOT</spring-data.version>
 				<spring-security.version>5.1.6.BUILD-SNAPSHOT</spring-security.version>
@@ -426,7 +426,7 @@
 			<dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-releasetrain</artifactId>
-				<version>${spring-data.version}</version>
+				<version>${spring-data-bom.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -434,7 +434,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
-				<version>${spring.version}</version>
+				<version>${spring-bom.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -442,7 +442,7 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-bom</artifactId>
-				<version>${spring-security.version}</version>
+				<version>${spring-security-bom.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -450,7 +450,7 @@
 			<dependency>
 				<groupId>io.projectreactor</groupId>
 				<artifactId>reactor-bom</artifactId>
-				<version>${reactor.version}</version>
+				<version>${reactor-bom.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
