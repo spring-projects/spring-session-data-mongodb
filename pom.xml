@@ -77,8 +77,8 @@
 		<junit.version>4.12</junit.version>
 		<lombok.version>1.18.6</lombok.version>
 		<mockito.version>2.25.1</mockito.version>
-		<mongo.version>3.10.1</mongo.version>
-		<mongo-reactivestreams.version>1.11.0</mongo-reactivestreams.version>
+		<mongo.version>3.11.0-rc0</mongo.version>
+		<mongo-reactivestreams.version>1.12.0-rc0</mongo-reactivestreams.version>
 		<reactor-bom.version>Dysprosium-M3</reactor-bom.version>
 		<spring-bom.version>5.2.0.M3</spring-bom.version>
 		<spring-data-bom.version>Moore-M3</spring-data-bom.version>
