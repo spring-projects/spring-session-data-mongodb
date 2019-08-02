@@ -15,15 +15,12 @@
  */
 package org.springframework.session.data.mongo;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,19 +35,18 @@ import org.springframework.session.Session;
  * @author Greg Turnquist
  * @since 1.2
  */
-@EqualsAndHashCode(of = { "id" })
 public class MongoSession implements Session {
 
 	/**
 	 * Mongo doesn't support {@literal dot} in field names. We replace it with a very rarely used character
 	 */
-	private static final char DOT_COVER_CHAR = '\uF607';
+	private static final char DOT_COVER_CHAR = '';
 
-	@Getter private String id;
+	private String id;
 	private long createdMillis = System.currentTimeMillis();
 	private long accessedMillis;
 	private long intervalSeconds;
-	@Getter @Setter private Date expireAt;
+	private Date expireAt;
 	private Map<String, Object> attrs = new HashMap<>();
 
 	public MongoSession() {
@@ -90,7 +86,6 @@ public class MongoSession implements Session {
 	}
 
 	public Set<String> getAttributeNames() {
-
 		return this.attrs.keySet().stream().map(MongoSession::uncoverDot).collect(Collectors.toSet());
 	}
 
@@ -135,5 +130,33 @@ public class MongoSession implements Session {
 
 	public boolean isExpired() {
 		return this.intervalSeconds >= 0 && new Date().after(this.expireAt);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		MongoSession that = (MongoSession) o;
+		return Objects.equals(id, that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+	
+	public String getId() {
+		return this.id;
+	}
+
+	public Date getExpireAt() {
+		return this.expireAt;
+	}
+
+	public void setExpireAt(final Date expireAt) {
+		this.expireAt = expireAt;
 	}
 }

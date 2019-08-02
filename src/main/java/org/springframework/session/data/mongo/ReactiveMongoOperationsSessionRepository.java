@@ -17,9 +17,6 @@ package org.springframework.session.data.mongo;
 
 import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.Duration;
 
 import org.bson.Document;
@@ -59,12 +56,11 @@ public class ReactiveMongoOperationsSessionRepository
 
 	private final ReactiveMongoOperations mongoOperations;
 
-	@Getter @Setter private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
-	@Getter @Setter private String collectionName = DEFAULT_COLLECTION_NAME;
-	@Setter private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
+	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
+	private String collectionName = DEFAULT_COLLECTION_NAME;
+	private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
 			Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
-
-	@Setter private MongoOperations blockingMongoOperations;
+	private MongoOperations blockingMongoOperations;
 	private ApplicationEventPublisher eventPublisher;
 
 	public ReactiveMongoOperationsSessionRepository(ReactiveMongoOperations mongoOperations) {
@@ -136,9 +132,10 @@ public class ReactiveMongoOperationsSessionRepository
 	@Override
 	public Mono<Void> deleteById(String id) {
 
-		return findSession(id)
-				.flatMap(document -> this.mongoOperations.remove(document, this.collectionName).then(Mono.just(document)))
-				.map(document -> convertToSession(this.mongoSessionConverter, document))
+		return findSession(id) //
+				.flatMap(document -> this.mongoOperations.remove(document, this.collectionName) //
+						.then(Mono.just(document))) //
+				.map(document -> convertToSession(this.mongoSessionConverter, document)) //
 				.doOnSuccess(mongoSession -> publishEvent(new SessionDeletedEvent(this, mongoSession))) //
 				.then();
 	}
@@ -151,7 +148,6 @@ public class ReactiveMongoOperationsSessionRepository
 	public void afterPropertiesSet() {
 
 		if (this.blockingMongoOperations != null) {
-
 			IndexOperations indexOperations = this.blockingMongoOperations.indexOps(this.collectionName);
 			this.mongoSessionConverter.ensureIndexes(indexOperations);
 		}
@@ -173,5 +169,29 @@ public class ReactiveMongoOperationsSessionRepository
 		} catch (Throwable ex) {
 			logger.error("Error publishing " + event + ".", ex);
 		}
+	}
+
+	public Integer getMaxInactiveIntervalInSeconds() {
+		return this.maxInactiveIntervalInSeconds;
+	}
+
+	public void setMaxInactiveIntervalInSeconds(final Integer maxInactiveIntervalInSeconds) {
+		this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
+	}
+
+	public String getCollectionName() {
+		return this.collectionName;
+	}
+
+	public void setCollectionName(final String collectionName) {
+		this.collectionName = collectionName;
+	}
+
+	public void setMongoSessionConverter(final AbstractMongoSessionConverter mongoSessionConverter) {
+		this.mongoSessionConverter = mongoSessionConverter;
+	}
+
+	public void setBlockingMongoOperations(final MongoOperations blockingMongoOperations) {
+		this.blockingMongoOperations = blockingMongoOperations;
 	}
 }

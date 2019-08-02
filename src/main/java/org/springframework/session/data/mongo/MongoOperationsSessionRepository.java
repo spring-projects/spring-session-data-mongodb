@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.session.data.mongo;
 
 import static org.springframework.session.data.mongo.MongoSessionUtils.*;
-
-import lombok.Setter;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -52,7 +49,6 @@ import org.springframework.session.events.SessionExpiredEvent;
  */
 public class MongoOperationsSessionRepository
 		implements FindByIndexNameSessionRepository<MongoSession>, ApplicationEventPublisherAware, InitializingBean {
-
 	/**
 	 * The default time period in seconds in which a session will expire.
 	 */
@@ -63,10 +59,9 @@ public class MongoOperationsSessionRepository
 	public static final String DEFAULT_COLLECTION_NAME = "sessions";
 	private static final Logger logger = LoggerFactory.getLogger(MongoOperationsSessionRepository.class);
 	private final MongoOperations mongoOperations;
-
-	@Setter private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
-	@Setter private String collectionName = DEFAULT_COLLECTION_NAME;
-	@Setter private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
+	private Integer maxInactiveIntervalInSeconds = DEFAULT_INACTIVE_INTERVAL;
+	private String collectionName = DEFAULT_COLLECTION_NAME;
+	private AbstractMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(
 			Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
 	private ApplicationEventPublisher eventPublisher;
 
@@ -76,15 +71,11 @@ public class MongoOperationsSessionRepository
 
 	@Override
 	public MongoSession createSession() {
-
 		MongoSession session = new MongoSession();
-
 		if (this.maxInactiveIntervalInSeconds != null) {
 			session.setMaxInactiveInterval(Duration.ofSeconds(this.maxInactiveIntervalInSeconds));
 		}
-
 		publishEvent(new SessionCreatedEvent(this, session));
-
 		return session;
 	}
 
@@ -107,10 +98,8 @@ public class MongoOperationsSessionRepository
 		MongoSession session = convertToSession(this.mongoSessionConverter, sessionWrapper);
 
 		if (session != null && session.isExpired()) {
-
 			publishEvent(new SessionExpiredEvent(this, session));
 			deleteById(id);
-
 			return null;
 		}
 
@@ -129,8 +118,7 @@ public class MongoOperationsSessionRepository
 
 		return Optional.ofNullable(this.mongoSessionConverter.getQueryForIndex(indexName, indexValue))
 				.map(query -> this.mongoOperations.find(query, Document.class, this.collectionName))
-				.orElse(Collections.emptyList()) //
-				.stream() //
+				.orElse(Collections.emptyList()).stream()
 				.map(dbSession -> convertToSession(this.mongoSessionConverter, dbSession))
 				.collect(Collectors.toMap(MongoSession::getId, mapSession -> mapSession));
 	}
@@ -139,19 +127,16 @@ public class MongoOperationsSessionRepository
 	public void deleteById(String id) {
 
 		Optional.ofNullable(findSession(id)).ifPresent(document -> {
-
 			MongoSession session = convertToSession(this.mongoSessionConverter, document);
 			if (session != null) {
 				publishEvent(new SessionDeletedEvent(this, session));
 			}
-
 			this.mongoOperations.remove(document, this.collectionName);
 		});
 	}
 
 	@Override
 	public void afterPropertiesSet() {
-
 		IndexOperations indexOperations = this.mongoOperations.indexOps(this.collectionName);
 		this.mongoSessionConverter.ensureIndexes(indexOperations);
 	}
@@ -167,7 +152,6 @@ public class MongoOperationsSessionRepository
 	}
 
 	private void publishEvent(ApplicationEvent event) {
-
 		try {
 			this.eventPublisher.publishEvent(event);
 		} catch (Throwable ex) {
@@ -175,4 +159,15 @@ public class MongoOperationsSessionRepository
 		}
 	}
 
+	public void setMaxInactiveIntervalInSeconds(final Integer maxInactiveIntervalInSeconds) {
+		this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
+	}
+
+	public void setCollectionName(final String collectionName) {
+		this.collectionName = collectionName;
+	}
+
+	public void setMongoSessionConverter(final AbstractMongoSessionConverter mongoSessionConverter) {
+		this.mongoSessionConverter = mongoSessionConverter;
+	}
 }
