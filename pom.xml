@@ -71,7 +71,6 @@
 		
 		<assertj.version>3.12.2</assertj.version>
 		<flapdoodle.version>2.2.0</flapdoodle.version>
-		<hamcrest.version>1.3</hamcrest.version>
 		<jackson-bom.version>2.9.9.20190727</jackson-bom.version>
 		<jsr305.version>3.0.2</jsr305.version>
 		<junit-bom.version>5.5.1</junit-bom.version>
@@ -557,13 +556,6 @@
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
 			<version>${assertj.version}</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-			<version>${hamcrest.version}</version>
 			<scope>test</scope>
 		</dependency>
 
