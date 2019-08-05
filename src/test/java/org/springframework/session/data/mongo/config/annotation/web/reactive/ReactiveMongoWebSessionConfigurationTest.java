@@ -103,7 +103,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 
 		assertThat(converter)
 			.extracting(AbstractMongoSessionConverter::getClass)
-			.contains(JdkMongoSessionConverter.class);
+			.isEqualTo(JdkMongoSessionConverter.class);
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 
 		assertThat(converter)
 			.extracting(AbstractMongoSessionConverter::getClass)
-			.contains(JacksonMongoSessionConverter.class);
+			.isEqualTo(JacksonMongoSessionConverter.class);
 	}
 
 	@Test
