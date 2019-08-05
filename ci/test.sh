@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-./mvnw -P${PROFILE} clean dependency:list test -Dsort -B
+./mvnw -P${PROFILE} clean dependency:list test -Dsort -U -B
