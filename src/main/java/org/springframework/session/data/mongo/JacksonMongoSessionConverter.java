@@ -39,8 +39,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
 /**
  * {@code AbstractMongoSessionConverter} implementation using Jackson.
@@ -110,7 +110,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	protected DBObject convert(MongoSession source) {
 
 		try {
-			DBObject dbSession = (DBObject) JSON.parse(this.objectMapper.writeValueAsString(source));
+			DBObject dbSession = BasicDBObject.parse(this.objectMapper.writeValueAsString(source));
 
 			// Override default serialization with proper values.
 			dbSession.put(PRINCIPAL_FIELD_NAME, extractPrincipal(source));
