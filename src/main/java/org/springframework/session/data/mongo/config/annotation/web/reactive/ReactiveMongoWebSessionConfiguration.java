@@ -42,7 +42,7 @@ import org.springframework.util.StringValueResolver;
  * @author Greg Turnquist
  * @author Vedran Pavić
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfiguration
 		implements BeanClassLoaderAware, EmbeddedValueResolverAware, ImportAware {
 

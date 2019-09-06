@@ -51,7 +51,7 @@ import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepo
 @Target({ java.lang.annotation.ElementType.TYPE })
 @Documented
 @Import(ReactiveMongoWebSessionConfiguration.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public @interface EnableMongoWebSession {
 
 	/**

@@ -51,7 +51,7 @@ import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
 @Target(ElementType.TYPE)
 @Documented
 @Import(MongoHttpSessionConfiguration.class)
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public @interface EnableMongoHttpSession {
 
 	/**

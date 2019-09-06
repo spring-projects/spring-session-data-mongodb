@@ -43,7 +43,7 @@ import org.springframework.util.StringValueResolver;
  * @author Eddú Meléndez
  * @since 1.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguration
 		implements BeanClassLoaderAware, EmbeddedValueResolverAware, ImportAware {
 
