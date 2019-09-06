@@ -136,7 +136,7 @@ public class ReactiveMongoOperationsSessionRepository
 				.flatMap(document -> this.mongoOperations.remove(document, this.collectionName) //
 						.then(Mono.just(document))) //
 				.map(document -> convertToSession(this.mongoSessionConverter, document)) //
-				.doOnSuccess(mongoSession -> publishEvent(new SessionDeletedEvent(this, mongoSession))) //
+				.doOnNext(mongoSession -> publishEvent(new SessionDeletedEvent(this, mongoSession))) //
 				.then();
 	}
 
