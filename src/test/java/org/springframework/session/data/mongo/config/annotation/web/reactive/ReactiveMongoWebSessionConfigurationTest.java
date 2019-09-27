@@ -17,10 +17,6 @@ package org.springframework.session.data.mongo.config.annotation.web.reactive;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.BDDMockito.times;
-import static org.mockito.BDDMockito.verify;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -38,7 +34,7 @@ import org.springframework.session.config.annotation.web.server.EnableSpringWebS
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JacksonMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
-import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.session.WebSessionManager;
@@ -85,7 +81,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(BadConfig.class);
 
 		assertThatExceptionOfType(UnsatisfiedDependencyException.class).isThrownBy(this.context::refresh)
-				.withMessageContaining("Error creating bean with name 'reactiveMongoOperationsSessionRepository'")
+				.withMessageContaining("Error creating bean with name 'reactiveMongoSessionRepository'")
 				.withMessageContaining("No qualifying bean of type '" + ReactiveMongoOperations.class.getCanonicalName());
 	}
 
@@ -96,8 +92,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(GoodConfig.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context
-				.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
 
 		AbstractMongoSessionConverter converter = findMongoSessionConverter(repository);
 
@@ -111,8 +106,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(OverrideSessionConverterConfig.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context
-				.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
 
 		AbstractMongoSessionConverter converter = findMongoSessionConverter(repository);
 
@@ -126,16 +120,14 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(OverrideMongoParametersConfig.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context
-				.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
 
-		Field inactiveField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class,
+		Field inactiveField = ReflectionUtils.findField(ReactiveMongoSessionRepository.class,
 				"maxInactiveIntervalInSeconds");
 		ReflectionUtils.makeAccessible(inactiveField);
 		Integer inactiveSeconds = (Integer) inactiveField.get(repository);
 
-		Field collectionNameField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class,
-				"collectionName");
+		Field collectionNameField = ReflectionUtils.findField(ReactiveMongoSessionRepository.class, "collectionName");
 		ReflectionUtils.makeAccessible(collectionNameField);
 		String collectionName = (String) collectionNameField.get(repository);
 
@@ -165,23 +157,22 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(CustomizedReactiveConfiguration.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context
-				.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
 
 		assertThat(repository.getCollectionName()).isEqualTo("custom-collection");
 		assertThat(repository.getMaxInactiveIntervalInSeconds()).isEqualTo(123);
 	}
 
 	/**
-	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the
-	 * {@link ReactiveMongoOperationsSessionRepository}. This is to avoid expanding the surface area of the API.
+	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the {@link ReactiveMongoSessionRepository}.
+	 * This is to avoid expanding the surface area of the API.
 	 * 
 	 * @param repository
 	 * @return
 	 */
-	private AbstractMongoSessionConverter findMongoSessionConverter(ReactiveMongoOperationsSessionRepository repository) {
+	private AbstractMongoSessionConverter findMongoSessionConverter(ReactiveMongoSessionRepository repository) {
 
-		Field field = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class, "mongoSessionConverter");
+		Field field = ReflectionUtils.findField(ReactiveMongoSessionRepository.class, "mongoSessionConverter");
 		ReflectionUtils.makeAccessible(field);
 		try {
 			return (AbstractMongoSessionConverter) field.get(repository);

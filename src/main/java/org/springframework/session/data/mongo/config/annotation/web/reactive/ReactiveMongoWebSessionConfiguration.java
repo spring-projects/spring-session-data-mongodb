@@ -32,12 +32,12 @@ import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.config.annotation.web.server.SpringWebSessionConfiguration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
-import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
 /**
- * Configure a {@link ReactiveMongoOperationsSessionRepository} using a provided {@link ReactiveMongoOperations}.
+ * Configure a {@link ReactiveMongoSessionRepository} using a provided {@link ReactiveMongoOperations}.
  * 
  * @author Greg Turnquist
  * @author Vedran Pavić
@@ -55,17 +55,16 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 	private ClassLoader classLoader;
 
 	@Bean
-	public ReactiveMongoOperationsSessionRepository reactiveMongoOperationsSessionRepository(
-			ReactiveMongoOperations operations) {
+	public ReactiveMongoSessionRepository reactiveMongoSessionRepository(ReactiveMongoOperations operations) {
 
-		ReactiveMongoOperationsSessionRepository repository = new ReactiveMongoOperationsSessionRepository(operations);
+		ReactiveMongoSessionRepository repository = new ReactiveMongoSessionRepository(operations);
 
 		if (this.mongoSessionConverter != null) {
 			repository.setMongoSessionConverter(this.mongoSessionConverter);
 		} else {
 			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(new SerializingConverter(),
 					new DeserializingConverter(this.classLoader),
-					Duration.ofSeconds(ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL));
+					Duration.ofSeconds(ReactiveMongoSessionRepository.DEFAULT_INACTIVE_INTERVAL));
 			repository.setMongoSessionConverter(mongoSessionConverter);
 		}
 
@@ -98,7 +97,7 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 		if (attributes != null) {
 			this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
 		} else {
-			this.maxInactiveIntervalInSeconds = ReactiveMongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL;
+			this.maxInactiveIntervalInSeconds = ReactiveMongoSessionRepository.DEFAULT_INACTIVE_INTERVAL;
 		}
 
 		String collectionNameValue = attributes != null ? attributes.getString("collectionName") : "";
