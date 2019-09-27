@@ -32,7 +32,7 @@ import org.springframework.session.data.mongo.config.annotation.web.http.EnableM
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * Integration tests for {@link org.springframework.session.data.mongo.MongoOperationsSessionRepository} that use
+ * Integration tests for {@link org.springframework.session.data.mongo.MongoIndexedSessionRepository} that use
  * {@link JacksonMongoSessionConverter} based session serialization.
  *
  * @author Jakub Kubrynski

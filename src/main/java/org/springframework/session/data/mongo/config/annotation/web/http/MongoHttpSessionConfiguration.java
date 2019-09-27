@@ -31,7 +31,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
@@ -54,9 +54,9 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 	private ClassLoader classLoader;
 
 	@Bean
-	public MongoOperationsSessionRepository mongoSessionRepository(MongoOperations mongoOperations) {
+	public MongoIndexedSessionRepository mongoSessionRepository(MongoOperations mongoOperations) {
 
-		MongoOperationsSessionRepository repository = new MongoOperationsSessionRepository(mongoOperations);
+		MongoIndexedSessionRepository repository = new MongoIndexedSessionRepository(mongoOperations);
 		repository.setMaxInactiveIntervalInSeconds(this.maxInactiveIntervalInSeconds);
 
 		if (this.mongoSessionConverter != null) {
@@ -64,7 +64,7 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 		} else {
 			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(new SerializingConverter(),
 					new DeserializingConverter(this.classLoader),
-					Duration.ofSeconds(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL));
+					Duration.ofSeconds(MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL));
 			repository.setMongoSessionConverter(mongoSessionConverter);
 		}
 
@@ -91,7 +91,7 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 		if (attributes != null) {
 			this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
 		} else {
-			this.maxInactiveIntervalInSeconds = MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL;
+			this.maxInactiveIntervalInSeconds = MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL;
 		}
 
 		String collectionNameValue = attributes != null ? attributes.getString("collectionName") : "";

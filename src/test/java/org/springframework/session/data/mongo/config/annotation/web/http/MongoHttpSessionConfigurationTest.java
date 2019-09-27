@@ -16,7 +16,7 @@
 package org.springframework.session.data.mongo.config.annotation.web.http;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
 import java.net.UnknownHostException;
@@ -33,7 +33,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
@@ -71,7 +71,7 @@ public class MongoHttpSessionConfigurationTest {
 
 		registerAndRefresh(DefaultConfiguration.class);
 
-		assertThat(this.context.getBean(MongoOperationsSessionRepository.class)).isNotNull();
+		assertThat(this.context.getBean(MongoIndexedSessionRepository.class)).isNotNull();
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class MongoHttpSessionConfigurationTest {
 
 		registerAndRefresh(CustomCollectionNameConfiguration.class);
 
-		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		MongoIndexedSessionRepository repository = this.context.getBean(MongoIndexedSessionRepository.class);
 
 		assertThat(repository).isNotNull();
 		assertThat(ReflectionTestUtils.getField(repository, "collectionName")).isEqualTo(COLLECTION_NAME);
@@ -101,7 +101,7 @@ public class MongoHttpSessionConfigurationTest {
 
 		registerAndRefresh(CustomMaxInactiveIntervalInSecondsConfiguration.class);
 
-		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		MongoIndexedSessionRepository repository = this.context.getBean(MongoIndexedSessionRepository.class);
 
 		assertThat(repository).isNotNull();
 		assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds"))
@@ -113,7 +113,7 @@ public class MongoHttpSessionConfigurationTest {
 
 		registerAndRefresh(CustomMaxInactiveIntervalInSecondsSetConfiguration.class);
 
-		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		MongoIndexedSessionRepository repository = this.context.getBean(MongoIndexedSessionRepository.class);
 
 		assertThat(repository).isNotNull();
 		assertThat(ReflectionTestUtils.getField(repository, "maxInactiveIntervalInSeconds"))
@@ -125,7 +125,7 @@ public class MongoHttpSessionConfigurationTest {
 
 		registerAndRefresh(CustomSessionConverterConfiguration.class);
 
-		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		MongoIndexedSessionRepository repository = this.context.getBean(MongoIndexedSessionRepository.class);
 		AbstractMongoSessionConverter mongoSessionConverter = this.context.getBean(AbstractMongoSessionConverter.class);
 
 		assertThat(repository).isNotNull();

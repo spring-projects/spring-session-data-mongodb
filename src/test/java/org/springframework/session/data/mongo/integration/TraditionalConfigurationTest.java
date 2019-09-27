@@ -16,7 +16,7 @@
 package org.springframework.session.data.mongo.integration;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.http.EnableMongoHttpSession;
 import org.springframework.session.data.mongo.integration.AbstractMongoRepositoryITest.BaseConfig;
 import org.springframework.test.context.ContextConfiguration;
@@ -25,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
  * @author Greg Turnquist
  */
 @ContextConfiguration
-public class TraditionalConfigurationTest extends AbstractClassLoaderTest<MongoOperationsSessionRepository> {
+public class TraditionalConfigurationTest extends AbstractClassLoaderTest<MongoIndexedSessionRepository> {
 
 	@Configuration
 	@EnableMongoHttpSession

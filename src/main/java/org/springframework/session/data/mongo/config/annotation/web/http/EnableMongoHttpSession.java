@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 
 /**
  * Add this annotation to a {@code @Configuration} class to expose the SessionRepositoryFilter as a bean named
@@ -59,12 +59,12 @@ public @interface EnableMongoHttpSession {
 	 *
 	 * @return default max inactive interval in seconds
 	 */
-	int maxInactiveIntervalInSeconds() default MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL;
+	int maxInactiveIntervalInSeconds() default MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL;
 
 	/**
 	 * The collection name to use.
 	 *
 	 * @return name of the collection to store session
 	 */
-	String collectionName() default MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME;
+	String collectionName() default MongoIndexedSessionRepository.DEFAULT_COLLECTION_NAME;
 }

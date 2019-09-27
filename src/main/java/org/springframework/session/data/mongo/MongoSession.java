@@ -50,7 +50,7 @@ public class MongoSession implements Session {
 	private Map<String, Object> attrs = new HashMap<>();
 
 	public MongoSession() {
-		this(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
+		this(MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 	}
 
 	public MongoSession(long maxInactiveIntervalInSeconds) {
@@ -147,7 +147,7 @@ public class MongoSession implements Session {
 	public int hashCode() {
 		return Objects.hash(id);
 	}
-	
+
 	public String getId() {
 		return this.id;
 	}
