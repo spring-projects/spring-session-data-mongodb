@@ -16,8 +16,11 @@
 package org.springframework.session.data.mongo.config.annotation.web.http;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +31,7 @@ import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
@@ -51,6 +55,7 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 	private Integer maxInactiveIntervalInSeconds;
 	private String collectionName;
 	private StringValueResolver embeddedValueResolver;
+	private List<SessionRepositoryCustomizer<MongoIndexedSessionRepository>> sessionRepositoryCustomizers;
 	private ClassLoader classLoader;
 
 	@Bean
@@ -71,6 +76,9 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 		if (StringUtils.hasText(this.collectionName)) {
 			repository.setCollectionName(this.collectionName);
 		}
+
+		this.sessionRepositoryCustomizers
+				.forEach(sessionRepositoryCustomizer -> sessionRepositoryCustomizer.customize(repository));
 
 		return repository;
 	}
@@ -103,6 +111,12 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 	@Autowired(required = false)
 	public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
 		this.mongoSessionConverter = mongoSessionConverter;
+	}
+
+	@Autowired(required = false)
+	public void setSessionRepositoryCustomizers(
+			ObjectProvider<SessionRepositoryCustomizer<MongoIndexedSessionRepository>> sessionRepositoryCustomizers) {
+		this.sessionRepositoryCustomizers = sessionRepositoryCustomizers.orderedStream().collect(Collectors.toList());
 	}
 
 	@Override

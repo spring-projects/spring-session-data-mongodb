@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -30,6 +31,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.session.ReactiveSessionRepository;
+import org.springframework.session.config.ReactiveSessionRepositoryCustomizer;
 import org.springframework.session.config.annotation.web.server.EnableSpringWebSession;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JacksonMongoSessionConverter;
@@ -163,6 +165,18 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		assertThat(repository.getMaxInactiveIntervalInSeconds()).isEqualTo(123);
 	}
 
+	@Test
+	public void sessionRepositoryCustomizer() {
+
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(SessionRepositoryCustomizerConfiguration.class);
+		this.context.refresh();
+
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
+
+		assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds", 10000);
+	}
+
 	/**
 	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the {@link ReactiveMongoSessionRepository}.
 	 * This is to avoid expanding the surface area of the API.
@@ -262,5 +276,27 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		ReactiveMongoOperations reactiveMongoOperations() {
 			return mock(ReactiveMongoOperations.class);
 		}
+	}
+
+	@EnableMongoWebSession
+	static class SessionRepositoryCustomizerConfiguration {
+
+		@Bean
+		ReactiveMongoOperations operations() {
+			return mock(ReactiveMongoOperations.class);
+		}
+
+		@Bean
+		@Order(0)
+		public ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository> sessionRepositoryCustomizerOne() {
+			return sessionRepository -> sessionRepository.setMaxInactiveIntervalInSeconds(0);
+		}
+
+		@Bean
+		@Order(1)
+		public ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository> sessionRepositoryCustomizerTwo() {
+			return sessionRepository -> sessionRepository.setMaxInactiveIntervalInSeconds(10000);
+		}
+
 	}
 }

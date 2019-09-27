@@ -16,8 +16,11 @@
 package org.springframework.session.data.mongo.config.annotation.web.reactive;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +32,7 @@ import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.session.config.ReactiveSessionRepositoryCustomizer;
 import org.springframework.session.config.annotation.web.server.SpringWebSessionConfiguration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
@@ -50,6 +54,7 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 	private Integer maxInactiveIntervalInSeconds;
 	private String collectionName;
 	private StringValueResolver embeddedValueResolver;
+	private List<ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository>> sessionRepositoryCustomizers;
 
 	@Autowired(required = false) private MongoOperations mongoOperations;
 	private ClassLoader classLoader;
@@ -79,6 +84,9 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 		if (this.mongoOperations != null) {
 			repository.setBlockingMongoOperations(this.mongoOperations);
 		}
+
+		this.sessionRepositoryCustomizers
+				.forEach(sessionRepositoryCustomizer -> sessionRepositoryCustomizer.customize(repository));
 
 		return repository;
 	}
@@ -131,5 +139,11 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 
 	public void setCollectionName(String collectionName) {
 		this.collectionName = collectionName;
+	}
+
+	@Autowired(required = false)
+	public void setSessionRepositoryCustomizers(
+			ObjectProvider<ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository>> sessionRepositoryCustomizers) {
+		this.sessionRepositoryCustomizers = sessionRepositoryCustomizers.orderedStream().collect(Collectors.toList());
 	}
 }

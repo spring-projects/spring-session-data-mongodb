@@ -22,6 +22,7 @@ import static org.mockito.BDDMockito.*;
 import java.net.UnknownHostException;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -32,6 +33,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -144,6 +146,16 @@ public class MongoHttpSessionConfigurationTest {
 		assertThat(ReflectionTestUtils.getField(configuration, "collectionName")).isEqualTo(COLLECTION_NAME);
 	}
 
+	@Test
+	public void sessionRepositoryCustomizer() {
+
+		registerAndRefresh(MongoConfiguration.class, SessionRepositoryCustomizerConfiguration.class);
+
+		MongoIndexedSessionRepository sessionRepository = this.context.getBean(MongoIndexedSessionRepository.class);
+
+		assertThat(sessionRepository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds", 10000);
+	}
+
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
 
 		this.context.register(annotatedClasses);
@@ -234,6 +246,22 @@ public class MongoHttpSessionConfigurationTest {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 
+	}
+
+	@EnableMongoHttpSession
+	static class SessionRepositoryCustomizerConfiguration {
+
+		@Bean
+		@Order(0)
+		public SessionRepositoryCustomizer<MongoIndexedSessionRepository> sessionRepositoryCustomizerOne() {
+			return sessionRepository -> sessionRepository.setMaxInactiveIntervalInSeconds(0);
+		}
+
+		@Bean
+		@Order(1)
+		public SessionRepositoryCustomizer<MongoIndexedSessionRepository> sessionRepositoryCustomizerTwo() {
+			return sessionRepository -> sessionRepository.setMaxInactiveIntervalInSeconds(10000);
+		}
 	}
 
 }
