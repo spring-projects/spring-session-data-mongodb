@@ -33,9 +33,12 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.mock.env.MockEnvironment;
+import org.springframework.session.IndexResolver;
 import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
+import org.springframework.session.data.mongo.JacksonMongoSessionConverter;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
+import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
@@ -156,6 +159,32 @@ public class MongoHttpSessionConfigurationTest {
 		assertThat(sessionRepository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds", 10000);
 	}
 
+	@Test
+	void customIndexResolverConfigurationWithDefaultMongoSessionConverter() {
+
+		registerAndRefresh(MongoConfiguration.class, CustomIndexResolverConfigurationWithDefaultMongoSessionConverter.class);
+
+		MongoIndexedSessionRepository repository = this.context.getBean(MongoIndexedSessionRepository.class);
+		IndexResolver<MongoSession> indexResolver = this.context.getBean(IndexResolver.class);
+		
+		assertThat(repository).isNotNull();
+		assertThat(indexResolver).isNotNull();
+		assertThat(repository).extracting("mongoSessionConverter").hasFieldOrPropertyWithValue("indexResolver", indexResolver);
+	}
+
+	@Test
+	void customIndexResolverConfigurationWithProvidedMongoSessionConverter() {
+
+		registerAndRefresh(MongoConfiguration.class, CustomIndexResolverConfigurationWithProvidedMongoSessionConverter.class);
+
+		MongoIndexedSessionRepository repository = this.context.getBean(MongoIndexedSessionRepository.class);
+		IndexResolver<MongoSession> indexResolver = this.context.getBean(IndexResolver.class);
+
+		assertThat(repository).isNotNull();
+		assertThat(indexResolver).isNotNull();
+		assertThat(repository).extracting("mongoSessionConverter").hasFieldOrPropertyWithValue("indexResolver", indexResolver);
+	}
+
 	private void registerAndRefresh(Class<?>... annotatedClasses) {
 
 		this.context.register(annotatedClasses);
@@ -264,4 +293,30 @@ public class MongoHttpSessionConfigurationTest {
 		}
 	}
 
+	@Configuration
+	@EnableMongoHttpSession
+	static class CustomIndexResolverConfigurationWithDefaultMongoSessionConverter {
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		public IndexResolver<MongoSession> indexResolver() {
+			return mock(IndexResolver.class);
+		}
+	}
+
+	@Configuration
+	@EnableMongoHttpSession
+	static class CustomIndexResolverConfigurationWithProvidedMongoSessionConverter {
+
+		@Bean
+		public AbstractMongoSessionConverter mongoSessionConverter() {
+			return new JacksonMongoSessionConverter();
+		}
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		public IndexResolver<MongoSession> indexResolver() {
+			return mock(IndexResolver.class);
+		}
+	}
 }

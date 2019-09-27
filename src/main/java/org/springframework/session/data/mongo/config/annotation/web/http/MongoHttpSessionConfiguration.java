@@ -31,11 +31,13 @@ import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.session.IndexResolver;
 import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
+import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
@@ -57,6 +59,7 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 	private StringValueResolver embeddedValueResolver;
 	private List<SessionRepositoryCustomizer<MongoIndexedSessionRepository>> sessionRepositoryCustomizers;
 	private ClassLoader classLoader;
+	private IndexResolver<MongoSession> indexResolver;
 
 	@Bean
 	public MongoIndexedSessionRepository mongoSessionRepository(MongoOperations mongoOperations) {
@@ -66,10 +69,19 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 
 		if (this.mongoSessionConverter != null) {
 			repository.setMongoSessionConverter(this.mongoSessionConverter);
+
+			if (this.indexResolver != null) {
+				this.mongoSessionConverter.setIndexResolver(this.indexResolver);
+			}
 		} else {
 			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(new SerializingConverter(),
 					new DeserializingConverter(this.classLoader),
 					Duration.ofSeconds(MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL));
+
+			if (this.indexResolver != null) {
+				mongoSessionConverter.setIndexResolver(this.indexResolver);
+			}
+
 			repository.setMongoSessionConverter(mongoSessionConverter);
 		}
 
@@ -129,4 +141,8 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 		this.embeddedValueResolver = resolver;
 	}
 
+	@Autowired(required = false)
+	public void setIndexResolver(IndexResolver<MongoSession> indexResolver) {
+		this.indexResolver = indexResolver;
+	}
 }

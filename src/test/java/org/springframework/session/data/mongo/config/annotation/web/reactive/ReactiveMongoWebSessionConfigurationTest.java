@@ -30,12 +30,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
+import org.springframework.session.IndexResolver;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.config.ReactiveSessionRepositoryCustomizer;
 import org.springframework.session.config.annotation.web.server.EnableSpringWebSession;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JacksonMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
+import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
@@ -177,6 +179,37 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds", 10000);
 	}
 
+	@Test
+	void customIndexResolverConfigurationWithDefaultMongoSessionConverter() {
+
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomIndexResolverConfigurationWithDefaultMongoSessionConverter.class);
+		this.context.refresh();
+
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
+		IndexResolver<MongoSession> indexResolver = this.context.getBean(IndexResolver.class);
+
+		assertThat(repository).isNotNull();
+		assertThat(indexResolver).isNotNull();
+		assertThat(repository).extracting("mongoSessionConverter").hasFieldOrPropertyWithValue("indexResolver", indexResolver);
+	}
+
+	@Test
+	void customIndexResolverConfigurationWithProvidedMongoSessionConverter() {
+
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomIndexResolverConfigurationWithProvidedtMongoSessionConverter.class);
+		this.context.refresh();
+
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
+		IndexResolver<MongoSession> indexResolver = this.context.getBean(IndexResolver.class);
+
+		assertThat(repository).isNotNull();
+		assertThat(indexResolver).isNotNull();
+		assertThat(repository).extracting("mongoSessionConverter").hasFieldOrPropertyWithValue("indexResolver", indexResolver);
+	}
+
+
 	/**
 	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the {@link ReactiveMongoSessionRepository}.
 	 * This is to avoid expanding the surface area of the API.
@@ -297,6 +330,44 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		public ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository> sessionRepositoryCustomizerTwo() {
 			return sessionRepository -> sessionRepository.setMaxInactiveIntervalInSeconds(10000);
 		}
+
+	}
+
+	@EnableMongoWebSession
+	static class CustomIndexResolverConfigurationWithDefaultMongoSessionConverter {
+
+		@Bean
+		ReactiveMongoOperations operations() {
+			return mock(ReactiveMongoOperations.class);
+		}
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		public IndexResolver<MongoSession> indexResolver() {
+			return mock(IndexResolver.class);
+		}
+
+	}
+
+	@EnableMongoWebSession
+	static class CustomIndexResolverConfigurationWithProvidedtMongoSessionConverter {
+
+		@Bean
+		ReactiveMongoOperations operations() {
+			return mock(ReactiveMongoOperations.class);
+		}
+
+		@Bean
+		JacksonMongoSessionConverter jacksonMongoSessionConverter() {
+			return new JacksonMongoSessionConverter();
+		}
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		public IndexResolver<MongoSession> indexResolver() {
+			return mock(IndexResolver.class);
+		}
+
 
 	}
 }

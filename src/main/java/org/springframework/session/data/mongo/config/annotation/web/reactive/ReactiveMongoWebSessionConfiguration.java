@@ -32,10 +32,12 @@ import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.session.IndexResolver;
 import org.springframework.session.config.ReactiveSessionRepositoryCustomizer;
 import org.springframework.session.config.annotation.web.server.SpringWebSessionConfiguration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
+import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
@@ -58,6 +60,8 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 
 	@Autowired(required = false) private MongoOperations mongoOperations;
 	private ClassLoader classLoader;
+	private IndexResolver<MongoSession> indexResolver;
+
 
 	@Bean
 	public ReactiveMongoSessionRepository reactiveMongoSessionRepository(ReactiveMongoOperations operations) {
@@ -66,10 +70,20 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 
 		if (this.mongoSessionConverter != null) {
 			repository.setMongoSessionConverter(this.mongoSessionConverter);
+
+			if (this.indexResolver != null) {
+				this.mongoSessionConverter.setIndexResolver(this.indexResolver);
+			}
+
 		} else {
 			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(new SerializingConverter(),
 					new DeserializingConverter(this.classLoader),
 					Duration.ofSeconds(ReactiveMongoSessionRepository.DEFAULT_INACTIVE_INTERVAL));
+
+			if (this.indexResolver != null) {
+				mongoSessionConverter.setIndexResolver(this.indexResolver);
+			}
+			
 			repository.setMongoSessionConverter(mongoSessionConverter);
 		}
 
@@ -145,5 +159,10 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 	public void setSessionRepositoryCustomizers(
 			ObjectProvider<ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository>> sessionRepositoryCustomizers) {
 		this.sessionRepositoryCustomizers = sessionRepositoryCustomizers.orderedStream().collect(Collectors.toList());
+	}
+
+	@Autowired(required = false)
+	public void setIndexResolver(IndexResolver<MongoSession> indexResolver) {
+		this.indexResolver = indexResolver;
 	}
 }
