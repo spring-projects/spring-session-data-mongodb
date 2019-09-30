@@ -90,9 +90,9 @@
 			<id>spring-next</id>
 			<properties>
 				<reactor.version>Dysprosium-BUILD-SNAPSHOT</reactor.version>
-				<spring.version>5.2.0.BUILD-SNAPSHOT</spring.version>
+				<spring.version>5.2.1.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Moore-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.1.6.BUILD-SNAPSHOT</spring-security.version>
+				<spring-security.version>5.1.7.BUILD-SNAPSHOT</spring-security.version>
 				<spring-session.version>2.2.0.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
