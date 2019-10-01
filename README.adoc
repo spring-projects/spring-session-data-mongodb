@@ -31,7 +31,7 @@ our pipelines testing against it. The extra tests are designed to give you a smo
 JDK 11, you should be using at least Spring Session for MongoDB *2.1*.
 ====
 
-IMPORTANT: *JDK 12* is Java's latest version and is unstable. We are testing against it to catch issues early on, but don't support it directly on any version of Spring Session for MongoDB.
+IMPORTANT: *JDK 13* is Java's latest version and is unstable. We are testing against it to catch issues early on, but don't support it directly on any version of Spring Session for MongoDB.
 
 == Building Spring Session MongoDB
 
