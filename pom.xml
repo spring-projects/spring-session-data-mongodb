@@ -81,7 +81,7 @@
 		<spring-bom.version>5.2.0.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Moore-RELEASE</spring-data-bom.version>
 		<spring-security-bom.version>5.1.6.RELEASE</spring-security-bom.version>
-		<spring-session.version>2.2.0.M4</spring-session.version>
+		<spring-session.version>2.2.0.RC1</spring-session.version>
 	</properties>
 
 	<profiles>
