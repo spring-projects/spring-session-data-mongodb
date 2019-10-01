@@ -79,7 +79,7 @@
 		<mongo-reactivestreams.version>1.12.0-rc0</mongo-reactivestreams.version>
 		<reactor-bom.version>Dysprosium-RELEASE</reactor-bom.version>
 		<spring-bom.version>5.2.0.RELEASE</spring-bom.version>
-		<spring-data-bom.version>Moore-RC3</spring-data-bom.version>
+		<spring-data-bom.version>Moore-RELEASE</spring-data-bom.version>
 		<spring-security-bom.version>5.1.6.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.2.0.M4</spring-session.version>
 	</properties>
@@ -90,9 +90,9 @@
 			<id>spring-next</id>
 			<properties>
 				<reactor.version>Dysprosium-BUILD-SNAPSHOT</reactor.version>
-				<spring.version>5.2.1.BUILD-SNAPSHOT</spring.version>
-				<spring-data.version>Moore-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.1.7.BUILD-SNAPSHOT</spring-security.version>
+				<spring-bom.version>5.2.1.BUILD-SNAPSHOT</spring-bom.version>
+				<spring-data-bom.version>Moore-BUILD-SNAPSHOT</spring-data-bom.version>
+				<spring-security-bom.version>5.1.7.BUILD-SNAPSHOT</spring-security-bom.version>
 				<spring-session.version>2.2.0.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
