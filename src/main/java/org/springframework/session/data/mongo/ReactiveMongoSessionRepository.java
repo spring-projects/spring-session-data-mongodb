@@ -15,6 +15,8 @@
  */
 package org.springframework.session.data.mongo;
 
+import static org.springframework.data.mongodb.core.query.Criteria.*;
+import static org.springframework.data.mongodb.core.query.Query.*;
 import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
 import java.time.Duration;
@@ -94,7 +96,13 @@ public class ReactiveMongoSessionRepository
 
 		DBObject dbObject = convertToDBObject(this.mongoSessionConverter, session);
 		if (dbObject != null) {
-			return this.mongoOperations.save(dbObject, this.collectionName).then();
+			if (session.hasChangedSessionId()) {
+				return this.mongoOperations.findAndRemove(query(where("_id").is(session.getOriginalSessionId())), MongoSession.class, this.collectionName)
+					.then(this.mongoOperations.save(dbObject, this.collectionName))
+					.then();
+			} else {
+				return this.mongoOperations.save(dbObject, this.collectionName).then();
+			}
 		} else {
 			return Mono.empty();
 		}
