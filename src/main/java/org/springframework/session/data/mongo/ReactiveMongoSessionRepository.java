@@ -15,6 +15,8 @@
  */
 package org.springframework.session.data.mongo;
 
+import static org.springframework.data.mongodb.core.query.Criteria.*;
+import static org.springframework.data.mongodb.core.query.Query.*;
 import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
 import java.time.Duration;
@@ -33,8 +35,6 @@ import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.events.SessionCreatedEvent;
 import org.springframework.session.events.SessionDeletedEvent;
-
-import com.mongodb.DBObject;
 
 /**
  * A {@link ReactiveSessionRepository} implementation that uses Spring Data MongoDB.
@@ -92,12 +92,20 @@ public class ReactiveMongoSessionRepository
 	@Override
 	public Mono<Void> save(MongoSession session) {
 
-		DBObject dbObject = convertToDBObject(this.mongoSessionConverter, session);
-		if (dbObject != null) {
-			return this.mongoOperations.save(dbObject, this.collectionName).then();
-		} else {
-			return Mono.empty();
-		}
+		return Mono //
+				.justOrEmpty(convertToDBObject(this.mongoSessionConverter, session)) //
+				.flatMap(dbObject -> {
+					if (session.hasChangedSessionId()) {
+
+						return this.mongoOperations
+								.remove(query(where("_id").is(session.getOriginalSessionId())), this.collectionName) //
+								.then(this.mongoOperations.save(dbObject, this.collectionName));
+					} else {
+
+						return this.mongoOperations.save(dbObject, this.collectionName);
+					}
+				}) //
+				.then();
 	}
 
 	@Override

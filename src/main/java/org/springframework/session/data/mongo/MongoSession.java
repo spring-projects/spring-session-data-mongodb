@@ -43,6 +43,7 @@ public class MongoSession implements Session {
 	private static final char DOT_COVER_CHAR = '';
 
 	private String id;
+	private String originalSessionId;
 	private long createdMillis = System.currentTimeMillis();
 	private long accessedMillis;
 	private long intervalSeconds;
@@ -60,6 +61,7 @@ public class MongoSession implements Session {
 	public MongoSession(String id, long maxInactiveIntervalInSeconds) {
 
 		this.id = id;
+		this.originalSessionId = id;
 		this.intervalSeconds = maxInactiveIntervalInSeconds;
 		setLastAccessedTime(Instant.ofEpochMilli(this.createdMillis));
 	}
@@ -72,6 +74,7 @@ public class MongoSession implements Session {
 		return attributeName.replace(DOT_COVER_CHAR, '.');
 	}
 
+	@Override
 	public String changeSessionId() {
 
 		String changedId = UUID.randomUUID().toString();
@@ -85,10 +88,12 @@ public class MongoSession implements Session {
 		return (T) this.attrs.get(coverDot(attributeName));
 	}
 
+	@Override
 	public Set<String> getAttributeNames() {
 		return this.attrs.keySet().stream().map(MongoSession::uncoverDot).collect(Collectors.toSet());
 	}
 
+	@Override
 	public void setAttribute(String attributeName, Object attributeValue) {
 
 		if (attributeValue == null) {
@@ -98,10 +103,12 @@ public class MongoSession implements Session {
 		}
 	}
 
+	@Override
 	public void removeAttribute(String attributeName) {
 		this.attrs.remove(coverDot(attributeName));
 	}
 
+	@Override
 	public Instant getCreationTime() {
 		return Instant.ofEpochMilli(this.createdMillis);
 	}
@@ -110,24 +117,29 @@ public class MongoSession implements Session {
 		this.createdMillis = created;
 	}
 
+	@Override
 	public Instant getLastAccessedTime() {
 		return Instant.ofEpochMilli(this.accessedMillis);
 	}
 
+	@Override
 	public void setLastAccessedTime(Instant lastAccessedTime) {
 
 		this.accessedMillis = lastAccessedTime.toEpochMilli();
 		this.expireAt = Date.from(lastAccessedTime.plus(Duration.ofSeconds(this.intervalSeconds)));
 	}
 
+	@Override
 	public Duration getMaxInactiveInterval() {
 		return Duration.ofSeconds(this.intervalSeconds);
 	}
 
+	@Override
 	public void setMaxInactiveInterval(Duration interval) {
 		this.intervalSeconds = interval.getSeconds();
 	}
 
+	@Override
 	public boolean isExpired() {
 		return this.intervalSeconds >= 0 && new Date().after(this.expireAt);
 	}
@@ -140,14 +152,15 @@ public class MongoSession implements Session {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		MongoSession that = (MongoSession) o;
-		return Objects.equals(id, that.id);
+		return Objects.equals(this.id, that.id);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(this.id);
 	}
 
+	@Override
 	public String getId() {
 		return this.id;
 	}
@@ -158,5 +171,13 @@ public class MongoSession implements Session {
 
 	public void setExpireAt(final Date expireAt) {
 		this.expireAt = expireAt;
+	}
+
+	boolean hasChangedSessionId() {
+		return !getId().equals(this.originalSessionId);
+	}
+
+	String getOriginalSessionId() {
+		return this.originalSessionId;
 	}
 }
