@@ -492,6 +492,7 @@
 					<artifactId>jcl-over-slf4j</artifactId>
 				</exclusion>
 			</exclusions>
+			<version>3.0.0.BUILD-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
