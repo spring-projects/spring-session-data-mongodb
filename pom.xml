@@ -75,8 +75,8 @@
 		<jsr305.version>3.0.2</jsr305.version>
 		<junit-bom.version>5.5.1</junit-bom.version>
 		<mockito.version>2.28.2</mockito.version>
-		<mongo.version>3.11.0</mongo.version>
-		<mongo-reactivestreams.version>1.12.0</mongo-reactivestreams.version>
+		<mongo.version>4.0.0-SNAPSHOT</mongo.version>
+		<mongo-reactivestreams.version>${mongo.version}</mongo-reactivestreams.version>
 		<reactor-bom.version>Dysprosium-RELEASE</reactor-bom.version>
 		<spring-bom.version>5.2.0.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Moore-RELEASE</spring-data-bom.version>
@@ -497,11 +497,17 @@
 
 		<dependency>
 			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver</artifactId>
+			<artifactId>mongodb-driver-sync</artifactId>
 			<version>${mongo.version}</version>
 			<optional>true</optional>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver-reactivestreams</artifactId>
+			<version>${mongo-reactivestreams.version}</version>
+			<optional>true</optional>
+		</dependency>
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -646,19 +652,6 @@
 			<artifactId>mongodb-driver-async</artifactId>
 			<version>${mongo.version}</version>
 			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver-reactivestreams</artifactId>
-			<version>${mongo-reactivestreams.version}</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.mongodb</groupId>
-					<artifactId>mongodb-driver-async</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<dependency>

@@ -42,7 +42,9 @@ import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.util.SocketUtils;
 
-import com.mongodb.MongoClient;
+import com.mongodb.ConnectionString;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 
 /**
  * Abstract base class for {@link MongoIndexedSessionRepository} tests.
@@ -401,7 +403,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 		@DependsOn("embeddedMongoServer")
 		public MongoOperations mongoOperations() throws UnknownHostException {
 
-			MongoClient mongo = new MongoClient("localhost", this.embeddedMongoPort);
+			MongoClient mongo = MongoClients.create(new ConnectionString("mongodb://localhost:" + this.embeddedMongoPort));
 			return new MongoTemplate(mongo, "test");
 		}
 
