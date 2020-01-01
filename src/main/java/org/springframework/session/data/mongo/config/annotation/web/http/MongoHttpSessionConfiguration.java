@@ -18,6 +18,7 @@ package org.springframework.session.data.mongo.config.annotation.web.http;
 import java.time.Duration;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.Bean;
@@ -52,11 +53,23 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 	private String collectionName;
 	private StringValueResolver embeddedValueResolver;
 	private ClassLoader classLoader;
+	private MongoOperations mongoOperations;
+
+	@Autowired
+	public void setMongoOperations(
+			@SpringSessionMongoOperations ObjectProvider<MongoOperations> springSessionMongoOperations,
+			ObjectProvider<MongoOperations> mongoOperations) {
+		MongoOperations mongoOperationsToUse = springSessionMongoOperations.getIfAvailable();
+		if (mongoOperationsToUse == null) {
+			mongoOperationsToUse = mongoOperations.getObject();
+		}
+		this.mongoOperations = mongoOperationsToUse;
+	}
 
 	@Bean
-	public MongoOperationsSessionRepository mongoSessionRepository(MongoOperations mongoOperations) {
+	public MongoOperationsSessionRepository mongoSessionRepository() {
 
-		MongoOperationsSessionRepository repository = new MongoOperationsSessionRepository(mongoOperations);
+		MongoOperationsSessionRepository repository = new MongoOperationsSessionRepository(this.mongoOperations);
 		repository.setMaxInactiveIntervalInSeconds(this.maxInactiveIntervalInSeconds);
 
 		if (this.mongoSessionConverter != null) {

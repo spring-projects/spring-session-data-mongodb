@@ -19,17 +19,17 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
 
-import java.net.UnknownHostException;
 
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.beans.factory.UnsatisfiedDependencyException;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
@@ -65,10 +65,9 @@ public class MongoHttpSessionConfigurationTest {
 	@Test
 	public void noMongoOperationsConfiguration() {
 
-		this.thrown.expect(UnsatisfiedDependencyException.class);
-		this.thrown.expectMessage("mongoSessionRepository");
-
-		registerAndRefresh(EmptyConfiguration.class);
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(
+				() -> registerAndRefresh(NoMongoOperationsConfiguration.class)).withMessageContaining(
+				"expected at least 1 bean which qualifies as autowire candidate");
 	}
 
 	@Test
@@ -155,16 +154,82 @@ public class MongoHttpSessionConfigurationTest {
 		this.context.refresh();
 	}
 
+	@Test
+	public void multipleDataSourceConfiguration() {
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(
+				() -> registerAndRefresh(MongoOperationConfiguration.class,
+						MultipleMongoOperationsConfiguration.class)).withMessageContaining(
+				"expected single matching bean but found 2");
+	}
+
+	@Test
+	public void primaryMongoOperationConfiguration() {
+
+		registerAndRefresh(MongoOperationConfiguration.class, PrimaryMongoOperationsConfiguration.class);
+
+		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		MongoOperations mongoOperations = this.context.getBean("primaryMongoOperations", MongoOperations.class);
+		assertThat(repository).isNotNull();
+		assertThat(mongoOperations).isNotNull();
+		MongoOperations mongoOperationsReflection = (MongoOperations) ReflectionTestUtils.getField(repository,
+				"mongoOperations");
+		assertThat(mongoOperationsReflection).isNotNull();
+		assertThat((mongoOperationsReflection)).isEqualTo(mongoOperations);
+	}
+
+	@Test
+	public void qualifiedDataSourceConfiguration() {
+		registerAndRefresh(MongoOperationConfiguration.class, QualifiedMongoOperationsConfiguration.class);
+
+		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		MongoOperations mongoOperations = this.context.getBean("qualifiedMongoOperations", MongoOperations.class);
+		assertThat(repository).isNotNull();
+		assertThat(mongoOperations).isNotNull();
+		MongoOperations mongoOperationsReflection = (MongoOperations) ReflectionTestUtils.getField(repository,
+				"mongoOperations");
+		assertThat(mongoOperationsReflection).isNotNull();
+		assertThat(mongoOperationsReflection).isEqualTo(mongoOperations);
+	}
+
+	@Test
+	public void qualifiedAndPrimaryDataSourceConfiguration() {
+		registerAndRefresh(MongoOperationConfiguration.class, QualifiedAndPrimaryMongoConfiguration.class);
+
+		MongoOperationsSessionRepository repository = this.context.getBean(MongoOperationsSessionRepository.class);
+		MongoOperations mongoOperations = this.context.getBean("qualifiedMongoOperations", MongoOperations.class);
+		assertThat(repository).isNotNull();
+		assertThat(mongoOperations).isNotNull();
+		MongoOperations mongoOperationsReflection = (MongoOperations) ReflectionTestUtils.getField(repository,
+				"mongoOperations");
+		assertThat(mongoOperations).isNotNull();
+		assertThat(mongoOperationsReflection).isEqualTo(mongoOperations);
+	}
+
 	@Configuration
 	@EnableMongoHttpSession
 	static class EmptyConfiguration {
 
 	}
 
+	@Configuration
+	static class MongoOperationConfiguration {
+
+		@Bean
+		public MongoOperations defaultMongoOperations() {
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
+
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
+
+			return mongoOperations;
+		}
+
+	}
+
 	static class BaseConfiguration {
 
 		@Bean
-		public MongoOperations mongoOperations() throws UnknownHostException {
+		public MongoOperations mongoOperations() {
 
 			MongoOperations mongoOperations = mock(MongoOperations.class);
 			IndexOperations indexOperations = mock(IndexOperations.class);
@@ -237,6 +302,80 @@ public class MongoHttpSessionConfigurationTest {
 		@Bean
 		public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 			return new PropertySourcesPlaceholderConfigurer();
+		}
+
+	}
+
+	@EnableMongoHttpSession
+	static class NoMongoOperationsConfiguration {
+
+	}
+
+	@EnableMongoHttpSession
+	static class MultipleMongoOperationsConfiguration {
+
+		@Bean
+		public MongoOperations secondaryDataSource() {
+			return mock(MongoOperations.class);
+		}
+
+	}
+
+	@EnableMongoHttpSession
+	static class PrimaryMongoOperationsConfiguration {
+
+		@Bean
+		@Primary
+		public MongoOperations primaryMongoOperations() {
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
+
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
+
+			return mongoOperations;
+		}
+
+	}
+
+	@EnableMongoHttpSession
+	static class QualifiedMongoOperationsConfiguration {
+
+		@Bean
+		@SpringSessionMongoOperations
+		public MongoOperations qualifiedMongoOperations() {
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
+
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
+
+			return mongoOperations;
+		}
+
+	}
+
+	@EnableMongoHttpSession
+	static class QualifiedAndPrimaryMongoConfiguration {
+
+		@Bean
+		@SpringSessionMongoOperations
+		public MongoOperations qualifiedMongoOperations() {
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
+
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
+
+			return mongoOperations;
+		}
+
+		@Bean
+		@Primary
+		public MongoOperations primaryMongoOperations() {
+			MongoOperations mongoOperations = mock(MongoOperations.class);
+			IndexOperations indexOperations = mock(IndexOperations.class);
+
+			given(mongoOperations.indexOps(anyString())).willReturn(indexOperations);
+
+			return mongoOperations;
 		}
 
 	}
