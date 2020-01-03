@@ -21,7 +21,7 @@ import java.lang.annotation.*;
  */
 /**
  * Qualifier annotation for a {@link org.springframework.data.mongodb.core.MongoOperations} to be injected in
- * {@link org.springframework.session.data.mongo.MongoOperationsSessionRepository}.
+ * {@link org.springframework.session.data.mongo.MongoIndexedSessionRepository}.
  *
  * This will enable us to have multiple MongoOperations in the application.
  *

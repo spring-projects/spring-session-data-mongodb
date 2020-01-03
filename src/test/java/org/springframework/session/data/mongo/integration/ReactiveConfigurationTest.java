@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.reactive.EnableMongoWebSession;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.SocketUtils;
@@ -35,7 +35,7 @@ import com.mongodb.reactivestreams.client.MongoClients;
  * @author Greg Turnquist
  */
 @ContextConfiguration
-public class ReactiveConfigurationTest extends AbstractClassLoaderTest<ReactiveMongoOperationsSessionRepository> {
+public class ReactiveConfigurationTest extends AbstractClassLoaderTest<ReactiveMongoSessionRepository> {
 
 	@Configuration
 	@EnableMongoWebSession

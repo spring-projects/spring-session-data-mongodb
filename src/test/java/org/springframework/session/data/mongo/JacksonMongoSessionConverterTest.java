@@ -21,9 +21,10 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.assertj.core.api.Assertions;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
 
@@ -84,10 +85,12 @@ public class JacksonMongoSessionConverterTest extends AbstractMongoSessionConver
 		assertThat(converterMapper).isEqualTo(myMapper);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void shouldNotAllowNullObjectMapperToBeInjected() {
 
-		new JacksonMongoSessionConverter((ObjectMapper) null);
+		Assertions.assertThatIllegalArgumentException().isThrownBy(() -> {
+			new JacksonMongoSessionConverter((ObjectMapper) null);
+		});
 	}
 
 	@Test

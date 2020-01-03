@@ -30,8 +30,10 @@ import org.springframework.data.mongodb.core.index.IndexInfo;
 import org.springframework.data.mongodb.core.index.IndexOperations;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.lang.Nullable;
+import org.springframework.session.DelegatingIndexResolver;
 import org.springframework.session.FindByIndexNameSessionRepository;
-import org.springframework.session.Session;
+import org.springframework.session.IndexResolver;
+import org.springframework.session.PrincipalNameIndexResolver;
 
 import com.mongodb.DBObject;
 
@@ -48,6 +50,8 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 	static final String EXPIRE_AT_FIELD_NAME = "expireAt";
 	private static final Log LOG = LogFactory.getLog(AbstractMongoSessionConverter.class);
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
+
+	private IndexResolver<MongoSession> indexResolver = new DelegatingIndexResolver<>(new PrincipalNameIndexResolver<>());
 
 	/**
 	 * Returns query to be executed to return sessions based on a particular index.
@@ -80,15 +84,9 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 				.ensureIndex(new Index(EXPIRE_AT_FIELD_NAME, Sort.Direction.ASC).named(EXPIRE_AT_FIELD_NAME).expire(0));
 	}
 
-	protected String extractPrincipal(Session expiringSession) {
-
-		String resolvedPrincipal = AuthenticationParser.extractName(expiringSession.getAttribute(SPRING_SECURITY_CONTEXT));
-
-		if (resolvedPrincipal != null) {
-			return resolvedPrincipal;
-		} else {
-			return expiringSession.getAttribute(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME);
-		}
+	protected String extractPrincipal(MongoSession expiringSession) {
+		return this.indexResolver.resolveIndexesFor(expiringSession)
+				.get(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
@@ -116,4 +114,8 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 	protected abstract DBObject convert(MongoSession session);
 
 	protected abstract MongoSession convert(Document sessionWrapper);
+
+	public void setIndexResolver(IndexResolver<MongoSession> indexResolver) {
+		this.indexResolver = Assert.requireNonNull(indexResolver, "indexResolver must not be null!");
+	}
 }

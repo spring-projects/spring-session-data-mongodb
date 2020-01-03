@@ -17,23 +17,19 @@
 package org.springframework.session.data.mongo;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
 import org.bson.Document;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Query;
@@ -43,25 +39,25 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 
 /**
- * Tests for {@link MongoOperationsSessionRepository}.
+ * Tests for {@link MongoIndexedSessionRepository}.
  *
  * @author Jakub Kubrynski
  * @author Vedran Pavic
  * @author Greg Turnquist
  */
-@RunWith(MockitoJUnitRunner.class)
-public class MongoOperationsSessionRepositoryTest {
+@ExtendWith(MockitoExtension.class)
+public class MongoIndexedSessionRepositoryTest {
 
 	@Mock private AbstractMongoSessionConverter converter;
 
 	@Mock private MongoOperations mongoOperations;
 
-	private MongoOperationsSessionRepository repository;
+	private MongoIndexedSessionRepository repository;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 
-		this.repository = new MongoOperationsSessionRepository(this.mongoOperations);
+		this.repository = new MongoIndexedSessionRepository(this.mongoOperations);
 		this.repository.setMongoSessionConverter(this.converter);
 	}
 
@@ -74,7 +70,7 @@ public class MongoOperationsSessionRepositoryTest {
 		// then
 		assertThat(session.getId()).isNotEmpty();
 		assertThat(session.getMaxInactiveInterval().getSeconds())
-				.isEqualTo(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
+				.isEqualTo(MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 	}
 
 	@Test
@@ -87,7 +83,7 @@ public class MongoOperationsSessionRepositoryTest {
 		// then
 		assertThat(session.getId()).isNotEmpty();
 		assertThat(session.getMaxInactiveInterval().getSeconds())
-				.isEqualTo(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
+				.isEqualTo(MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 	}
 
 	@Test
@@ -103,7 +99,7 @@ public class MongoOperationsSessionRepositoryTest {
 		this.repository.save(session);
 
 		// then
-		verify(this.mongoOperations).save(dbSession, MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME);
+		verify(this.mongoOperations).save(dbSession, MongoIndexedSessionRepository.DEFAULT_COLLECTION_NAME);
 	}
 
 	@Test
@@ -113,8 +109,9 @@ public class MongoOperationsSessionRepositoryTest {
 		String sessionId = UUID.randomUUID().toString();
 		Document sessionDocument = new Document();
 
-		given(this.mongoOperations.findById(sessionId, Document.class,
-				MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(sessionDocument);
+		given(
+				this.mongoOperations.findById(sessionId, Document.class, MongoIndexedSessionRepository.DEFAULT_COLLECTION_NAME))
+						.willReturn(sessionDocument);
 
 		MongoSession session = new MongoSession();
 
@@ -135,8 +132,9 @@ public class MongoOperationsSessionRepositoryTest {
 		String sessionId = UUID.randomUUID().toString();
 		Document sessionDocument = new Document();
 
-		given(this.mongoOperations.findById(sessionId, Document.class,
-				MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME)).willReturn(sessionDocument);
+		given(
+				this.mongoOperations.findById(sessionId, Document.class, MongoIndexedSessionRepository.DEFAULT_COLLECTION_NAME))
+						.willReturn(sessionDocument);
 
 		MongoSession session = mock(MongoSession.class);
 
@@ -149,8 +147,7 @@ public class MongoOperationsSessionRepositoryTest {
 		this.repository.findById(sessionId);
 
 		// then
-		verify(this.mongoOperations).remove(any(Document.class),
-				eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
+		verify(this.mongoOperations).remove(any(Document.class), eq(MongoIndexedSessionRepository.DEFAULT_COLLECTION_NAME));
 	}
 
 	@Test
@@ -162,19 +159,18 @@ public class MongoOperationsSessionRepositoryTest {
 		Document sessionDocument = new Document();
 		sessionDocument.put("id", sessionId);
 
-		MongoSession mongoSession = new MongoSession(sessionId, MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
+		MongoSession mongoSession = new MongoSession(sessionId, MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 
 		given(this.converter.convert(sessionDocument, TypeDescriptor.valueOf(Document.class),
 				TypeDescriptor.valueOf(MongoSession.class))).willReturn(mongoSession);
 		given(this.mongoOperations.findById(eq(sessionId), eq(Document.class),
-				eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME))).willReturn(sessionDocument);
+				eq(MongoIndexedSessionRepository.DEFAULT_COLLECTION_NAME))).willReturn(sessionDocument);
 
 		// when
 		this.repository.deleteById(sessionId);
 
 		// then
-		verify(this.mongoOperations).remove(any(Document.class),
-				eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME));
+		verify(this.mongoOperations).remove(any(Document.class), eq(MongoIndexedSessionRepository.DEFAULT_COLLECTION_NAME));
 	}
 
 	@Test
@@ -187,7 +183,7 @@ public class MongoOperationsSessionRepositoryTest {
 
 		given(this.converter.getQueryForIndex(anyString(), any(Object.class))).willReturn(mock(Query.class));
 		given(this.mongoOperations.find(any(Query.class), eq(Document.class),
-				eq(MongoOperationsSessionRepository.DEFAULT_COLLECTION_NAME))).willReturn(Collections.singletonList(document));
+				eq(MongoIndexedSessionRepository.DEFAULT_COLLECTION_NAME))).willReturn(Collections.singletonList(document));
 
 		String sessionId = UUID.randomUUID().toString();
 

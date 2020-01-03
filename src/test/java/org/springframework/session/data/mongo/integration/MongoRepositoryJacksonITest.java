@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.geo.GeoModule;
@@ -32,7 +32,7 @@ import org.springframework.session.data.mongo.config.annotation.web.http.EnableM
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * Integration tests for {@link org.springframework.session.data.mongo.MongoOperationsSessionRepository} that use
+ * Integration tests for {@link org.springframework.session.data.mongo.MongoIndexedSessionRepository} that use
  * {@link JacksonMongoSessionConverter} based session serialization.
  *
  * @author Jakub Kubrynski

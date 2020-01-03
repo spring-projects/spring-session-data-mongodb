@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
@@ -38,14 +38,14 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.util.SocketUtils;
 
 import com.mongodb.MongoClient;
 
 /**
- * Abstract base class for {@link org.springframework.session.data.mongo.MongoOperationsSessionRepository} tests.
+ * Abstract base class for {@link MongoIndexedSessionRepository} tests.
  *
  * @author Jakub Kubrynski
  * @author Vedran Pavic
@@ -57,7 +57,7 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 	protected static final String INDEX_NAME = FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME;
 
-	@Autowired protected MongoOperationsSessionRepository repository;
+	@Autowired protected MongoIndexedSessionRepository repository;
 
 	@Test
 	public void saves() {

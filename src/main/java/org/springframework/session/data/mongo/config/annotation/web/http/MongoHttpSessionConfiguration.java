@@ -16,6 +16,8 @@
 package org.springframework.session.data.mongo.config.annotation.web.http;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
@@ -29,10 +31,13 @@ import org.springframework.core.serializer.support.DeserializingConverter;
 import org.springframework.core.serializer.support.SerializingConverter;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.session.IndexResolver;
+import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.config.annotation.web.http.SpringHttpSessionConfiguration;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
+import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.util.StringUtils;
 import org.springframework.util.StringValueResolver;
 
@@ -44,15 +49,17 @@ import org.springframework.util.StringValueResolver;
  * @author Eddú Meléndez
  * @since 1.2
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguration
-        implements BeanClassLoaderAware, EmbeddedValueResolverAware, ImportAware {
+		implements BeanClassLoaderAware, EmbeddedValueResolverAware, ImportAware {
 
-    private AbstractMongoSessionConverter mongoSessionConverter;
-    private Integer maxInactiveIntervalInSeconds;
-    private String collectionName;
-    private StringValueResolver embeddedValueResolver;
-    private ClassLoader classLoader;
+	private AbstractMongoSessionConverter mongoSessionConverter;
+	private Integer maxInactiveIntervalInSeconds;
+	private String collectionName;
+	private StringValueResolver embeddedValueResolver;
+	private List<SessionRepositoryCustomizer<MongoIndexedSessionRepository>> sessionRepositoryCustomizers;
+	private ClassLoader classLoader;
+	private IndexResolver<MongoSession> indexResolver;
     private MongoOperations mongoOperations;
 
     @Autowired
@@ -66,66 +73,88 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
         this.mongoOperations = mongoOperationsToUse;
     }
 
-    @Bean
-    public MongoOperationsSessionRepository mongoSessionRepository() {
+	@Bean
+	public MongoIndexedSessionRepository mongoSessionRepository() {
 
-        MongoOperationsSessionRepository repository = new MongoOperationsSessionRepository(mongoOperations);
-        repository.setMaxInactiveIntervalInSeconds(this.maxInactiveIntervalInSeconds);
+		MongoIndexedSessionRepository repository = new MongoIndexedSessionRepository(mongoOperations);
+		repository.setMaxInactiveIntervalInSeconds(this.maxInactiveIntervalInSeconds);
 
-        if (this.mongoSessionConverter != null) {
-            repository.setMongoSessionConverter(this.mongoSessionConverter);
-        } else {
-            JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(new SerializingConverter(),
-                    new DeserializingConverter(this.classLoader),
-                    Duration.ofSeconds(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL));
-            repository.setMongoSessionConverter(mongoSessionConverter);
-        }
+		if (this.mongoSessionConverter != null) {
+			repository.setMongoSessionConverter(this.mongoSessionConverter);
 
-        if (StringUtils.hasText(this.collectionName)) {
-            repository.setCollectionName(this.collectionName);
-        }
+			if (this.indexResolver != null) {
+				this.mongoSessionConverter.setIndexResolver(this.indexResolver);
+			}
+		} else {
+			JdkMongoSessionConverter mongoSessionConverter = new JdkMongoSessionConverter(new SerializingConverter(),
+					new DeserializingConverter(this.classLoader),
+					Duration.ofSeconds(MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL));
 
-        return repository;
-    }
+			if (this.indexResolver != null) {
+				mongoSessionConverter.setIndexResolver(this.indexResolver);
+			}
 
-    public void setCollectionName(String collectionName) {
-        this.collectionName = collectionName;
-    }
+			repository.setMongoSessionConverter(mongoSessionConverter);
+		}
 
-    public void setMaxInactiveIntervalInSeconds(Integer maxInactiveIntervalInSeconds) {
-        this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
-    }
+		if (StringUtils.hasText(this.collectionName)) {
+			repository.setCollectionName(this.collectionName);
+		}
 
-    public void setImportMetadata(AnnotationMetadata importMetadata) {
+		this.sessionRepositoryCustomizers
+				.forEach(sessionRepositoryCustomizer -> sessionRepositoryCustomizer.customize(repository));
 
-        AnnotationAttributes attributes = AnnotationAttributes
-                .fromMap(importMetadata.getAnnotationAttributes(EnableMongoHttpSession.class.getName()));
+		return repository;
+	}
 
-        if (attributes != null) {
-            this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
-        } else {
-            this.maxInactiveIntervalInSeconds = MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL;
-        }
+	public void setCollectionName(String collectionName) {
+		this.collectionName = collectionName;
+	}
 
-        String collectionNameValue = attributes != null ? attributes.getString("collectionName") : "";
-        if (StringUtils.hasText(collectionNameValue)) {
-            this.collectionName = this.embeddedValueResolver.resolveStringValue(collectionNameValue);
-        }
-    }
+	public void setMaxInactiveIntervalInSeconds(Integer maxInactiveIntervalInSeconds) {
+		this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
+	}
 
-    @Autowired(required = false)
-    public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
-        this.mongoSessionConverter = mongoSessionConverter;
-    }
+	public void setImportMetadata(AnnotationMetadata importMetadata) {
 
-    @Override
-    public void setBeanClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
-    }
+		AnnotationAttributes attributes = AnnotationAttributes
+				.fromMap(importMetadata.getAnnotationAttributes(EnableMongoHttpSession.class.getName()));
 
-    @Override
-    public void setEmbeddedValueResolver(StringValueResolver resolver) {
-        this.embeddedValueResolver = resolver;
-    }
+		if (attributes != null) {
+			this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
+		} else {
+			this.maxInactiveIntervalInSeconds = MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL;
+		}
 
+		String collectionNameValue = attributes != null ? attributes.getString("collectionName") : "";
+		if (StringUtils.hasText(collectionNameValue)) {
+			this.collectionName = this.embeddedValueResolver.resolveStringValue(collectionNameValue);
+		}
+	}
+
+	@Autowired(required = false)
+	public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
+		this.mongoSessionConverter = mongoSessionConverter;
+	}
+
+	@Autowired(required = false)
+	public void setSessionRepositoryCustomizers(
+			ObjectProvider<SessionRepositoryCustomizer<MongoIndexedSessionRepository>> sessionRepositoryCustomizers) {
+		this.sessionRepositoryCustomizers = sessionRepositoryCustomizers.orderedStream().collect(Collectors.toList());
+	}
+
+	@Override
+	public void setBeanClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
+	@Override
+	public void setEmbeddedValueResolver(StringValueResolver resolver) {
+		this.embeddedValueResolver = resolver;
+	}
+
+	@Autowired(required = false)
+	public void setIndexResolver(IndexResolver<MongoSession> indexResolver) {
+		this.indexResolver = indexResolver;
+	}
 }

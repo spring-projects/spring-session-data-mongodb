@@ -17,28 +17,28 @@ package org.springframework.session.data.mongo.config.annotation.web.reactive;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.BDDMockito.times;
-import static org.mockito.BDDMockito.verify;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.data.mongodb.core.index.IndexOperations;
+import org.springframework.session.IndexResolver;
 import org.springframework.session.ReactiveSessionRepository;
+import org.springframework.session.config.ReactiveSessionRepositoryCustomizer;
 import org.springframework.session.config.annotation.web.server.EnableSpringWebSession;
 import org.springframework.session.data.mongo.AbstractMongoSessionConverter;
 import org.springframework.session.data.mongo.JacksonMongoSessionConverter;
 import org.springframework.session.data.mongo.JdkMongoSessionConverter;
-import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
+import org.springframework.session.data.mongo.MongoSession;
+import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.session.WebSessionManager;
@@ -53,7 +53,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
+	@AfterEach
 	public void tearDown() {
 
 		if (this.context != null) {
@@ -85,7 +85,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(BadConfig.class);
 
 		assertThatExceptionOfType(UnsatisfiedDependencyException.class).isThrownBy(this.context::refresh)
-				.withMessageContaining("Error creating bean with name 'reactiveMongoOperationsSessionRepository'")
+				.withMessageContaining("Error creating bean with name 'reactiveMongoSessionRepository'")
 				.withMessageContaining("No qualifying bean of type '" + ReactiveMongoOperations.class.getCanonicalName());
 	}
 
@@ -96,8 +96,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(GoodConfig.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context
-				.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
 
 		AbstractMongoSessionConverter converter = findMongoSessionConverter(repository);
 
@@ -111,8 +110,7 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(OverrideSessionConverterConfig.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context
-				.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
 
 		AbstractMongoSessionConverter converter = findMongoSessionConverter(repository);
 
@@ -126,16 +124,14 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(OverrideMongoParametersConfig.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context
-				.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
 
-		Field inactiveField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class,
+		Field inactiveField = ReflectionUtils.findField(ReactiveMongoSessionRepository.class,
 				"maxInactiveIntervalInSeconds");
 		ReflectionUtils.makeAccessible(inactiveField);
 		Integer inactiveSeconds = (Integer) inactiveField.get(repository);
 
-		Field collectionNameField = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class,
-				"collectionName");
+		Field collectionNameField = ReflectionUtils.findField(ReactiveMongoSessionRepository.class, "collectionName");
 		ReflectionUtils.makeAccessible(collectionNameField);
 		String collectionName = (String) collectionNameField.get(repository);
 
@@ -165,23 +161,65 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		this.context.register(CustomizedReactiveConfiguration.class);
 		this.context.refresh();
 
-		ReactiveMongoOperationsSessionRepository repository = this.context
-				.getBean(ReactiveMongoOperationsSessionRepository.class);
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
 
 		assertThat(repository.getCollectionName()).isEqualTo("custom-collection");
 		assertThat(repository.getMaxInactiveIntervalInSeconds()).isEqualTo(123);
 	}
 
+	@Test
+	public void sessionRepositoryCustomizer() {
+
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(SessionRepositoryCustomizerConfiguration.class);
+		this.context.refresh();
+
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
+
+		assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds", 10000);
+	}
+
+	@Test
+	void customIndexResolverConfigurationWithDefaultMongoSessionConverter() {
+
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomIndexResolverConfigurationWithDefaultMongoSessionConverter.class);
+		this.context.refresh();
+
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
+		IndexResolver<MongoSession> indexResolver = this.context.getBean(IndexResolver.class);
+
+		assertThat(repository).isNotNull();
+		assertThat(indexResolver).isNotNull();
+		assertThat(repository).extracting("mongoSessionConverter").hasFieldOrPropertyWithValue("indexResolver", indexResolver);
+	}
+
+	@Test
+	void customIndexResolverConfigurationWithProvidedMongoSessionConverter() {
+
+		this.context = new AnnotationConfigApplicationContext();
+		this.context.register(CustomIndexResolverConfigurationWithProvidedtMongoSessionConverter.class);
+		this.context.refresh();
+
+		ReactiveMongoSessionRepository repository = this.context.getBean(ReactiveMongoSessionRepository.class);
+		IndexResolver<MongoSession> indexResolver = this.context.getBean(IndexResolver.class);
+
+		assertThat(repository).isNotNull();
+		assertThat(indexResolver).isNotNull();
+		assertThat(repository).extracting("mongoSessionConverter").hasFieldOrPropertyWithValue("indexResolver", indexResolver);
+	}
+
+
 	/**
-	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the
-	 * {@link ReactiveMongoOperationsSessionRepository}. This is to avoid expanding the surface area of the API.
+	 * Reflectively extract the {@link AbstractMongoSessionConverter} from the {@link ReactiveMongoSessionRepository}.
+	 * This is to avoid expanding the surface area of the API.
 	 * 
 	 * @param repository
 	 * @return
 	 */
-	private AbstractMongoSessionConverter findMongoSessionConverter(ReactiveMongoOperationsSessionRepository repository) {
+	private AbstractMongoSessionConverter findMongoSessionConverter(ReactiveMongoSessionRepository repository) {
 
-		Field field = ReflectionUtils.findField(ReactiveMongoOperationsSessionRepository.class, "mongoSessionConverter");
+		Field field = ReflectionUtils.findField(ReactiveMongoSessionRepository.class, "mongoSessionConverter");
 		ReflectionUtils.makeAccessible(field);
 		try {
 			return (AbstractMongoSessionConverter) field.get(repository);
@@ -271,5 +309,65 @@ public class ReactiveMongoWebSessionConfigurationTest {
 		ReactiveMongoOperations reactiveMongoOperations() {
 			return mock(ReactiveMongoOperations.class);
 		}
+	}
+
+	@EnableMongoWebSession
+	static class SessionRepositoryCustomizerConfiguration {
+
+		@Bean
+		ReactiveMongoOperations operations() {
+			return mock(ReactiveMongoOperations.class);
+		}
+
+		@Bean
+		@Order(0)
+		public ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository> sessionRepositoryCustomizerOne() {
+			return sessionRepository -> sessionRepository.setMaxInactiveIntervalInSeconds(0);
+		}
+
+		@Bean
+		@Order(1)
+		public ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository> sessionRepositoryCustomizerTwo() {
+			return sessionRepository -> sessionRepository.setMaxInactiveIntervalInSeconds(10000);
+		}
+
+	}
+
+	@EnableMongoWebSession
+	static class CustomIndexResolverConfigurationWithDefaultMongoSessionConverter {
+
+		@Bean
+		ReactiveMongoOperations operations() {
+			return mock(ReactiveMongoOperations.class);
+		}
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		public IndexResolver<MongoSession> indexResolver() {
+			return mock(IndexResolver.class);
+		}
+
+	}
+
+	@EnableMongoWebSession
+	static class CustomIndexResolverConfigurationWithProvidedtMongoSessionConverter {
+
+		@Bean
+		ReactiveMongoOperations operations() {
+			return mock(ReactiveMongoOperations.class);
+		}
+
+		@Bean
+		JacksonMongoSessionConverter jacksonMongoSessionConverter() {
+			return new JacksonMongoSessionConverter();
+		}
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		public IndexResolver<MongoSession> indexResolver() {
+			return mock(IndexResolver.class);
+		}
+
+
 	}
 }

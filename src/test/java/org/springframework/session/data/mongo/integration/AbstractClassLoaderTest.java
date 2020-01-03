@@ -19,7 +19,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 
 import java.lang.reflect.Field;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.serializer.DefaultDeserializer;

@@ -15,15 +15,12 @@
  */
 package org.springframework.session.data.mongo;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,23 +35,23 @@ import org.springframework.session.Session;
  * @author Greg Turnquist
  * @since 1.2
  */
-@EqualsAndHashCode(of = { "id" })
 public class MongoSession implements Session {
 
 	/**
 	 * Mongo doesn't support {@literal dot} in field names. We replace it with a very rarely used character
 	 */
-	private static final char DOT_COVER_CHAR = '\uF607';
+	private static final char DOT_COVER_CHAR = '';
 
-	@Getter private String id;
+	private String id;
+	private String originalSessionId;
 	private long createdMillis = System.currentTimeMillis();
 	private long accessedMillis;
 	private long intervalSeconds;
-	@Getter @Setter private Date expireAt;
+	private Date expireAt;
 	private Map<String, Object> attrs = new HashMap<>();
 
 	public MongoSession() {
-		this(MongoOperationsSessionRepository.DEFAULT_INACTIVE_INTERVAL);
+		this(MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 	}
 
 	public MongoSession(long maxInactiveIntervalInSeconds) {
@@ -64,6 +61,7 @@ public class MongoSession implements Session {
 	public MongoSession(String id, long maxInactiveIntervalInSeconds) {
 
 		this.id = id;
+		this.originalSessionId = id;
 		this.intervalSeconds = maxInactiveIntervalInSeconds;
 		setLastAccessedTime(Instant.ofEpochMilli(this.createdMillis));
 	}
@@ -76,6 +74,7 @@ public class MongoSession implements Session {
 		return attributeName.replace(DOT_COVER_CHAR, '.');
 	}
 
+	@Override
 	public String changeSessionId() {
 
 		String changedId = UUID.randomUUID().toString();
@@ -89,11 +88,12 @@ public class MongoSession implements Session {
 		return (T) this.attrs.get(coverDot(attributeName));
 	}
 
+	@Override
 	public Set<String> getAttributeNames() {
-
 		return this.attrs.keySet().stream().map(MongoSession::uncoverDot).collect(Collectors.toSet());
 	}
 
+	@Override
 	public void setAttribute(String attributeName, Object attributeValue) {
 
 		if (attributeValue == null) {
@@ -103,10 +103,12 @@ public class MongoSession implements Session {
 		}
 	}
 
+	@Override
 	public void removeAttribute(String attributeName) {
 		this.attrs.remove(coverDot(attributeName));
 	}
 
+	@Override
 	public Instant getCreationTime() {
 		return Instant.ofEpochMilli(this.createdMillis);
 	}
@@ -115,25 +117,67 @@ public class MongoSession implements Session {
 		this.createdMillis = created;
 	}
 
+	@Override
 	public Instant getLastAccessedTime() {
 		return Instant.ofEpochMilli(this.accessedMillis);
 	}
 
+	@Override
 	public void setLastAccessedTime(Instant lastAccessedTime) {
 
 		this.accessedMillis = lastAccessedTime.toEpochMilli();
 		this.expireAt = Date.from(lastAccessedTime.plus(Duration.ofSeconds(this.intervalSeconds)));
 	}
 
+	@Override
 	public Duration getMaxInactiveInterval() {
 		return Duration.ofSeconds(this.intervalSeconds);
 	}
 
+	@Override
 	public void setMaxInactiveInterval(Duration interval) {
 		this.intervalSeconds = interval.getSeconds();
 	}
 
+	@Override
 	public boolean isExpired() {
 		return this.intervalSeconds >= 0 && new Date().after(this.expireAt);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		MongoSession that = (MongoSession) o;
+		return Objects.equals(this.id, that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.id);
+	}
+
+	@Override
+	public String getId() {
+		return this.id;
+	}
+
+	public Date getExpireAt() {
+		return this.expireAt;
+	}
+
+	public void setExpireAt(final Date expireAt) {
+		this.expireAt = expireAt;
+	}
+
+	boolean hasChangedSessionId() {
+		return !getId().equals(this.originalSessionId);
+	}
+
+	String getOriginalSessionId() {
+		return this.originalSessionId;
 	}
 }
