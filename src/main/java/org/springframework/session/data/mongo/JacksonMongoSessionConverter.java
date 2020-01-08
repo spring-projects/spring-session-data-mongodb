@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
@@ -126,6 +128,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	protected MongoSession convert(Document source) {
 
 		Date expireAt = (Date) source.remove(EXPIRE_AT_FIELD_NAME);
+		source.remove("originalSessionId");
 		String json = source.toJson(JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build());
 
 		try {
@@ -142,7 +145,10 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	 * Used to whitelist {@link MongoSession} for {@link SecurityJackson2Modules}.
 	 */
 	private static class MongoSessionMixin {
-		// Nothing special
+		@JsonCreator
+		public MongoSessionMixin(@JsonProperty("_id") String id,
+								 @JsonProperty("intervalSeconds") long maxInactiveIntervalInSeconds) {
+		}
 	}
 
 	/**
