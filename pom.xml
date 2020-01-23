@@ -78,7 +78,7 @@
 		<mongo.version>3.11.0</mongo.version>
 		<mongo-reactivestreams.version>1.12.0</mongo-reactivestreams.version>
 		<reactor-bom.version>Dysprosium-SR4</reactor-bom.version>
-		<spring-bom.version>5.2.0.RELEASE</spring-bom.version>
+		<spring-bom.version>5.2.3.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Moore-SR4</spring-data-bom.version>
 		<spring-security-bom.version>5.1.6.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.2.0.RELEASE</spring-session.version>
