@@ -80,7 +80,7 @@
 		<reactor-bom.version>Dysprosium-SR4</reactor-bom.version>
 		<spring-bom.version>5.2.3.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Moore-SR4</spring-data-bom.version>
-		<spring-security-bom.version>5.1.6.RELEASE</spring-security-bom.version>
+		<spring-security-bom.version>5.1.7.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.2.0.RELEASE</spring-session.version>
 	</properties>
 
