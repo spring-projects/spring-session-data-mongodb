@@ -80,7 +80,7 @@
 		<reactor-bom.version>Dysprosium-SR4</reactor-bom.version>
 		<spring-bom.version>5.2.3.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Neumann-M2</spring-data-bom.version>
-		<spring-security-bom.version>5.1.6.RELEASE</spring-security-bom.version>
+		<spring-security-bom.version>5.2.1.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.2.0.RELEASE</spring-session.version>
 	</properties>
 
@@ -92,7 +92,7 @@
 				<reactor.version>Dysprosium-BUILD-SNAPSHOT</reactor.version>
 				<spring-bom.version>5.2.4.BUILD-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>Neumann-BUILD-SNAPSHOT</spring-data-bom.version>
-				<spring-security-bom.version>5.1.7.BUILD-SNAPSHOT</spring-security-bom.version>
+				<spring-security-bom.version>5.2.2.BUILD-SNAPSHOT</spring-security-bom.version>
 				<spring-session.version>2.2.0.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
