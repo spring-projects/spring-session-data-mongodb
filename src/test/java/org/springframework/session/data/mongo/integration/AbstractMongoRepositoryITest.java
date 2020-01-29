@@ -18,7 +18,6 @@ package org.springframework.session.data.mongo.integration;
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
@@ -42,7 +41,8 @@ import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.mongo.MongoSession;
 import org.springframework.util.SocketUtils;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 
 /**
  * Abstract base class for {@link MongoIndexedSessionRepository} tests.
@@ -399,9 +399,9 @@ abstract public class AbstractMongoRepositoryITest extends AbstractITest {
 
 		@Bean
 		@DependsOn("embeddedMongoServer")
-		public MongoOperations mongoOperations() throws UnknownHostException {
+		public MongoOperations mongoOperations() {
 
-			MongoClient mongo = new MongoClient("localhost", this.embeddedMongoPort);
+			MongoClient mongo = MongoClients.create("mongodb://localhost:" + this.embeddedMongoPort);
 			return new MongoTemplate(mongo, "test");
 		}
 
