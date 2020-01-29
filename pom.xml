@@ -79,7 +79,7 @@
 		<mongo-reactivestreams.version>4.0.0-beta1</mongo-reactivestreams.version>
 		<reactor-bom.version>Dysprosium-SR4</reactor-bom.version>
 		<spring-bom.version>5.2.3.RELEASE</spring-bom.version>
-		<spring-data-bom.version>Neumann-M2</spring-data-bom.version>
+		<spring-data-bom.version>Neumann-BUILD-SNAPSHOT</spring-data-bom.version>
 		<spring-security-bom.version>5.2.1.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.3.0.M1</spring-session.version>
 	</properties>
