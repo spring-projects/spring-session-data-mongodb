@@ -49,17 +49,6 @@ pipeline {
 						sh "PROFILE=spring-next,convergence ci/test.sh"
 					}
 				}
-				stage("Test: springdata-next (jdk8)") {
-					agent {
-						docker {
-							image 'adoptopenjdk/openjdk8:latest'
-							args '-v $HOME/.m2:/root/.m2'
-						}
-					}
-					steps {
-						sh "PROFILE=springdata-next,convergence ci/test.sh"
-					}
-				}
 				stage("Test: baseline (jdk11)") {
 					agent {
 						docker {
@@ -82,17 +71,6 @@ pipeline {
 						sh "PROFILE=spring-next,convergence ci/test.sh"
 					}
 				}
-				stage("Test: springdata-next (jdk11)") {
-					agent {
-						docker {
-							image 'adoptopenjdk/openjdk11:latest'
-							args '-v $HOME/.m2:/root/.m2'
-						}
-					}
-					steps {
-						sh "PROFILE=springdata-next,convergence ci/test.sh"
-					}
-				}
 				stage("Test: baseline (jdk13)") {
 					agent {
 						docker {
@@ -113,17 +91,6 @@ pipeline {
 					}
 					steps {
 						sh "PROFILE=spring-next,convergence ci/test.sh"
-					}
-				}
-				stage("Test: springdata-next (jdk13)") {
-					agent {
-						docker {
-							image 'adoptopenjdk/openjdk13:latest'
-							args '-v $HOME/.m2:/root/.m2'
-						}
-					}
-					steps {
-						sh "PROFILE=springdata-next,convergence ci/test.sh"
 					}
 				}
 			}
