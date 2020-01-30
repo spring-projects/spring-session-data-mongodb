@@ -81,7 +81,7 @@
 		<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
 		<reactor.version>Californium-SR15</reactor.version>
 		<spring.version>5.1.13.RELEASE</spring.version>
-		<spring-data.version>Lovelace-SR10</spring-data.version>
+		<spring-data.version>Lovelace-SR15</spring-data.version>
 		<spring-security.version>5.1.6.RELEASE</spring-security.version>
 		<spring-session.version>2.1.8.RELEASE</spring-session.version>
 	</properties>
