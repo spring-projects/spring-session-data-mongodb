@@ -82,7 +82,7 @@
 		<reactor.version>Californium-SR15</reactor.version>
 		<spring.version>5.1.13.RELEASE</spring.version>
 		<spring-data.version>Lovelace-SR15</spring-data.version>
-		<spring-security.version>5.1.6.RELEASE</spring-security.version>
+		<spring-security.version>5.1.7.RELEASE</spring-security.version>
 		<spring-session.version>2.1.8.RELEASE</spring-session.version>
 	</properties>
 
@@ -94,7 +94,7 @@
 				<reactor.version>Californium-BUILD-SNAPSHOT</reactor.version>
 				<spring.version>5.1.14.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
-				<spring-security.version>5.1.7.BUILD-SNAPSHOT</spring-security.version>
+				<spring-security.version>5.1.8.BUILD-SNAPSHOT</spring-security.version>
 				<spring-session.version>2.1.5.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
