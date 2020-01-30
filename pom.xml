@@ -79,7 +79,7 @@
 		<mockito.version>2.18.3</mockito.version>
 		<mongo.version>3.8.0</mongo.version>
 		<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
-		<reactor.version>Californium-SR10</reactor.version>
+		<reactor.version>Californium-SR15</reactor.version>
 		<spring.version>5.1.10.RELEASE</spring.version>
 		<spring-data.version>Lovelace-SR10</spring-data.version>
 		<spring-security.version>5.1.6.RELEASE</spring-security.version>
