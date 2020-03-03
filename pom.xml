@@ -80,7 +80,7 @@
 		<mongo.version>3.8.0</mongo.version>
 		<mongo-reactivestreams.version>1.9.0</mongo-reactivestreams.version>
 		<reactor.version>Californium-SR16</reactor.version>
-		<spring.version>5.1.13.RELEASE</spring.version>
+		<spring.version>5.1.14.RELEASE</spring.version>
 		<spring-data.version>Lovelace-SR15</spring-data.version>
 		<spring-security.version>5.1.7.RELEASE</spring-security.version>
 		<spring-session.version>2.1.10.RELEASE</spring-session.version>
@@ -92,7 +92,7 @@
 			<id>spring-next</id>
 			<properties>
 				<reactor.version>Californium-BUILD-SNAPSHOT</reactor.version>
-				<spring.version>5.1.14.BUILD-SNAPSHOT</spring.version>
+				<spring.version>5.1.15.BUILD-SNAPSHOT</spring.version>
 				<spring-data.version>Lovelace-BUILD-SNAPSHOT</spring-data.version>
 				<spring-security.version>5.1.8.BUILD-SNAPSHOT</spring-security.version>
 				<spring-session.version>2.1.11.BUILD-SNAPSHOT</spring-session.version>
