@@ -80,7 +80,7 @@
 		<reactor-bom.version>Dysprosium-SR5</reactor-bom.version>
 		<spring-bom.version>5.2.4.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Moore-SR5</spring-data-bom.version>
-		<spring-security-bom.version>5.1.7.RELEASE</spring-security-bom.version>
+		<spring-security-bom.version>5.1.8.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.2.1.RELEASE</spring-session.version>
 	</properties>
 
@@ -92,7 +92,7 @@
 				<reactor.version>Dysprosium-BUILD-SNAPSHOT</reactor.version>
 				<spring-bom.version>5.2.5.BUILD-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>Moore-BUILD-SNAPSHOT</spring-data-bom.version>
-				<spring-security-bom.version>5.1.8.BUILD-SNAPSHOT</spring-security-bom.version>
+				<spring-security-bom.version>5.1.9.BUILD-SNAPSHOT</spring-security-bom.version>
 				<spring-session.version>2.2.2.BUILD-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
