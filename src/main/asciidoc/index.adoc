@@ -1,9 +1,11 @@
 
-= Spring Session MongoDB
-Rob Winch, Vedran Pavić, Jakub Kubrynski, Greg Turnquist
+= Spring Session MongoDB - Reference Documentation
+Rob Winch; Vedran Pavić; Jakub Kubrynski; Greg Turnquist
 :doctype: book
 :toc: left
 :toclevels: 4
+:revnumber: {version}
+:revdate: {localdate}
 
 [[abstract]]
 
