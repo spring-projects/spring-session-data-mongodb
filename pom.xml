@@ -76,7 +76,8 @@
 		<jsr305.version>3.0.2</jsr305.version>
 		<junit-bom.version>5.6.0</junit-bom.version>
 		<mockito.version>2.28.2</mockito.version>
-		<mongo.version>4.0.0-rc0</mongo.version>
+		<mongo.version>4.0.0-beta1</mongo.version>
+		<mongo-reactivestreams.version>4.0.0-beta1</mongo-reactivestreams.version>
 		<reactor-bom.version>Dysprosium-SR5</reactor-bom.version>
 		<spring-bom.version>5.2.4.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Neumann-M3</spring-data-bom.version>
@@ -89,6 +90,8 @@
 		<profile>
 			<id>spring-next</id>
 			<properties>
+				<mongo.version>4.0.0-rc0</mongo.version>
+				<mongo-reactivestreams.version>4.0.0-rc0</mongo-reactivestreams.version>
 				<reactor.version>Dysprosium-BUILD-SNAPSHOT</reactor.version>
 				<spring-bom.version>5.2.5.BUILD-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>Neumann-BUILD-SNAPSHOT</spring-data-bom.version>
@@ -841,7 +844,7 @@
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>mongodb-driver-reactivestreams</artifactId>
-			<version>${mongo.version}</version>
+			<version>${mongo-reactivestreams.version}</version>
 			<scope>test</scope>
 		</dependency>
 
