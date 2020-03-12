@@ -90,8 +90,8 @@
 		<profile>
 			<id>spring-next</id>
 			<properties>
-				<mongo.version>4.0.0-rc0</mongo.version>
-				<mongo-reactivestreams.version>4.0.0-rc0</mongo-reactivestreams.version>
+				<mongo.version>4.0.0</mongo.version>
+				<mongo-reactivestreams.version>4.0.0</mongo-reactivestreams.version>
 				<reactor.version>Dysprosium-BUILD-SNAPSHOT</reactor.version>
 				<spring-bom.version>5.2.5.BUILD-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>Neumann-BUILD-SNAPSHOT</spring-data-bom.version>
