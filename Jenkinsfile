@@ -25,76 +25,76 @@ pipeline {
 				}
 			}
 		}
-		stage("Test: baseline (jdk8)") {
-			agent {
-				docker {
-					image 'adoptopenjdk/openjdk8:latest'
-					args '-v $HOME/.m2:/root/.m2'
-				}
-			}
-			steps {
-				sh "PROFILE=convergence ci/test.sh"
-			}
-		}
-		stage("Test other configurations") {
-			parallel {
-				stage("Test: spring-next (jdk8)") {
-					agent {
-						docker {
-							image 'adoptopenjdk/openjdk8:latest'
-							args '-v $HOME/.m2:/root/.m2'
-						}
-					}
-					steps {
-						sh "PROFILE=spring-next,convergence ci/test.sh"
-					}
-				}
-				stage("Test: baseline (jdk11)") {
-					agent {
-						docker {
-							image 'adoptopenjdk/openjdk11:latest'
-							args '-v $HOME/.m2:/root/.m2'
-						}
-					}
-					steps {
-						sh "PROFILE=convergence ci/test.sh"
-					}
-				}
-				stage("Test: spring-next (jdk11)") {
-					agent {
-						docker {
-							image 'adoptopenjdk/openjdk11:latest'
-							args '-v $HOME/.m2:/root/.m2'
-						}
-					}
-					steps {
-						sh "PROFILE=spring-next,convergence ci/test.sh"
-					}
-				}
-				stage("Test: baseline (jdk13)") {
-					agent {
-						docker {
-							image 'adoptopenjdk/openjdk13:latest'
-							args '-v $HOME/.m2:/root/.m2'
-						}
-					}
-					steps {
-						sh "PROFILE=convergence ci/test.sh"
-					}
-				}
-				stage("Test: spring-next (jdk13)") {
-					agent {
-						docker {
-							image 'adoptopenjdk/openjdk13:latest'
-							args '-v $HOME/.m2:/root/.m2'
-						}
-					}
-					steps {
-						sh "PROFILE=spring-next,convergence ci/test.sh"
-					}
-				}
-			}
-		}
+//		stage("Test: baseline (jdk8)") {
+//			agent {
+//				docker {
+//					image 'adoptopenjdk/openjdk8:latest'
+//					args '-v $HOME/.m2:/root/.m2'
+//				}
+//			}
+//			steps {
+//				sh "PROFILE=convergence ci/test.sh"
+//			}
+//		}
+//		stage("Test other configurations") {
+//			parallel {
+//				stage("Test: spring-next (jdk8)") {
+//					agent {
+//						docker {
+//							image 'adoptopenjdk/openjdk8:latest'
+//							args '-v $HOME/.m2:/root/.m2'
+//						}
+//					}
+//					steps {
+//						sh "PROFILE=spring-next,convergence ci/test.sh"
+//					}
+//				}
+//				stage("Test: baseline (jdk11)") {
+//					agent {
+//						docker {
+//							image 'adoptopenjdk/openjdk11:latest'
+//							args '-v $HOME/.m2:/root/.m2'
+//						}
+//					}
+//					steps {
+//						sh "PROFILE=convergence ci/test.sh"
+//					}
+//				}
+//				stage("Test: spring-next (jdk11)") {
+//					agent {
+//						docker {
+//							image 'adoptopenjdk/openjdk11:latest'
+//							args '-v $HOME/.m2:/root/.m2'
+//						}
+//					}
+//					steps {
+//						sh "PROFILE=spring-next,convergence ci/test.sh"
+//					}
+//				}
+//				stage("Test: baseline (jdk13)") {
+//					agent {
+//						docker {
+//							image 'adoptopenjdk/openjdk13:latest'
+//							args '-v $HOME/.m2:/root/.m2'
+//						}
+//					}
+//					steps {
+//						sh "PROFILE=convergence ci/test.sh"
+//					}
+//				}
+//				stage("Test: spring-next (jdk13)") {
+//					agent {
+//						docker {
+//							image 'adoptopenjdk/openjdk13:latest'
+//							args '-v $HOME/.m2:/root/.m2'
+//						}
+//					}
+//					steps {
+//						sh "PROFILE=spring-next,convergence ci/test.sh"
+//					}
+//				}
+//			}
+//		}
 		stage('Deploy to Artifactory') {
 			agent {
 				docker {
