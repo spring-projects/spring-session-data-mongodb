@@ -154,7 +154,6 @@
 				<maven.test.skip>true</maven.test.skip>
 				<maven.kotlin.skip>true</maven.kotlin.skip>
 				<maven.install.skip>true</maven.install.skip>
-				<maven.deploy.skip>true</maven.deploy.skip>
 				<skipTests>true</skipTests>
 			</properties>
 
