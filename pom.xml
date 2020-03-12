@@ -150,10 +150,6 @@
 				<generated-asciidoc-sources.directory>${project.build.directory}/generated-asciidoc-sources/source/
 				</generated-asciidoc-sources.directory>
 				<generated-docs.directory>${project.build.directory}/generated-docs</generated-docs.directory>
-				<maven.main.skip>true</maven.main.skip>
-				<maven.test.skip>true</maven.test.skip>
-				<maven.kotlin.skip>true</maven.kotlin.skip>
-				<skipTests>true</skipTests>
 			</properties>
 
 			<dependencies>
