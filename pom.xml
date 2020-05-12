@@ -80,7 +80,7 @@
 		<reactor-bom.version>Dysprosium-SR7</reactor-bom.version>
 		<spring-bom.version>5.2.6.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Neumann-RELEASE</spring-data-bom.version>
-		<spring-security-bom.version>5.2.2.RELEASE</spring-security-bom.version>
+		<spring-security-bom.version>5.2.4.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.3.0.RC1</spring-session.version>
 	</properties>
 
