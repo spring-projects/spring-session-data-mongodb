@@ -119,7 +119,7 @@ pipeline {
 
 					RELEASE_TYPE = 'milestone' // .RC? or .M?
 
-					if (PROJECT_VERSION.endsWith('BUILD-SNAPSHOT')) {
+					if (PROJECT_VERSION.endsWith('SNAPSHOT')) {
 						RELEASE_TYPE = 'snapshot'
 					} else if (PROJECT_VERSION.endsWith('RELEASE')) {
 						RELEASE_TYPE = 'release'
