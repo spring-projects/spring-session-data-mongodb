@@ -81,7 +81,7 @@
 		<spring-bom.version>5.2.6.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Neumann-RELEASE</spring-data-bom.version>
 		<spring-security-bom.version>5.2.4.RELEASE</spring-security-bom.version>
-		<spring-session.version>2.3.0.RC1</spring-session.version>
+		<spring-session.version>2.3.0.RELEASE</spring-session.version>
 	</properties>
 
 	<profiles>
@@ -93,7 +93,7 @@
 				<spring-bom.version>5.2.7.BUILD-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>Neumann-BUILD-SNAPSHOT</spring-data-bom.version>
 				<spring-security-bom.version>5.2.5.BUILD-SNAPSHOT</spring-security-bom.version>
-				<spring-session.version>2.3.0.BUILD-SNAPSHOT</spring-session.version>
+				<spring-session.version>2.3.0.RELEASE</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
