@@ -76,7 +76,7 @@
 		<jsr305.version>3.0.2</jsr305.version>
 		<junit-bom.version>5.6.0</junit-bom.version>
 		<mockito.version>2.28.2</mockito.version>
-		<mongo.version>4.0.2</mongo.version>
+		<mongo.version>4.0.3</mongo.version>
 		<reactor-bom.version>Dysprosium-SR7</reactor-bom.version>
 		<spring-bom.version>5.2.6.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Neumann-RELEASE</spring-data-bom.version>
