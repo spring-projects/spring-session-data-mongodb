@@ -79,7 +79,7 @@
 		<mongo.version>4.0.3</mongo.version>
 		<reactor-bom.version>Dysprosium-SR7</reactor-bom.version>
 		<spring-bom.version>5.2.6.RELEASE</spring-bom.version>
-		<spring-data-bom.version>Neumann-RELEASE</spring-data-bom.version>
+		<spring-data-bom.version>2020.0.0-M1</spring-data-bom.version>
 		<spring-security-bom.version>5.2.4.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.4.0-M1</spring-session.version>
 	</properties>
@@ -91,7 +91,7 @@
 			<properties>
 				<reactor.version>Dysprosium-BUILD-SNAPSHOT</reactor.version>
 				<spring-bom.version>5.2.7.BUILD-SNAPSHOT</spring-bom.version>
-				<spring-data-bom.version>Neumann-BUILD-SNAPSHOT</spring-data-bom.version>
+				<spring-data-bom.version>2020.0.0-SNAPSHOT</spring-data-bom.version>
 				<spring-security-bom.version>5.2.5.BUILD-SNAPSHOT</spring-security-bom.version>
 				<spring-session.version>2.4.0-SNAPSHOT</spring-session.version>
 			</properties>
@@ -608,7 +608,7 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-releasetrain</artifactId>
+				<artifactId>spring-data-bom</artifactId>
 				<version>${spring-data-bom.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
