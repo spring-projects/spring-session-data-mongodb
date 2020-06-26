@@ -76,7 +76,7 @@
 		<jsr305.version>3.0.2</jsr305.version>
 		<junit-bom.version>5.6.0</junit-bom.version>
 		<mockito.version>2.28.2</mockito.version>
-		<mongo.version>4.0.3</mongo.version>
+		<mongo.version>4.0.4</mongo.version>
 		<reactor-bom.version>Dysprosium-SR9</reactor-bom.version>
 		<spring-bom.version>5.3.0-M1</spring-bom.version>
 		<spring-data-bom.version>2020.0.0-M1</spring-data-bom.version>
