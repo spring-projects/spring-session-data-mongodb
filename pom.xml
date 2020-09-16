@@ -74,7 +74,7 @@
 		<flapdoodle.version>2.2.0</flapdoodle.version>
 		<jackson-bom.version>2.10.0</jackson-bom.version>
 		<jsr305.version>3.0.2</jsr305.version>
-		<junit-bom.version>5.6.0</junit-bom.version>
+		<junit-bom.version>5.6.2</junit-bom.version>
 		<mockito.version>2.28.2</mockito.version>
 		<mongo.version>4.0.4</mongo.version>
 		<reactor-bom.version>Dysprosium-SR9</reactor-bom.version>
