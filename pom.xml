@@ -77,7 +77,7 @@
 		<junit-bom.version>5.6.2</junit-bom.version>
 		<mockito.version>2.28.2</mockito.version>
 		<mongo.version>4.0.4</mongo.version>
-		<reactor-bom.version>Dysprosium-SR9</reactor-bom.version>
+		<reactor-bom.version>2020.0.0-RC1</reactor-bom.version>
 		<spring-bom.version>5.3.0-M1</spring-bom.version>
 		<spring-data-bom.version>2020.0.0-M1</spring-data-bom.version>
 		<spring-security-bom.version>5.3.3.RELEASE</spring-security-bom.version>
@@ -89,7 +89,7 @@
 		<profile>
 			<id>spring-next</id>
 			<properties>
-				<reactor.version>Dysprosium-BUILD-SNAPSHOT</reactor.version>
+				<reactor.version>2020.0.0-SNAPSHOT</reactor.version>
 				<spring-bom.version>5.3.0-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>2020.0.0-SNAPSHOT</spring-data-bom.version>
 				<spring-security-bom.version>5.3.4.BUILD-SNAPSHOT</spring-security-bom.version>
