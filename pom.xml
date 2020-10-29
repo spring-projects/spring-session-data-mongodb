@@ -76,7 +76,7 @@
 		<jsr305.version>3.0.2</jsr305.version>
 		<junit-bom.version>5.6.2</junit-bom.version>
 		<mockito.version>2.28.2</mockito.version>
-		<mongo.version>4.1.0</mongo.version>
+		<mongo.version>4.1.1</mongo.version>
 		<reactor-bom.version>2020.0.0</reactor-bom.version>
 		<spring-bom.version>5.3.0</spring-bom.version>
 		<spring-data-bom.version>2020.0.0</spring-data-bom.version>
