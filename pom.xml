@@ -72,7 +72,7 @@
 
 		<assertj.version>3.13.1</assertj.version>
 		<flapdoodle.version>2.2.0</flapdoodle.version>
-		<jackson-bom.version>2.10.0</jackson-bom.version>
+		<jackson-bom.version>2.11.2</jackson-bom.version>
 		<jsr305.version>3.0.2</jsr305.version>
 		<junit-bom.version>5.6.2</junit-bom.version>
 		<mockito.version>2.28.2</mockito.version>
@@ -90,10 +90,10 @@
 			<id>spring-next</id>
 			<properties>
 				<reactor.version>2020.0.0-SNAPSHOT</reactor.version>
-				<spring-bom.version>5.3.0-SNAPSHOT</spring-bom.version>
+				<spring-bom.version>5.3.1-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>2020.0.0-SNAPSHOT</spring-data-bom.version>
-				<spring-security-bom.version>5.3.5.BUILD-SNAPSHOT</spring-security-bom.version>
-				<spring-session.version>2.4.0-SNAPSHOT</spring-session.version>
+				<spring-security-bom.version>5.3.6.BUILD-SNAPSHOT</spring-security-bom.version>
+				<spring-session.version>2.4.1-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
