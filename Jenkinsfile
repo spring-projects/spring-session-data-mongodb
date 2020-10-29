@@ -117,11 +117,13 @@ pipeline {
 							returnStdout: true
 					).trim()
 
-					RELEASE_TYPE = 'milestone' // .RC? or .M?
+					RELEASE_TYPE = 'snapshot'
 
-					if (PROJECT_VERSION.endsWith('SNAPSHOT')) {
+					if (PROJECT_VERSION.matches(/.*-RC[0-9]+$/) || PROJECT_VERSION.matches(/.*-M[0-9]+$/)) {
+						RELEASE_TYPE = "milestone"
+					} else if (PROJECT_VERSION.endsWith('SNAPSHOT')) {
 						RELEASE_TYPE = 'snapshot'
-					} else if (PROJECT_VERSION.endsWith('RELEASE')) {
+					} else if (PROJECT_VERSION.matches(/.*\.[0-9]+$/)) {
 						RELEASE_TYPE = 'release'
 					}
 
