@@ -170,7 +170,7 @@ pipeline {
 							returnStdout: true
 					).trim()
 
-					if (PROJECT_VERSION.endsWith('RELEASE')) {
+					if (PROJECT_VERSION.matches(/.*\.[0-9]+$/)) {
 						unstash name: 'build_info'
 						sh "ci/promote-to-bintray.sh"
 					} else {
@@ -205,7 +205,7 @@ pipeline {
 							returnStdout: true
 					).trim()
 
-					if (PROJECT_VERSION.endsWith('RELEASE')) {
+					if (PROJECT_VERSION.matches(/.*\.[0-9]+$/)) {
 						unstash name: 'build_info'
 						sh "ci/sync-to-maven-central.sh"
 					} else {
