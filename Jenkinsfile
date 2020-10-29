@@ -29,7 +29,7 @@ pipeline {
 			agent {
 				docker {
 					image 'adoptopenjdk/openjdk8:latest'
-					args '-v $HOME/.m2:/root/.m2'
+					args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
 				}
 			}
 			steps {
@@ -42,7 +42,7 @@ pipeline {
 					agent {
 						docker {
 							image 'adoptopenjdk/openjdk8:latest'
-							args '-v $HOME/.m2:/root/.m2'
+							args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
 						}
 					}
 					steps {
@@ -53,7 +53,7 @@ pipeline {
 					agent {
 						docker {
 							image 'adoptopenjdk/openjdk11:latest'
-							args '-v $HOME/.m2:/root/.m2'
+							args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
 						}
 					}
 					steps {
@@ -64,7 +64,7 @@ pipeline {
 					agent {
 						docker {
 							image 'adoptopenjdk/openjdk11:latest'
-							args '-v $HOME/.m2:/root/.m2'
+							args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
 						}
 					}
 					steps {
@@ -75,7 +75,7 @@ pipeline {
 					agent {
 						docker {
 							image 'adoptopenjdk/openjdk13:latest'
-							args '-v $HOME/.m2:/root/.m2'
+							args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
 						}
 					}
 					steps {
@@ -86,7 +86,7 @@ pipeline {
 					agent {
 						docker {
 							image 'adoptopenjdk/openjdk13:latest'
-							args '-v $HOME/.m2:/root/.m2'
+							args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
 						}
 					}
 					steps {
@@ -99,7 +99,7 @@ pipeline {
 			agent {
 				docker {
 					image 'adoptopenjdk/openjdk8:latest'
-					args '-v $HOME/.m2:/root/.m2'
+					args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
 				}
 			}
 
@@ -152,7 +152,7 @@ pipeline {
 			agent {
 				docker {
 					image 'springci/spring-session-data-mongodb-openjdk8-with-jq:latest'
-					args '-v $HOME/.m2:/root/.m2'
+					args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
 				}
 			}
 
@@ -186,7 +186,7 @@ pipeline {
 			agent {
 				docker {
 					image 'springci/spring-session-data-mongodb-openjdk8-with-jq:latest'
-					args '-v $HOME/.m2:/root/.m2'
+					args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
 				}
 			}
 
