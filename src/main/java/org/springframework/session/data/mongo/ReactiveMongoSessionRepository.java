@@ -19,12 +19,13 @@ import static org.springframework.data.mongodb.core.query.Criteria.*;
 import static org.springframework.data.mongodb.core.query.Query.*;
 import static org.springframework.session.data.mongo.MongoSessionUtils.*;
 
+import reactor.core.publisher.Mono;
+
 import java.time.Duration;
 
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -136,6 +137,7 @@ public class ReactiveMongoSessionRepository
 	public void afterPropertiesSet() {
 
 		if (this.blockingMongoOperations != null) {
+
 			IndexOperations indexOperations = this.blockingMongoOperations.indexOps(this.collectionName);
 			this.mongoSessionConverter.ensureIndexes(indexOperations);
 		}

@@ -62,7 +62,6 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 	private ClassLoader classLoader;
 	private IndexResolver<MongoSession> indexResolver;
 
-
 	@Bean
 	public ReactiveMongoSessionRepository reactiveMongoSessionRepository(ReactiveMongoOperations operations) {
 
@@ -83,7 +82,7 @@ public class ReactiveMongoWebSessionConfiguration extends SpringWebSessionConfig
 			if (this.indexResolver != null) {
 				mongoSessionConverter.setIndexResolver(this.indexResolver);
 			}
-			
+
 			repository.setMongoSessionConverter(mongoSessionConverter);
 		}
 

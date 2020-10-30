@@ -20,8 +20,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.Document;
@@ -35,6 +33,8 @@ import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.util.Assert;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -145,10 +145,10 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	 * Used to whitelist {@link MongoSession} for {@link SecurityJackson2Modules}.
 	 */
 	private static class MongoSessionMixin {
+
 		@JsonCreator
 		public MongoSessionMixin(@JsonProperty("_id") String id,
-								 @JsonProperty("intervalSeconds") long maxInactiveIntervalInSeconds) {
-		}
+				@JsonProperty("intervalSeconds") long maxInactiveIntervalInSeconds) {}
 	}
 
 	/**

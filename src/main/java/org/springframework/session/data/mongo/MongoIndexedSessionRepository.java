@@ -132,6 +132,7 @@ public class MongoIndexedSessionRepository
 	public void deleteById(String id) {
 
 		Optional.ofNullable(findSession(id)).ifPresent(document -> {
+
 			MongoSession session = convertToSession(this.mongoSessionConverter, document);
 			if (session != null) {
 				publishEvent(new SessionDeletedEvent(this, session));

@@ -69,6 +69,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 		Assert.notNull(serializer, "serializer cannot be null");
 		Assert.notNull(deserializer, "deserializer cannot be null");
 		Assert.notNull(maxInactiveInterval, "maxInactiveInterval cannot be null");
+
 		this.serializer = serializer;
 		this.deserializer = deserializer;
 		this.maxInactiveInterval = maxInactiveInterval;
