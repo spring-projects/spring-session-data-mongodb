@@ -1,5 +1,6 @@
-#!/bin/bash
+#!/bin/bash -x
 
 set -euo pipefail
 
-MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/spring-session-maven-repository" ./mvnw -P${PROFILE} clean dependency:list test -Dsort -U -B
+MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/jenkins-home" \
+  ./mvnw -P${PROFILE} clean dependency:list test -Dsort -U -B
