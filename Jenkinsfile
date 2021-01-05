@@ -29,7 +29,7 @@ pipeline {
 			agent {
 				docker {
 					image 'adoptopenjdk/openjdk8:latest'
-					args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
+					args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 				}
 			}
 			steps {
@@ -42,7 +42,7 @@ pipeline {
 					agent {
 						docker {
 							image 'adoptopenjdk/openjdk8:latest'
-							args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
+							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
 					}
 					steps {
@@ -53,7 +53,7 @@ pipeline {
 					agent {
 						docker {
 							image 'adoptopenjdk/openjdk11:latest'
-							args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
+							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
 					}
 					steps {
@@ -64,7 +64,7 @@ pipeline {
 					agent {
 						docker {
 							image 'adoptopenjdk/openjdk11:latest'
-							args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
+							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
 					}
 					steps {
@@ -75,7 +75,7 @@ pipeline {
 					agent {
 						docker {
 							image 'adoptopenjdk/openjdk13:latest'
-							args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
+							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
 					}
 					steps {
@@ -86,7 +86,7 @@ pipeline {
 					agent {
 						docker {
 							image 'adoptopenjdk/openjdk13:latest'
-							args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
+							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
 					}
 					steps {
@@ -95,25 +95,30 @@ pipeline {
 				}
 			}
 		}
-		stage('Deploy to Artifactory') {
+		stage('Deploy') {
 			agent {
 				docker {
-					image 'adoptopenjdk/openjdk8:latest'
-					args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
+					image 'springci/spring-session-data-mongodb-openjdk8-with-jq:latest'
+					args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 				}
 			}
+			options { timeout(time: 20, unit: 'MINUTES') }
 
 			environment {
 				ARTIFACTORY = credentials('02bd1690-b54f-4c9f-819d-a77cb7a9822c')
+				SONATYPE = credentials('oss-token')
+				KEYRING = credentials('spring-signing-secring.gpg')
+				PASSPHRASE = credentials('spring-gpg-passphrase')
 			}
 
 			steps {
 				script {
 					// Warm up this plugin quietly before using it.
-					sh "./mvnw -q org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version"
+					sh 'MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/jenkins-home" ./mvnw -q org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version'
 
+					// Extract project's version number
 					PROJECT_VERSION = sh(
-							script: "./mvnw org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -o | grep -v INFO",
+							script: 'MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/jenkins-home" ./mvnw org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -o | grep -v INFO',
 							returnStdout: true
 					).trim()
 
@@ -127,34 +132,28 @@ pipeline {
 						RELEASE_TYPE = 'release'
 					}
 
-					OUTPUT = sh(
-							script: "PROFILE=distribute,docs,${RELEASE_TYPE} ci/build.sh",
-							returnStdout: true
-					).trim()
-
-					echo "$OUTPUT"
-
-					build_info_path = OUTPUT.split('\n')
-							.find { it.contains('Artifactory Build Info Recorder') }
-							.split('Saving Build Info to ')[1]
-							.trim()[1..-2]
-
-					dir(build_info_path + '/..') {
-						stash name: 'build_info', includes: "*.json"
+					if (RELEASE_TYPE == 'release') {
+						sh "PROFILE=distribute,central USERNAME=${SONATYPE_USR} PASSWORD=${SONATYPE_PSW} ci/build-and-deploy-to-maven-central.sh ${PROJECT_VERSION}"
+					} else {
+						sh "PROFILE=distribute,${RELEASE_TYPE} ci/build-and-deploy-to-artifactory.sh"
 					}
 				}
 			}
 		}
-		stage('Promote to Bintray') {
+		stage('Release documentation') {
 			when {
-				branch 'release'
+				anyOf {
+					branch 'main'
+					branch 'release'
+				}
 			}
 			agent {
 				docker {
 					image 'springci/spring-session-data-mongodb-openjdk8-with-jq:latest'
-					args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
+					args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 				}
 			}
+			options { timeout(time: 20, unit: 'MINUTES') }
 
 			environment {
 				ARTIFACTORY = credentials('02bd1690-b54f-4c9f-819d-a77cb7a9822c')
@@ -162,55 +161,12 @@ pipeline {
 
 			steps {
 				script {
-					// Warm up this plugin quietly before using it.
-					sh "./mvnw -q org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version"
-
-					PROJECT_VERSION = sh(
-							script: "./mvnw org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -o | grep -v INFO",
-							returnStdout: true
-					).trim()
-
-					if (PROJECT_VERSION.matches(/.*\.[0-9]+$/)) {
-						unstash name: 'build_info'
-						sh "ci/promote-to-bintray.sh"
-					} else {
-						echo "${PROJECT_VERSION} is not a candidate for promotion to Bintray."
-					}
-				}
-			}
-		}
-		stage('Sync to Maven Central') {
-			when {
-				branch 'release'
-			}
-			agent {
-				docker {
-					image 'springci/spring-session-data-mongodb-openjdk8-with-jq:latest'
-					args '-v $HOME/.m2:/tmp/spring-session-maven-repository/.m2'
-				}
-			}
-
-			environment {
-				BINTRAY = credentials('Bintray-spring-operator')
-				SONATYPE = credentials('oss-token')
-			}
-
-			steps {
-				script {
-					// Warm up this plugin quietly before using it.
-					sh "./mvnw -q org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version"
-
-					PROJECT_VERSION = sh(
-							script: "./mvnw org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -o | grep -v INFO",
-							returnStdout: true
-					).trim()
-
-					if (PROJECT_VERSION.matches(/.*\.[0-9]+$/)) {
-						unstash name: 'build_info'
-						sh "ci/sync-to-maven-central.sh"
-					} else {
-						echo "${PROJECT_VERSION} is not a candidate for syncing to Maven Central."
-					}
+					sh 'MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/jenkins-home" ./mvnw -Pdistribute,docs ' +
+							'-Dartifactory.server=https://repo.spring.io ' +
+							"-Dartifactory.username=${ARTIFACTORY_USR} " +
+							"-Dartifactory.password=${ARTIFACTORY_PSW} " +
+							"-Dartifactory.distribution-repository=temp-private-local " +
+							'-Dmaven.test.skip=true -Dmaven.deploy.skip=true deploy -B'
 				}
 			}
 		}
