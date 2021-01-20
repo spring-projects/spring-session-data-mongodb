@@ -17,14 +17,15 @@ package org.springframework.session.data.mongo.integration;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
+import de.flapdoodle.embed.mongo.MongodExecutable;
+import reactor.test.StepVerifier;
+
 import java.io.IOException;
 import java.net.URI;
 
-import de.flapdoodle.embed.mongo.MongodExecutable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import reactor.test.StepVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -103,8 +104,7 @@ public class MongoDbLogoutVerificationTest {
 				.cookie("SESSION", originalSessionId) //
 				.exchange() //
 				.expectStatus().isFound() //
-				.returnResult(String.class)
-				.getResponseCookies().getFirst("SESSION").getValue();
+				.returnResult(String.class).getResponseCookies().getFirst("SESSION").getValue();
 
 		assertThat(newSessionId).isNotEqualTo(originalSessionId);
 
