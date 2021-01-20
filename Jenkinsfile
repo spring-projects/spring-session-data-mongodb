@@ -144,7 +144,7 @@ pipeline {
 			when {
 				anyOf {
 					branch 'main'
-					branch 'release'
+					branch 'release-2.4'
 				}
 			}
 			agent {
