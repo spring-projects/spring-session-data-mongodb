@@ -82,7 +82,7 @@
 		<spring-bom.version>5.3.3</spring-bom.version>
 		<spring-data-bom.version>2020.0.3</spring-data-bom.version>
 		<spring-security-bom.version>5.3.6.RELEASE</spring-security-bom.version>
-		<spring-session.version>2.4.2</spring-session.version>
+		<spring-session.version>2.5.0-M1</spring-session.version>
 	</properties>
 
 	<profiles>
@@ -94,7 +94,7 @@
 				<spring-bom.version>5.3.4-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>2020.0.4-SNAPSHOT</spring-data-bom.version>
 				<spring-security-bom.version>5.3.7.BUILD-SNAPSHOT</spring-security-bom.version>
-				<spring-session.version>2.4.3-SNAPSHOT</spring-session.version>
+				<spring-session.version>2.5.0-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
@@ -1038,6 +1038,10 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>spring-libs-milestone</id>
+			<url>https://repo.spring.io/libs-milestone</url>
 		</repository>
 	</repositories>
 
