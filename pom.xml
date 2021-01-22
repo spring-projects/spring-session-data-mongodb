@@ -140,9 +140,12 @@
 		</profile>
 
 		<profile>
-			<id>distribute</id>
+			<id>docs</id>
 
 			<properties>
+				<maven.test.skip>true</maven.test.skip>
+				<maven.deploy.skip>true</maven.deploy.skip>
+				<skipTests>true</skipTests>
 				<docs.resources.version>0.1.2.RELEASE</docs.resources.version>
 				<shared.resources>${project.build.directory}/shared-resources</shared.resources>
 				<generated-asciidoc-sources.directory>${project.build.directory}/generated-asciidoc-sources/source/
@@ -162,6 +165,7 @@
 
 			<build>
 				<plugins>
+
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-dependency-plugin</artifactId>
@@ -182,150 +186,6 @@
 							</execution>
 						</executions>
 					</plugin>
-
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<configuration>
-							<additionalparam>-Xdoclint:none</additionalparam>
-						</configuration>
-						<executions>
-							<execution>
-								<id>aggregate-javadoc</id>
-								<goals>
-									<goal>aggregate</goal>
-								</goals>
-								<phase>package</phase>
-								<configuration>
-									<outputDirectory>${project.root}/target/site/apidocs</outputDirectory>
-								</configuration>
-							</execution>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<version>3.0.0</version>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<version>1.8</version>
-						<executions>
-
-							<execution>
-								<id>copy-documentation-resources</id>
-								<phase>generate-resources</phase>
-								<configuration>
-									<target>
-										<copy todir="target/site/reference/html/images">
-											<fileset dir="${basedir}/src/main/asciidoc" erroronmissingdir="false">
-												<include name="**/*.png"/>
-												<include name="**/*.gif"/>
-												<include name="**/*.jpg"/>
-											</fileset>
-											<flattenmapper/>
-										</copy>
-									</target>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-
-							<execution>
-								<id>create-generated-docs-resources</id>
-								<phase>process-resources</phase>
-								<configuration>
-									<target>
-										<copy failonerror="false" todir="${generated-asciidoc-sources.directory}/">
-											<fileset dir="src/main/asciidoc" includes="**/*.adoc"/>
-										</copy>
-										<copy failonerror="false"
-											  todir="${generated-asciidoc-sources.directory}/images/">
-											<fileset dir="src/main/asciidoc/images"/>
-										</copy>
-
-										<copy todir="${generated-docs.directory}">
-											<fileset dir="${generated-asciidoc-sources.directory}">
-												<include name="css/**"/>
-												<include name="js/**"/>
-											</fileset>
-										</copy>
-									</target>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-
-							<execution>
-								<id>rename-reference-docs</id>
-								<phase>prepare-package</phase>
-								<configuration>
-									<target>
-
-										<!-- Copy files for the single-file HTML version -->
-										<copy failonerror="false"
-											  todir="target/site/reference/html/images">
-											<fileset dir="${generated-docs.directory}/images"/>
-										</copy>
-
-										<!-- Copy shared resources. Spring Data ones first to override the ones shared -->
-										<copy failonerror="false" todir="target/site/reference/html/">
-											<fileset dir="${shared.resources}">
-												<include name="css/**"/>
-												<include name="js/**"/>
-											</fileset>
-										</copy>
-
-										<copy failonerror="false" todir="target/site/reference/html/">
-											<fileset dir="${generated-asciidoc-sources.directory}">
-												<include name="css/**"/>
-												<include name="js/**"/>
-											</fileset>
-										</copy>
-
-										<copy failonerror="false" todir="target/site/reference/html/">
-											<fileset dir="${generated-docs.directory}" includes="*.html"/>
-										</copy>
-
-									</target>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-
-						</executions>
-
-					</plugin>
-
-				</plugins>
-			</build>
-		</profile>
-
-		<profile>
-			<id>docs</id>
-
-			<build>
-				<plugins>
 
 					<plugin>
 						<groupId>org.asciidoctor</groupId>
@@ -403,11 +263,35 @@
 					</plugin>
 
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+					<plugin>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<configuration>
 							<additionalparam>-Xdoclint:none</additionalparam>
 						</configuration>
 						<executions>
+							<execution>
+								<id>aggregate-javadoc</id>
+								<goals>
+									<goal>aggregate</goal>
+								</goals>
+								<phase>package</phase>
+								<configuration>
+									<outputDirectory>${project.root}/target/site/apidocs</outputDirectory>
+								</configuration>
+							</execution>
 							<execution>
 								<id>attach-javadocs</id>
 								<goals>
@@ -420,48 +304,103 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-antrun-plugin</artifactId>
-						<dependencies>
-							<dependency>
-								<groupId>ant-contrib</groupId>
-								<artifactId>ant-contrib</artifactId>
-								<version>1.0b3</version>
-								<exclusions>
-									<exclusion>
-										<groupId>ant</groupId>
-										<artifactId>ant</artifactId>
-									</exclusion>
-								</exclusions>
-							</dependency>
-							<dependency>
-								<groupId>org.apache.ant</groupId>
-								<artifactId>ant-nodeps</artifactId>
-								<version>1.8.1</version>
-							</dependency>
-							<dependency>
-								<groupId>org.tigris.antelope</groupId>
-								<artifactId>antelopetasks</artifactId>
-								<version>3.2.10</version>
-							</dependency>
-						</dependencies>
+						<version>1.8</version>
 						<executions>
+
 							<execution>
-								<id>package-and-attach-docs-zip</id>
-								<phase>package</phase>
+								<id>copy-documentation-resources</id>
+								<phase>generate-resources</phase>
+								<configuration>
+									<target>
+										<copy todir="target/site/reference/html/images">
+											<fileset dir="${basedir}/src/main/asciidoc" erroronmissingdir="false">
+												<include name="**/*.png"/>
+												<include name="**/*.gif"/>
+												<include name="**/*.jpg"/>
+											</fileset>
+											<flattenmapper/>
+										</copy>
+									</target>
+								</configuration>
 								<goals>
 									<goal>run</goal>
 								</goals>
-								<configuration>
-									<tasks>
-										<zip destfile="${project.build.directory}/${project.artifactId}-${project.version}.zip">
-											<zipfileset
-													src="${project.build.directory}/${project.artifactId}-${project.version}-javadoc.jar"
-													prefix="api"/>
-											<fileset dir="${project.build.directory}/site"/>
-										</zip>
-									</tasks>
-								</configuration>
 							</execution>
+
+							<execution>
+								<id>create-generated-docs-resources</id>
+								<phase>process-resources</phase>
+								<configuration>
+									<target>
+										<copy failonerror="false" todir="${generated-asciidoc-sources.directory}/">
+											<fileset dir="src/main/asciidoc" includes="**/*.adoc"/>
+										</copy>
+										<copy failonerror="false"
+										      todir="${generated-asciidoc-sources.directory}/images/">
+											<fileset dir="src/main/asciidoc/images"/>
+										</copy>
+
+										<copy todir="${generated-docs.directory}">
+											<fileset dir="${generated-asciidoc-sources.directory}">
+												<include name="css/**"/>
+												<include name="js/**"/>
+											</fileset>
+										</copy>
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+
+							<execution>
+								<id>rename-reference-docs</id>
+								<phase>prepare-package</phase>
+								<configuration>
+									<target>
+
+										<!-- Copy files for the single-file HTML version -->
+										<copy failonerror="false"
+										      todir="target/site/reference/html/images">
+											<fileset dir="${generated-docs.directory}/images"/>
+										</copy>
+
+										<!-- Copy shared resources. Spring Data ones first to override the ones shared -->
+										<copy failonerror="false" todir="target/site/reference/html/">
+											<fileset dir="${shared.resources}">
+												<include name="css/**"/>
+												<include name="js/**"/>
+											</fileset>
+										</copy>
+
+										<copy failonerror="false" todir="target/site/reference/html/">
+											<fileset dir="${generated-asciidoc-sources.directory}">
+												<include name="css/**"/>
+												<include name="js/**"/>
+											</fileset>
+										</copy>
+
+										<copy failonerror="false" todir="target/site/reference/html/">
+											<fileset dir="${generated-docs.directory}" includes="*.html"/>
+										</copy>
+
+										<!-- Copy and rename the Epub file -->
+										<copy failonerror="false" file="${generated-docs.directory}/index.pdf"
+										      tofile="target/site/reference/pdf/spring-hateoas-reference.pdf"/>
+
+										<!-- Copy and rename the PDF file -->
+										<copy failonerror="false" file="${generated-docs.directory}/index.epub"
+										      tofile="target/site/reference/epub/spring-hateoas-reference.epub"/>
+
+									</target>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+
 						</executions>
+
 					</plugin>
 
 					<!--
@@ -553,13 +492,6 @@
 									<buildInfo>
 										<buildUrl>{{BUILD_URL}}</buildUrl>
 									</buildInfo>
-									<deployProperties>
-										<zip.name>spring-session-data-mongodb</zip.name>
-										<zip.displayname>spring-session-data-mongodb</zip.displayname>
-										<zip.deployed>false</zip.deployed>
-										<zip.type>docs</zip.type>
-										<archives>*:*:*:*@zip</archives>
-									</deployProperties>
 									<publisher>
 										<contextUrl>https://repo.spring.io</contextUrl>
 										<username>{{ARTIFACTORY_USR}}</username>
@@ -595,13 +527,6 @@
 									<buildInfo>
 										<buildUrl>{{BUILD_URL}}</buildUrl>
 									</buildInfo>
-									<deployProperties>
-										<zip.name>spring-session-data-mongodb</zip.name>
-										<zip.displayname>spring-session-data-mongodb</zip.displayname>
-										<zip.deployed>false</zip.deployed>
-										<zip.type>docs</zip.type>
-										<archives>*:*:*:*@zip</archives>
-									</deployProperties>
 									<publisher>
 										<contextUrl>https://repo.spring.io</contextUrl>
 										<username>{{ARTIFACTORY_USR}}</username>
@@ -620,15 +545,8 @@
 		<profile>
 			<id>central</id>
 
-			<properties>
-				<maven.main.skip>true</maven.main.skip>
-				<maven.test.skip>true</maven.test.skip>
-				<maven.kotlin.skip>true</maven.kotlin.skip>
-				<maven.install.skip>true</maven.install.skip>
-				<skipTests>true</skipTests>
-			</properties>
-			
 			<build>
+
 				<pluginManagement>
 					<plugins>
 
@@ -675,6 +593,21 @@
 				</pluginManagement>
 
 				<plugins>
+
+					<plugin>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<configuration>
+							<additionalparam>-Xdoclint:none</additionalparam>
+						</configuration>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
