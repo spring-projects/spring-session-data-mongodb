@@ -133,9 +133,9 @@ pipeline {
 					}
 
 					if (RELEASE_TYPE == 'release') {
-						sh "PROFILE=distribute,central USERNAME=${SONATYPE_USR} PASSWORD=${SONATYPE_PSW} ci/build-and-deploy-to-maven-central.sh ${PROJECT_VERSION}"
+						sh "PROFILE=central USERNAME=${SONATYPE_USR} PASSWORD=${SONATYPE_PSW} ci/build-and-deploy-to-maven-central.sh ${PROJECT_VERSION}"
 					} else {
-						sh "PROFILE=distribute,${RELEASE_TYPE} ci/build-and-deploy-to-artifactory.sh"
+						sh "PROFILE=${RELEASE_TYPE} ci/build-and-deploy-to-artifactory.sh"
 					}
 				}
 			}
@@ -161,12 +161,12 @@ pipeline {
 
 			steps {
 				script {
-					sh 'MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/jenkins-home" ./mvnw -Pdistribute,docs ' +
+					sh 'MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/jenkins-home" ./mvnw -Pdocs ' +
 							'-Dartifactory.server=https://repo.spring.io ' +
 							"-Dartifactory.username=${ARTIFACTORY_USR} " +
 							"-Dartifactory.password=${ARTIFACTORY_PSW} " +
 							"-Dartifactory.distribution-repository=temp-private-local " +
-							'-Dmaven.test.skip=true -Dmaven.deploy.skip=true deploy -B'
+							'deploy -B'
 				}
 			}
 		}
