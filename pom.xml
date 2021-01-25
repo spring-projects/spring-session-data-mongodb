@@ -77,7 +77,7 @@
 		<mockito.version>2.28.2</mockito.version>
 		<mongo.version>3.11.0</mongo.version>
 		<mongo-reactivestreams.version>1.12.0</mongo-reactivestreams.version>
-		<reactor-bom.version>Dysprosium-SR5</reactor-bom.version>
+		<reactor-bom.version>Dysprosium-SR16</reactor-bom.version>
 		<spring-bom.version>5.2.4.RELEASE</spring-bom.version>
 		<spring-data-bom.version>Moore-SR5</spring-data-bom.version>
 		<spring-security-bom.version>5.1.8.RELEASE</spring-security-bom.version>
