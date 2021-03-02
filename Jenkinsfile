@@ -106,19 +106,15 @@ pipeline {
 
 			environment {
 				ARTIFACTORY = credentials('02bd1690-b54f-4c9f-819d-a77cb7a9822c')
-				SONATYPE = credentials('oss-token')
+				SONATYPE = credentials('oss-login')
 				KEYRING = credentials('spring-signing-secring.gpg')
 				PASSPHRASE = credentials('spring-gpg-passphrase')
 			}
 
 			steps {
 				script {
-					// Warm up this plugin quietly before using it.
-					sh 'MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/jenkins-home" ./mvnw -q org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version'
-
-					// Extract project's version number
 					PROJECT_VERSION = sh(
-							script: 'MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/jenkins-home" ./mvnw org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate -Dexpression=project.version -o | grep -v INFO',
+							script: "ci/version.sh",
 							returnStdout: true
 					).trim()
 
@@ -134,6 +130,12 @@ pipeline {
 
 					if (RELEASE_TYPE == 'release') {
 						sh "PROFILE=central USERNAME=${SONATYPE_USR} PASSWORD=${SONATYPE_PSW} ci/build-and-deploy-to-maven-central.sh ${PROJECT_VERSION}"
+
+						slackSend(
+							color: (currentBuild.currentResult == 'SUCCESS') ? 'good' : 'danger',
+							channel: '#spring-session-bot',
+							message: "@here Spring Session for MongoDB ${PROJECT_VERSION} is staged on Sonatype awaiting closure and release.")
+
 					} else {
 						sh "PROFILE=${RELEASE_TYPE} ci/build-and-deploy-to-artifactory.sh"
 					}
