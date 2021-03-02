@@ -56,10 +56,10 @@ pipeline {
 						sh "PROFILE=spring-next,convergence ci/test.sh"
 					}
 				}
-				stage("Test: baseline (jdk13)") {
+				stage("Test: baseline (jdk15)") {
 					agent {
 						docker {
-							image 'adoptopenjdk/openjdk13:latest'
+							image 'adoptopenjdk/openjdk15:latest'
 							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
 					}
@@ -67,10 +67,10 @@ pipeline {
 						sh "PROFILE=convergence ci/test.sh"
 					}
 				}
-				stage("Test: spring-next (jdk13)") {
+				stage("Test: spring-next (jdk15)") {
 					agent {
 						docker {
-							image 'adoptopenjdk/openjdk13:latest'
+							image 'adoptopenjdk/openjdk15:latest'
 							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
 					}
