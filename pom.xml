@@ -76,7 +76,7 @@
 		<jsr305.version>3.0.2</jsr305.version>
 		<junit-bom.version>5.6.2</junit-bom.version>
 		<mockito.version>2.28.2</mockito.version>
-		<mongo.version>4.1.1</mongo.version>
+		<mongo.version>4.2.0</mongo.version>
 		<java-module-name>spring.session.data.mongodb</java-module-name>
 		<reactor-bom.version>2020.0.4</reactor-bom.version>
 		<spring-bom.version>5.3.4</spring-bom.version>
@@ -90,7 +90,6 @@
 		<profile>
 			<id>spring-next</id>
 			<properties>
-				<mongo.version>4.2.0</mongo.version>
 				<reactor.version>2020.0.5-SNAPSHOT</reactor.version>
 				<spring-bom.version>5.3.5-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>2021.0.0-SNAPSHOT</spring-data-bom.version>
