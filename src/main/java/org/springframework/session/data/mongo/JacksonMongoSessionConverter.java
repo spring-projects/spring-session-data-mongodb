@@ -56,9 +56,8 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 
 	private static final Log LOG = LogFactory.getLog(JacksonMongoSessionConverter.class);
 
-	private static final String ATTRS_FIELD_NAME = "attrs.";
-	private static final String PRINCIPAL_FIELD_NAME = "principal";
-	private static final String EXPIRE_AT_FIELD_NAME = "expireAt";
+	private String attrsFieldName = "attrs.";
+	private String pricipalFieldName = "principal";
 
 	private final ObjectMapper objectMapper;
 
@@ -78,13 +77,14 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 		this.objectMapper = objectMapper;
 	}
 
+	@Override
 	@Nullable
 	protected Query getQueryForIndex(String indexName, Object indexValue) {
 
 		if (FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME.equals(indexName)) {
-			return Query.query(Criteria.where(PRINCIPAL_FIELD_NAME).is(indexValue));
+			return Query.query(Criteria.where(pricipalFieldName).is(indexValue));
 		} else {
-			return Query.query(Criteria.where(ATTRS_FIELD_NAME + MongoSession.coverDot(indexName)).is(indexValue));
+			return Query.query(Criteria.where(attrsFieldName + MongoSession.coverDot(indexName)).is(indexValue));
 		}
 	}
 
@@ -115,8 +115,8 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 			DBObject dbSession = BasicDBObject.parse(this.objectMapper.writeValueAsString(source));
 
 			// Override default serialization with proper values.
-			dbSession.put(PRINCIPAL_FIELD_NAME, extractPrincipal(source));
-			dbSession.put(EXPIRE_AT_FIELD_NAME, source.getExpireAt());
+			dbSession.put(pricipalFieldName, extractPrincipal(source));
+			dbSession.put(getExpireAtFieldName(), source.getExpireAt());
 			return dbSession;
 		} catch (JsonProcessingException e) {
 			throw new IllegalStateException("Cannot convert MongoExpiringSession", e);
@@ -127,7 +127,7 @@ public class JacksonMongoSessionConverter extends AbstractMongoSessionConverter 
 	@Nullable
 	protected MongoSession convert(Document source) {
 
-		Date expireAt = (Date) source.remove(EXPIRE_AT_FIELD_NAME);
+		Date expireAt = (Date) source.remove(getExpireAtFieldName());
 		source.remove("originalSessionId");
 		String json = source.toJson(JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build());
 

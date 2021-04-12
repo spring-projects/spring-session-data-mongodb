@@ -47,7 +47,7 @@ import com.mongodb.DBObject;
  */
 public abstract class AbstractMongoSessionConverter implements GenericConverter {
 
-	static final String EXPIRE_AT_FIELD_NAME = "expireAt";
+	private String expireAtFieldName = "expireAt";
 	private static final Log LOG = LogFactory.getLog(AbstractMongoSessionConverter.class);
 	private static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 
@@ -73,16 +73,16 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 	protected void ensureIndexes(IndexOperations sessionCollectionIndexes) {
 
 		for (IndexInfo info : sessionCollectionIndexes.getIndexInfo()) {
-			if (EXPIRE_AT_FIELD_NAME.equals(info.getName())) {
-				LOG.debug("TTL index on field " + EXPIRE_AT_FIELD_NAME + " already exists");
+			if (expireAtFieldName.equals(info.getName())) {
+				LOG.debug("TTL index on field " + expireAtFieldName + " already exists");
 				return;
 			}
 		}
 
-		LOG.info("Creating TTL index on field " + EXPIRE_AT_FIELD_NAME);
+		LOG.info("Creating TTL index on field " + expireAtFieldName);
 
 		sessionCollectionIndexes
-				.ensureIndex(new Index(EXPIRE_AT_FIELD_NAME, Sort.Direction.ASC).named(EXPIRE_AT_FIELD_NAME).expire(0));
+				.ensureIndex(new Index(expireAtFieldName, Sort.Direction.ASC).named(expireAtFieldName).expire(0));
 	}
 
 	protected String extractPrincipal(MongoSession expiringSession) {
@@ -91,11 +91,13 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 				.get(FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME);
 	}
 
+	@Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
 
 		return Collections.singleton(new ConvertiblePair(DBObject.class, MongoSession.class));
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	@Nullable
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
@@ -119,5 +121,13 @@ public abstract class AbstractMongoSessionConverter implements GenericConverter 
 
 	public void setIndexResolver(IndexResolver<MongoSession> indexResolver) {
 		this.indexResolver = Assert.requireNonNull(indexResolver, "indexResolver must not be null!");
+	}
+	
+	public void setExpireAtFieldName(String expireAtFieldName) {
+		this.expireAtFieldName = expireAtFieldName;
+	}
+
+	String getExpireAtFieldName() {
+		return expireAtFieldName;
 	}
 }
