@@ -81,7 +81,7 @@
 		<reactor-bom.version>2020.0.4</reactor-bom.version>
 		<spring-bom.version>5.3.6</spring-bom.version>
 		<spring-data-bom.version>2021.0.0-M4</spring-data-bom.version>
-		<spring-security-bom.version>5.5.0-M2</spring-security-bom.version>
+		<spring-security-bom.version>5.5.0-RC1</spring-security-bom.version>
 		<spring-session.version>2.5.0-M1</spring-session.version>
 	</properties>
 
