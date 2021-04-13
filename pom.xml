@@ -82,7 +82,7 @@
 		<spring-bom.version>5.3.6</spring-bom.version>
 		<spring-data-bom.version>2020.0.7</spring-data-bom.version>
 		<spring-security-bom.version>5.3.9.RELEASE</spring-security-bom.version>
-		<spring-session.version>2.4.2</spring-session.version>
+		<spring-session.version>2.4.3</spring-session.version>
 	</properties>
 
 	<profiles>
@@ -94,7 +94,7 @@
 				<spring-bom.version>5.3.7-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>2020.0.8-SNAPSHOT</spring-data-bom.version>
 				<spring-security-bom.version>5.3.10.BUILD-SNAPSHOT</spring-security-bom.version>
-				<spring-session.version>2.4.3-SNAPSHOT</spring-session.version>
+				<spring-session.version>2.4.4-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
