@@ -81,7 +81,7 @@
 		<reactor-bom.version>2020.0.4</reactor-bom.version>
 		<spring-bom.version>5.3.6</spring-bom.version>
 		<spring-data-bom.version>2020.0.7</spring-data-bom.version>
-		<spring-security-bom.version>5.3.8.RELEASE</spring-security-bom.version>
+		<spring-security-bom.version>5.3.9.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.4.2</spring-session.version>
 	</properties>
 
@@ -93,7 +93,7 @@
 				<reactor.version>2020.0.5-SNAPSHOT</reactor.version>
 				<spring-bom.version>5.3.7-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>2020.0.8-SNAPSHOT</spring-data-bom.version>
-				<spring-security-bom.version>5.3.9.BUILD-SNAPSHOT</spring-security-bom.version>
+				<spring-security-bom.version>5.3.10.BUILD-SNAPSHOT</spring-security-bom.version>
 				<spring-session.version>2.4.3-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
