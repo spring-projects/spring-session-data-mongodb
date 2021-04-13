@@ -90,6 +90,7 @@
 		<profile>
 			<id>spring-next</id>
 			<properties>
+				<mongo.version>4.2.3</mongo.version>
 				<reactor.version>2020.0.5-SNAPSHOT</reactor.version>
 				<spring-bom.version>5.3.7-SNAPSHOT</spring-bom.version>
 				<spring-data-bom.version>2021.0.0-SNAPSHOT</spring-data-bom.version>
