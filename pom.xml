@@ -80,7 +80,7 @@
 		<java-module-name>spring.session.data.mongodb</java-module-name>
 		<reactor-bom.version>2020.0.6</reactor-bom.version>
 		<spring-bom.version>5.3.6</spring-bom.version>
-		<spring-data-bom.version>2020.0.7</spring-data-bom.version>
+		<spring-data-bom.version>2020.0.8</spring-data-bom.version>
 		<spring-security-bom.version>5.3.9.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.4.3</spring-session.version>
 	</properties>
@@ -92,7 +92,6 @@
 			<properties>
 				<reactor.version>2020.0.7-SNAPSHOT</reactor.version>
 				<spring-bom.version>5.3.7-SNAPSHOT</spring-bom.version>
-				<spring-data-bom.version>2020.0.8-SNAPSHOT</spring-data-bom.version>
 				<spring-security-bom.version>5.3.10.BUILD-SNAPSHOT</spring-security-bom.version>
 				<spring-session.version>2.4.4-SNAPSHOT</spring-session.version>
 			</properties>
