@@ -160,7 +160,7 @@ pipeline {
 
 			steps {
 				script {
-					sh 'MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/jenkins-home" ./mvnw -Pdocs ' +
+					sh 'MAVEN_OPTS="-Duser.name=jenkins -Duser.home=/tmp/jenkins-home" ./mvnw -s settings.xml -Pdocs ' +
 							'-Dartifactory.server=https://repo.spring.io ' +
 							"-Dartifactory.username=${ARTIFACTORY_USR} " +
 							"-Dartifactory.password=${ARTIFACTORY_PSW} " +
