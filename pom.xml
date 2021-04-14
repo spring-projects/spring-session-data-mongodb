@@ -79,7 +79,7 @@
 		<mongo.version>4.0.5</mongo.version>
 		<reactor-bom.version>Dysprosium-SR16</reactor-bom.version>
 		<spring-bom.version>5.2.14.RELEASE</spring-bom.version>
-		<spring-data-bom.version>Neumann-SR6</spring-data-bom.version>
+		<spring-data-bom.version>Neumann-SR8</spring-data-bom.version>
 		<spring-security-bom.version>5.2.4.RELEASE</spring-security-bom.version>
 		<spring-session.version>2.3.2.RELEASE</spring-session.version>
 	</properties>
