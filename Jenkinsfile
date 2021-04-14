@@ -17,6 +17,9 @@ pipeline {
 					args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 				}
 			}
+			environment {
+				ARTIFACTORY = credentials('02bd1690-b54f-4c9f-819d-a77cb7a9822c')
+			}
 			steps {
 				sh "PROFILE=convergence ci/test.sh"
 			}
@@ -30,6 +33,9 @@ pipeline {
 							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
 					}
+					environment {
+						ARTIFACTORY = credentials('02bd1690-b54f-4c9f-819d-a77cb7a9822c')
+					}
 					steps {
 						sh "PROFILE=spring-next,convergence ci/test.sh"
 					}
@@ -40,6 +46,9 @@ pipeline {
 							image 'adoptopenjdk/openjdk11:latest'
 							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
+					}
+					environment {
+						ARTIFACTORY = credentials('02bd1690-b54f-4c9f-819d-a77cb7a9822c')
 					}
 					steps {
 						sh "PROFILE=convergence ci/test.sh"
@@ -52,6 +61,9 @@ pipeline {
 							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
 					}
+					environment {
+						ARTIFACTORY = credentials('02bd1690-b54f-4c9f-819d-a77cb7a9822c')
+					}
 					steps {
 						sh "PROFILE=spring-next,convergence ci/test.sh"
 					}
@@ -63,6 +75,9 @@ pipeline {
 							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
 					}
+					environment {
+						ARTIFACTORY = credentials('02bd1690-b54f-4c9f-819d-a77cb7a9822c')
+					}
 					steps {
 						sh "PROFILE=convergence ci/test.sh"
 					}
@@ -73,6 +88,9 @@ pipeline {
 							image 'adoptopenjdk/openjdk15:latest'
 							args '-v $HOME/.m2:/tmp/jenkins-home/.m2'
 						}
+					}
+					environment {
+						ARTIFACTORY = credentials('02bd1690-b54f-4c9f-819d-a77cb7a9822c')
 					}
 					steps {
 						sh "PROFILE=spring-next,convergence ci/test.sh"
