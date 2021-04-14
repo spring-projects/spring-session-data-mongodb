@@ -954,14 +954,7 @@
 
 		</plugins>
 	</build>
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-plugins-release</id>
-			<url>https://repo.spring.io/plugins-release</url>
-		</pluginRepository>
-	</pluginRepositories>
-
+	
 	<repositories>
 		<repository>
 			<id>spring-libs-snapshot</id>
