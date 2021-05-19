@@ -90,10 +90,10 @@
 		<profile>
 			<id>spring-next</id>
 			<properties>
-				<reactor.version>2020.0.7-SNAPSHOT</reactor.version>
-				<spring-bom.version>5.3.7-SNAPSHOT</spring-bom.version>
-				<spring-security-bom.version>5.5.0-SNAPSHOT</spring-security-bom.version>
-				<spring-session.version>2.5.0-SNAPSHOT</spring-session.version>
+				<reactor.version>2020.0.8-SNAPSHOT</reactor.version>
+				<spring-bom.version>5.3.8-SNAPSHOT</spring-bom.version>
+				<spring-security-bom.version>5.5.1-SNAPSHOT</spring-security-bom.version>
+				<spring-session.version>2.5.1-SNAPSHOT</spring-session.version>
 			</properties>
 			<repositories>
 				<repository>
