@@ -79,7 +79,7 @@
 		<mongo.version>4.2.3</mongo.version>
 		<java-module-name>spring.session.data.mongodb</java-module-name>
 		<reactor-bom.version>2020.0.7</reactor-bom.version>
-		<spring-bom.version>5.3.6</spring-bom.version>
+		<spring-bom.version>5.3.7</spring-bom.version>
 		<spring-data-bom.version>2021.0.0</spring-data-bom.version>
 		<spring-security-bom.version>5.5.0</spring-security-bom.version>
 		<spring-session.version>2.5.0</spring-session.version>
