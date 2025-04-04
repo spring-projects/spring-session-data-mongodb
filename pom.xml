@@ -234,7 +234,7 @@
 										<stylesheet>spring.css</stylesheet>
 										<toc>left</toc>
 										<github-tag>v${project.version}</github-tag>
-										<code-dir>${basedir}</code-dir>
+										<code-dir>${project.basedir}</code-dir>
 										<samples-dir>
 											https://raw.githubusercontent.com/spring-projects/spring-session-data-mongodb-examples/master
 										</samples-dir>
