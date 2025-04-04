@@ -1,3 +1,5 @@
+WARNING: This repository is no longer active because Spring Session MongoDB has been moved into https://github.com/spring-projects/spring-session[Spring Session]!
+
 https://spring.io/projects/spring-session-data-mongodb[Spring Session for MongoDB] is part of the Spring Session umbrella.
 
 image:https://jenkins.spring.io/buildStatus/icon?job=spring-session-data-mongodb%2Fmaster&subject=Corn%20(master)[link=https://jenkins.spring.io/view/SpringData/job/spring-session-data-mongodb/]
