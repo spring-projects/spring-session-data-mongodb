@@ -60,9 +60,21 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 	private List<SessionRepositoryCustomizer<MongoIndexedSessionRepository>> sessionRepositoryCustomizers;
 	private ClassLoader classLoader;
 	private IndexResolver<MongoSession> indexResolver;
+    private MongoOperations mongoOperations;
+
+    @Autowired
+    public void setMongoOperations(
+            @SpringSessionMongoOperations ObjectProvider<MongoOperations> springSessionMongoOperations,
+            ObjectProvider<MongoOperations> mongoOperations) {
+        MongoOperations mongoOperationsToUse = springSessionMongoOperations.getIfAvailable();
+        if (mongoOperationsToUse == null) {
+            mongoOperationsToUse = mongoOperations.getObject();
+        }
+        this.mongoOperations = mongoOperationsToUse;
+    }
 
 	@Bean
-	public MongoIndexedSessionRepository mongoSessionRepository(MongoOperations mongoOperations) {
+	public MongoIndexedSessionRepository mongoSessionRepository() {
 
 		MongoIndexedSessionRepository repository = new MongoIndexedSessionRepository(mongoOperations);
 		repository.setMaxInactiveIntervalInSeconds(this.maxInactiveIntervalInSeconds);
@@ -95,18 +107,18 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 		return repository;
 	}
 
-	public void setCollectionName(String collectionName) {
-		this.collectionName = collectionName;
-	}
+    public void setCollectionName(String collectionName) {
+        this.collectionName = collectionName;
+    }
 
-	public void setMaxInactiveIntervalInSeconds(Integer maxInactiveIntervalInSeconds) {
-		this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
-	}
+    public void setMaxInactiveIntervalInSeconds(Integer maxInactiveIntervalInSeconds) {
+        this.maxInactiveIntervalInSeconds = maxInactiveIntervalInSeconds;
+    }
 
-	public void setImportMetadata(AnnotationMetadata importMetadata) {
+    public void setImportMetadata(AnnotationMetadata importMetadata) {
 
-		AnnotationAttributes attributes = AnnotationAttributes
-				.fromMap(importMetadata.getAnnotationAttributes(EnableMongoHttpSession.class.getName()));
+        AnnotationAttributes attributes = AnnotationAttributes
+                .fromMap(importMetadata.getAnnotationAttributes(EnableMongoHttpSession.class.getName()));
 
 		if (attributes != null) {
 			this.maxInactiveIntervalInSeconds = attributes.getNumber("maxInactiveIntervalInSeconds");
@@ -114,16 +126,16 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 			this.maxInactiveIntervalInSeconds = MongoIndexedSessionRepository.DEFAULT_INACTIVE_INTERVAL;
 		}
 
-		String collectionNameValue = attributes != null ? attributes.getString("collectionName") : "";
-		if (StringUtils.hasText(collectionNameValue)) {
-			this.collectionName = this.embeddedValueResolver.resolveStringValue(collectionNameValue);
-		}
-	}
+        String collectionNameValue = attributes != null ? attributes.getString("collectionName") : "";
+        if (StringUtils.hasText(collectionNameValue)) {
+            this.collectionName = this.embeddedValueResolver.resolveStringValue(collectionNameValue);
+        }
+    }
 
-	@Autowired(required = false)
-	public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
-		this.mongoSessionConverter = mongoSessionConverter;
-	}
+    @Autowired(required = false)
+    public void setMongoSessionConverter(AbstractMongoSessionConverter mongoSessionConverter) {
+        this.mongoSessionConverter = mongoSessionConverter;
+    }
 
 	@Autowired(required = false)
 	public void setSessionRepositoryCustomizers(
@@ -136,10 +148,10 @@ public class MongoHttpSessionConfiguration extends SpringHttpSessionConfiguratio
 		this.classLoader = classLoader;
 	}
 
-	@Override
-	public void setEmbeddedValueResolver(StringValueResolver resolver) {
-		this.embeddedValueResolver = resolver;
-	}
+    @Override
+    public void setEmbeddedValueResolver(StringValueResolver resolver) {
+        this.embeddedValueResolver = resolver;
+    }
 
 	@Autowired(required = false)
 	public void setIndexResolver(IndexResolver<MongoSession> indexResolver) {
