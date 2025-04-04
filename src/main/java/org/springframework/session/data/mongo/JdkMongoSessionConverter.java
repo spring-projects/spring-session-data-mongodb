@@ -47,12 +47,12 @@ import com.mongodb.DBObject;
  */
 public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 
-	private static final String ID = "_id";
-	private static final String CREATION_TIME = "created";
-	private static final String LAST_ACCESSED_TIME = "accessed";
-	private static final String MAX_INTERVAL = "interval";
-	private static final String ATTRIBUTES = "attr";
-	private static final String PRINCIPAL_FIELD_NAME = "principal";
+	private String idFieldName = "_id";
+	private String creationTimeFieldName = "created";
+	private String lastAccessedTimeFieldName = "accessed";
+	private String maxIntervalFieldName = "interval";
+	private String attributesFieldName = "attr";
+	private String principalFieldName = "principal";
 
 	private final Converter<Object, byte[]> serializer;
 	private final Converter<byte[], Object> deserializer;
@@ -80,7 +80,7 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 	public Query getQueryForIndex(String indexName, Object indexValue) {
 
 		if (FindByIndexNameSessionRepository.PRINCIPAL_NAME_INDEX_NAME.equals(indexName)) {
-			return Query.query(Criteria.where(PRINCIPAL_FIELD_NAME).is(indexValue));
+			return Query.query(Criteria.where(principalFieldName).is(indexValue));
 		} else {
 			return null;
 		}
@@ -91,13 +91,13 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 
 		BasicDBObject basicDBObject = new BasicDBObject();
 
-		basicDBObject.put(ID, session.getId());
-		basicDBObject.put(CREATION_TIME, session.getCreationTime());
-		basicDBObject.put(LAST_ACCESSED_TIME, session.getLastAccessedTime());
-		basicDBObject.put(MAX_INTERVAL, session.getMaxInactiveInterval());
-		basicDBObject.put(PRINCIPAL_FIELD_NAME, extractPrincipal(session));
-		basicDBObject.put(EXPIRE_AT_FIELD_NAME, session.getExpireAt());
-		basicDBObject.put(ATTRIBUTES, serializeAttributes(session));
+		basicDBObject.put(idFieldName, session.getId());
+		basicDBObject.put(creationTimeFieldName, session.getCreationTime());
+		basicDBObject.put(lastAccessedTimeFieldName, session.getLastAccessedTime());
+		basicDBObject.put(maxIntervalFieldName, session.getMaxInactiveInterval());
+		basicDBObject.put(principalFieldName, extractPrincipal(session));
+		basicDBObject.put(getExpireAtFieldName(), session.getExpireAt());
+		basicDBObject.put(attributesFieldName, serializeattributesFieldName(session));
 
 		return basicDBObject;
 	}
@@ -105,60 +105,112 @@ public class JdkMongoSessionConverter extends AbstractMongoSessionConverter {
 	@Override
 	protected MongoSession convert(Document sessionWrapper) {
 
-		Object maxInterval = sessionWrapper.getOrDefault(MAX_INTERVAL, this.maxInactiveInterval);
+		Object maxInterval = sessionWrapper.getOrDefault(maxIntervalFieldName, this.maxInactiveInterval);
 
 		Duration maxIntervalDuration = (maxInterval instanceof Duration) ? (Duration) maxInterval
 				: Duration.parse(maxInterval.toString());
 
-		MongoSession session = new MongoSession(sessionWrapper.getString(ID), maxIntervalDuration.getSeconds());
+		MongoSession session = new MongoSession(sessionWrapper.getString(idFieldName),
+				maxIntervalDuration.getSeconds());
 
-		Object creationTime = sessionWrapper.get(CREATION_TIME);
+		Object creationTime = sessionWrapper.get(creationTimeFieldName);
 		if (creationTime instanceof Instant) {
 			session.setCreationTime(((Instant) creationTime).toEpochMilli());
 		} else if (creationTime instanceof Date) {
 			session.setCreationTime(((Date) creationTime).getTime());
 		}
 
-		Object lastAccessedTime = sessionWrapper.get(LAST_ACCESSED_TIME);
+		Object lastAccessedTime = sessionWrapper.get(lastAccessedTimeFieldName);
 		if (lastAccessedTime instanceof Instant) {
 			session.setLastAccessedTime((Instant) lastAccessedTime);
 		} else if (lastAccessedTime instanceof Date) {
 			session.setLastAccessedTime(Instant.ofEpochMilli(((Date) lastAccessedTime).getTime()));
 		}
 
-		session.setExpireAt((Date) sessionWrapper.get(EXPIRE_AT_FIELD_NAME));
+		session.setExpireAt((Date) sessionWrapper.get(getExpireAtFieldName()));
 
-		deserializeAttributes(sessionWrapper, session);
+		deserializeattributesFieldName(sessionWrapper, session);
 
 		return session;
 	}
 
 	@Nullable
-	private byte[] serializeAttributes(Session session) {
+	private byte[] serializeattributesFieldName(Session session) {
 
-		Map<String, Object> attributes = new HashMap<>();
+		Map<String, Object> attributesFieldName = new HashMap<>();
 
 		for (String attrName : session.getAttributeNames()) {
-			attributes.put(attrName, session.getAttribute(attrName));
+			attributesFieldName.put(attrName, session.getAttribute(attrName));
 		}
 
-		return this.serializer.convert(attributes);
+		return this.serializer.convert(attributesFieldName);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void deserializeAttributes(Document sessionWrapper, Session session) {
+	private void deserializeattributesFieldName(Document sessionWrapper, Session session) {
 
-		Object sessionAttributes = sessionWrapper.get(ATTRIBUTES);
+		Object sessionattributesFieldName = sessionWrapper.get(attributesFieldName);
 
-		byte[] attributesBytes = (sessionAttributes instanceof Binary ? ((Binary) sessionAttributes).getData()
-				: (byte[]) sessionAttributes);
+		byte[] attributesFieldNameBytes = (sessionattributesFieldName instanceof Binary
+				? ((Binary) sessionattributesFieldName).getData()
+				: (byte[]) sessionattributesFieldName);
 
-		Map<String, Object> attributes = (Map<String, Object>) this.deserializer.convert(attributesBytes);
+		Map<String, Object> attributesFieldName = (Map<String, Object>) this.deserializer
+				.convert(attributesFieldNameBytes);
 
-		if (attributes != null) {
-			for (Map.Entry<String, Object> entry : attributes.entrySet()) {
+		if (attributesFieldName != null) {
+			for (Map.Entry<String, Object> entry : attributesFieldName.entrySet()) {
 				session.setAttribute(entry.getKey(), entry.getValue());
 			}
 		}
 	}
+
+	public String getIdFieldName() {
+		return idFieldName;
+	}
+
+	public void setIdFieldName(String idFieldName) {
+		this.idFieldName = idFieldName;
+	}
+
+	public String getCreationTimeFieldName() {
+		return creationTimeFieldName;
+	}
+
+	public void setCreationTimeFieldName(String creationTimeFieldName) {
+		this.creationTimeFieldName = creationTimeFieldName;
+	}
+
+	public String getLastAccessedTimeFieldName() {
+		return lastAccessedTimeFieldName;
+	}
+
+	public void setLastAccessedTimeFieldName(String lastAccessedTimeFieldName) {
+		this.lastAccessedTimeFieldName = lastAccessedTimeFieldName;
+	}
+
+	public String getMaxIntervalFieldName() {
+		return maxIntervalFieldName;
+	}
+
+	public void setMaxIntervalFieldName(String maxIntervalFieldName) {
+		this.maxIntervalFieldName = maxIntervalFieldName;
+	}
+
+	public String getPrincipalFieldName() {
+		return principalFieldName;
+	}
+
+	public void setPrincipalFieldName(String principalFieldName) {
+		this.principalFieldName = principalFieldName;
+	}
+
+	public String getAttributesFieldName() {
+		return attributesFieldName;
+	}
+
+	public void setAttributesFieldName(String attributesFieldName) {
+		this.attributesFieldName = attributesFieldName;
+	}
+
 }
